@@ -1,10 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Formula Idle V4.5</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-$END$
+
+<!-- PRESTIGE -->
+<div class="prestige-panel">
+
+    <h2>PRESTIGE</h2>
+
+    <div class="upgrade prestige-card">
+        Future Prestige Layer
+    </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="game-container">
+    <button onclick="resetSave()">RESET SAVE</button>
+    <h1>NEON FORMULA</h1>
+
+    <div class="formula" id="formulaText">
+        f(t)=t²
+    </div>
+
+    <div class="stat">
+        <span>TIME</span>
+        <span id="time">0</span>
+    </div>
+
+    <div class="stat">
+        <span>VALUE</span>
+        <span id="value">0</span>
+    </div>
+
+    <div class="stat">
+        <span>GROWTH/SEC</span>
+        <span id="growth">0</span>
+    </div>
+    <div class="prestige-center">
+        <button id="prestigeBtn" onclick="doPrestige()" style="display:none;">
+            PRESTIGE
+        </button>
+
+        <div class="prestige-info">
+            p: <span id="pValue">0</span>
+        </div>
+    </div>
+</div>
+
+<!-- UPGRADES -->
+<div class="upgrades">
+
+    <h2>UPGRADES</h2>
+
+    <!-- A -->
+    <div class="upgrade">
+        <div class="upgrade-title">A</div>
+        <div class="upgrade-desc" id="aFormula">
+            a = t^(1/3)
+        </div>
+
+        <div class="row">
+            <span>lvl: <span id="aLevel">0</span></span>
+            <span>cost: <span id="aCost">1000</span></span>
+        </div>
+
+        <button id="btnA" onclick="buyA()">BUY</button>
+    </div>
+
+    <!-- B -->
+    <div class="upgrade">
+        <div class="upgrade-title">B</div>
+        <div class="upgrade-desc" id="bFormula">
+            b = a^0.50
+        </div>
+
+        <div class="row">
+            <span>lvl: <span id="bLevel">0</span></span>
+            <span>cost: <span id="bCost">100K</span></span>
+        </div>
+
+        <button id="btnB" onclick="buyB()">BUY</button>
+    </div>
+
+    <!-- C -->
+    <div class="upgrade">
+        <div class="upgrade-title">C</div>
+        <div class="upgrade-desc" id="cFormula">
+            c = a*b/100
+        </div>
+
+        <div class="row">
+            <span>lvl: <span id="cLevel">0</span></span>
+            <span>cost: <span id="cCost">10M</span></span>
+        </div>
+
+        <button id="btnC" onclick="buyC()">BUY</button>
+    </div>
+
+    <!-- D -->
+    <div class="upgrade">
+        <div class="upgrade-title">D</div>
+        <div class="upgrade-desc" id="dFormula">
+            d = (a+b+c)*1
+        </div>
+
+        <div class="row">
+            <span>lvl: <span id="dLevel">0</span></span>
+            <span>cost: <span id="dCost">1B</span></span>
+        </div>
+
+        <button id="btnD" onclick="buyD()">BUY</button>
+    </div>
+
+    <!-- E -->
+    <div class="upgrade">
+        <div class="upgrade-title">E</div>
+        <div class="upgrade-desc" id="eFormula">
+            e = log₅(a*b*c*d)
+        </div>
+
+        <div class="row">
+            <span>lvl: <span id="eLevel">0</span></span>
+            <span>cost: <span id="eCost">100T</span></span>
+        </div>
+
+        <button id="btnE" onclick="buyE()">BUY</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+<script src="prestige.js"></script>
+
 </body>
 </html>
