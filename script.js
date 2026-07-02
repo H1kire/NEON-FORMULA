@@ -1,8 +1,16 @@
+// ====================
+// SCRIPT.JS
+// ====================
 const MS_PER_SEC = 1000;
 let lastFrame = Date.now();
 
 let t = 0;
 let value = 0;
+
+let prestigeUpgrades = window.prestigeUpgrades || {
+    simpleBoost: 0,
+    globalSum: 0
+};
 
 let aLevel = 0;
 let bLevel = 0;
@@ -119,16 +127,120 @@ function format(n){
         return n.toFixed(0);
 
     const u = [
-        "K",
-        "M",
-        "B",
-        "T",
-        "Qa",
-        "Qi",
-        "Sx",
-        "Sp",
-        "Oc",
-        "No"
+
+        "K",    // 1e3
+        "M",    // 1e6
+        "B",    // 1e9
+        "T",    // 1e12
+        "Qa",   // 1e15
+        "Qi",   // 1e18
+        "Sx",   // 1e21
+        "Sp",   // 1e24
+        "Oc",   // 1e27
+        "No",   // 1e30
+
+        "Dc",   // 1e33
+        "UDc",  // 1e36
+        "DDc",  // 1e39
+        "TDc",  // 1e42
+        "QaDc", // 1e45
+        "QiDc", // 1e48
+        "SxDc", // 1e51
+        "SpDc", // 1e54
+        "OcDc", // 1e57
+        "NoDc", // 1e60
+
+        "Vg",   // 1e63
+        "UVg",  // 1e66
+        "DVg",  // 1e69
+        "TVg",  // 1e72
+        "QaVg", // 1e75
+        "QiVg", // 1e78
+        "SxVg", // 1e81
+        "SpVg", // 1e84
+        "OcVg", // 1e87
+        "NoVg", // 1e90
+
+        "Tg",   // 1e93
+        "UTg",  // 1e96
+        "DTg",  // 1e99
+        "TTg",  // 1e102
+        "QaTg", // 1e105
+        "QiTg", // 1e108
+        "SxTg", // 1e111
+        "SpTg", // 1e114
+        "OcTg", // 1e117
+        "NoTg", // 1e120
+
+        "Qd",   // 1e123
+        "UQd",  // 1e126
+        "DQd",  // 1e129
+        "TQd",  // 1e132
+        "QaQd", // 1e135
+        "QiQd", // 1e138
+        "SxQd", // 1e141
+        "SpQd", // 1e144
+        "OcQd", // 1e147
+        "NoQd", // 1e150
+
+        "Qn",   // 1e153
+        "UQn",  // 1e156
+        "DQn",  // 1e159
+        "TQn",  // 1e162
+        "QaQn", // 1e165
+        "QiQn", // 1e168
+        "SxQn", // 1e171
+        "SpQn", // 1e174
+        "OcQn", // 1e177
+        "NoQn", // 1e180
+
+        "Se",   // 1e183
+        "USe",  // 1e186
+        "DSe",  // 1e189
+        "TSe",  // 1e192
+        "QaSe", // 1e195
+        "QiSe", // 1e198
+        "SxSe", // 1e201
+        "SpSe", // 1e204
+        "OcSe", // 1e207
+        "NoSe", // 1e210
+
+        "St",   // 1e213
+        "USt",  // 1e216
+        "DSt",  // 1e219
+        "TSt",  // 1e222
+        "QaSt", // 1e225
+        "QiSt", // 1e228
+        "SxSt", // 1e231
+        "SpSt", // 1e234
+        "OcSt", // 1e237
+        "NoSt", // 1e240
+
+        "Og",   // 1e243
+        "UOg",  // 1e246
+        "DOg",  // 1e249
+        "TOg",  // 1e252
+        "QaOg", // 1e255
+        "QiOg", // 1e258
+        "SxOg", // 1e261
+        "SpOg", // 1e264
+        "OcOg", // 1e267
+        "NoOg", // 1e270
+
+        "Ng",   // 1e273
+        "UNg",  // 1e276
+        "DNg",  // 1e279
+        "TNg",  // 1e282
+        "QaNg", // 1e285
+        "QiNg", // 1e288
+        "SxNg", // 1e291
+        "SpNg", // 1e294
+        "OcNg", // 1e297
+        "NoNg", // 1e300
+
+        "Ce",   // 1e303
+        "UCe"   // 1e306
+
     ];
 
     let i = -1;
@@ -284,22 +396,64 @@ function getE(){
 
 function getGain(){
 
-    return (
-        Math.pow(
-            t + 1,
-            2
-        ) *
+    let boost = 1;
+
+    // Simple Boost
+    boost *= (1 + (prestigeUpgrades.simpleBoost || 0) * 0.25);
+
+    // Общая часть формулы
+    const base =
         getA() *
         getB() *
         getC() *
         getD() *
-        getE()
-    );
+        getE();
+
+    let result;
+
+    // Без Global Sum
+    if((prestigeUpgrades.globalSum || 0) === 0){
+
+        result =
+            Math.pow(t + 1, 2) *
+            base *
+            boost;
+
+    }
+
+    // Global Sum
+    else{
+
+        let sum = 0;
+
+        for(
+            let i = 1;
+            i <= prestigeUpgrades.globalSum;
+            i++
+        ){
+
+            sum += Math.pow(t + i, 2);
+
+        }
+
+        result =
+            sum *
+            base *
+            boost;
+
+    }
+
+    // Защита
+    if(!isFinite(result))
+        return 0;
+
+    return result;
 
 }
+
 function getGrowthPerSecond(){
 
-    return getGain() * (MS_PER_SEC / TICK);
+    return getGain();
 
 }
 
@@ -383,26 +537,56 @@ function buyE(){
 
 function updateFormulaText(){
 
-    let formula =
-        "f(t)=t²";
+    // Пока нет Global Sum
+    if(prestigeUpgrades.globalSum === 0){
 
-    if(aLevel > 0)
-        formula += " × a";
+        let formula = "f(t)=t²";
 
-    if(bLevel > 0)
-        formula += " × b";
+        if(aLevel > 0)
+            formula += " × a";
 
-    if(cLevel > 0)
-        formula += " × c";
+        if(bLevel > 0)
+            formula += " × b";
 
-    if(dLevel > 0)
-        formula += " × d";
+        if(cLevel > 0)
+            formula += " × c";
 
-    if(eLevel > 0)
-        formula += " × e";
+        if(dLevel > 0)
+            formula += " × d";
 
-    formulaDisplay.textContent =
-        formula;
+        if(eLevel > 0)
+            formula += " × e";
+
+        formulaDisplay.textContent = formula;
+
+    }
+
+    // После покупки Global Sum
+    else{
+
+        let formula =
+            `f(t)=Σ₁→${prestigeUpgrades.globalSum}((t+i)²`;
+
+        if(aLevel > 0)
+            formula += " × a";
+
+        if(bLevel > 0)
+            formula += " × b";
+
+        if(cLevel > 0)
+            formula += " × c";
+
+        if(dLevel > 0)
+            formula += " × d";
+
+        if(eLevel > 0)
+            formula += " × e";
+
+        formula += ")";
+
+        formulaDisplay.textContent = formula;
+
+    }
 
 }
 
@@ -541,10 +725,10 @@ function loop(){
     lastFrame = now;
 
     t += delta;
-    value += getGain() * delta * (1000 / TICK);
+
+    value += getGain() * delta;
 
     updateUI();
-
 }
 
 // ======================

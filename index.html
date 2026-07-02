@@ -10,12 +10,60 @@
 <body>
 
 <!-- PRESTIGE -->
-<div class="prestige-panel">
+<div id="prestigePanel" class="prestige-panel">
 
-    <h2>PRESTIGE</h2>
+    <!-- Simple Boost -->
+    <div class="upgrade">
 
-    <div class="upgrade prestige-card">
-        Future Prestige Layer
+        <div class="upgrade-title">
+            Simple Boost
+        </div>
+
+        <div class="upgrade-desc">
+            +25% GROWTH/SEC
+        </div>
+
+        <div class="row">
+        <span>lvl:
+            <span id="simpleBoostLevel">0</span>
+        </span>
+
+            <span>cost:
+            <span id="simpleBoostCost">1</span>p
+        </span>
+        </div>
+
+        <button onclick="buySimpleBoost()">
+            BUY
+        </button>
+
+    </div>
+
+    <!-- Global Sum -->
+    <div class="upgrade">
+
+        <div class="upgrade-title">
+            Global Sum
+        </div>
+
+        <div class="upgrade-desc">
+            Increase Σ limit
+        </div>
+
+        <div class="row">
+        <span>lvl:
+            <span id="globalSumLevel">0</span>/5
+        </span>
+
+            <span>cost:
+            <span id="globalSumCost">10</span>p
+        </span>
+        </div>
+
+        <button onclick="buyGlobalSum()">
+            BUY
+        </button>
+
     </div>
 
 </div>
@@ -136,8 +184,7 @@
 
 </div>
 
-<script src="script.js"></script>
 <script src="prestige.js"></script>
-
+<script src="script.js"></script>
 </body>
 </html>

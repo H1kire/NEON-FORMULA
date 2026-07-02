@@ -1,5 +1,5 @@
 // ======================
-// PRESTIGE SYSTEM V4
+// PRESTIGE SYSTEM \ PRESCTIGE.js
 // ======================
 
 // prestige points (p)
@@ -8,9 +8,25 @@ let p = 0;
 // prestige unlock flag
 let prestigeUnlocked = false;
 
+// ======================
+// prestigeUpgrades
+// ======================
+
+window.prestigeUpgrades = window.prestigeUpgrades || {
+    simpleBoost: 0,
+    globalSum: 0
+};
+
+
 // DOM
 const prestigeBtn = document.getElementById("prestigeBtn");
 const pDisplay = document.getElementById("pValue");
+const prestigePanel = document.getElementById("prestigePanel");
+const simpleBoostLevel = document.getElementById("simpleBoostLevel");
+const simpleBoostCost = document.getElementById("simpleBoostCost");
+
+const globalSumLevel = document.getElementById("globalSumLevel");
+const globalSumCost = document.getElementById("globalSumCost");
 
 // ======================
 // COST FUNCTION
@@ -71,6 +87,8 @@ function doPrestige() {
     // add prestige points
     p += gain;
 
+    prestigeUnlocked = true;
+
     savePrestige();
     updatePrestigeUI();
 }
@@ -81,7 +99,9 @@ function doPrestige() {
 
 function savePrestige() {
     localStorage.setItem("prestigeSave", JSON.stringify({
-        p: p
+        p: p,
+        prestigeUnlocked: prestigeUnlocked,
+        prestigeUpgrades: prestigeUpgrades
     }));
 }
 
@@ -93,7 +113,67 @@ function loadPrestige() {
         return;
 
     p = JSON.parse(data).p || 0;
+    prestigeUnlocked = data.prestigeUnlocked || false;
+    prestigeUpgrades = data.prestigeUpgrades || {
+        simpleBoost: 0,
+        globalSum: 0
+    };
 }
+
+// ==================================================================
+// PRESTIGE UPG.
+// ==================================================================
+// ======================
+// COST PRESTIGE UPG.
+// ======================
+
+function getSimpleBoostCost(){
+    return Math.ceil(1 * Math.pow(1.5, prestigeUpgrades.simpleBoost));
+}
+
+function getGlobalSumCost(){
+    return Math.min(
+        5,
+        Math.ceil(10 * Math.pow(10, prestigeUpgrades.globalSum))
+    );
+}
+
+// ======================
+// BUY PRESTIGE UPG.
+// ======================
+
+function buySimpleBoost(){
+
+    const cost = getSimpleBoostCost();
+
+    if(p < cost) return;
+
+    p -= cost;
+    prestigeUpgrades.simpleBoost++;
+
+    savePrestige();
+    updatePrestigeUI();
+}
+function buyGlobalSum(){
+
+    const cost = getGlobalSumCost();
+
+    if(p < cost) return;
+
+    p -= cost;
+
+    if(prestigeUpgrades.globalSum < 5)
+        prestigeUpgrades.globalSum++;
+
+    savePrestige();
+    updatePrestigeUI();
+}
+
+
+// ======================
+// BUY PRESTIGE UPG.
+// ======================
+
 
 // ======================
 // UI CONTROL
@@ -106,7 +186,7 @@ function updatePrestigeUI() {
 
     let gain = getPrestigeGain();
 
-    // show button only if available
+    // BUTTON
     if (gain > 0) {
         prestigeBtn.style.display = "block";
         prestigeBtn.textContent = `PRESTIGE +${gain}p`;
@@ -114,8 +194,28 @@ function updatePrestigeUI() {
         prestigeBtn.style.display = "none";
     }
 
+    // PRESTIGE PANEL
+    if (prestigePanel) {
+        if(prestigeUnlocked){
+
+            prestigePanel.style.display = "block";
+
+        }
+        else{
+
+            prestigePanel.style.display = "none";
+
+        }
+    }
+
     if (pDisplay)
         pDisplay.textContent = p;
+
+    simpleBoostLevel.textContent = prestigeUpgrades.simpleBoost;
+    simpleBoostCost.textContent = getSimpleBoostCost();
+
+    globalSumLevel.textContent = prestigeUpgrades.globalSum;
+    globalSumCost.textContent = getGlobalSumCost();
 }
 
 // ======================
