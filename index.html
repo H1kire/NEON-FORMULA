@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Formula Idle V4.5</title>
+    <title>Neon Formula Idle V5.1</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -65,7 +65,36 @@
         </button>
 
     </div>
+    <!-- Auto Buyer -->
+    <div class="upgrade">
 
+        <div class="upgrade-title">
+            Auto Buyer
+        </div>
+
+        <div class="upgrade-desc">
+            Automatically buys letter upgrades.
+        </div>
+
+        <div class="row">
+
+        <span>
+            lvl:
+            <span id="autoBuyerLevel">0</span>
+        </span>
+
+            <span>
+            cost:
+            <span id="autoBuyerCost">10</span> p
+        </span>
+
+        </div>
+
+        <button onclick="buyAutoBuyer()">
+            BUY
+        </button>
+
+    </div>
 </div>
 
 <!-- MAIN -->
@@ -110,6 +139,11 @@
     <!-- A -->
     <div class="upgrade">
         <div class="upgrade-title">A</div>
+        <button id="autoA"
+                class="auto-toggle"
+                onclick="toggleAutoA()">
+            AUTO ON
+        </button>
         <div class="upgrade-desc" id="aFormula">
             a = t^(1/3)
         </div>
@@ -125,6 +159,11 @@
     <!-- B -->
     <div class="upgrade">
         <div class="upgrade-title">B</div>
+        <button id="autoB"
+                class="auto-toggle"
+                onclick="toggleAutoB()">
+            AUTO ON
+        </button>
         <div class="upgrade-desc" id="bFormula">
             b = a^0.50
         </div>
@@ -140,6 +179,11 @@
     <!-- C -->
     <div class="upgrade">
         <div class="upgrade-title">C</div>
+        <button id="autoC"
+                class="auto-toggle"
+                onclick="toggleAutoC()">
+            AUTO ON
+        </button>
         <div class="upgrade-desc" id="cFormula">
             c = a*b/100
         </div>
@@ -155,6 +199,11 @@
     <!-- D -->
     <div class="upgrade">
         <div class="upgrade-title">D</div>
+        <button id="autoD"
+                class="auto-toggle"
+                onclick="toggleAutoD()">
+            AUTO ON
+        </button>
         <div class="upgrade-desc" id="dFormula">
             d = (a+b+c)*1
         </div>
@@ -170,6 +219,11 @@
     <!-- E -->
     <div class="upgrade">
         <div class="upgrade-title">E</div>
+        <button id="autoE"
+                class="auto-toggle"
+                onclick="toggleAutoE()">
+            AUTO ON
+        </button>
         <div class="upgrade-desc" id="eFormula">
             e = log₅(a*b*c*d)
         </div>

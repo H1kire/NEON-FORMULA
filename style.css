@@ -279,3 +279,14 @@ button:hover{
     margin-top:8px;
     color:#a78bfa;
 }
+
+.upgrade-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.auto-toggle{
+    font-size:11px;
+    padding:3px 8px;
+}

@@ -104,6 +104,7 @@ function resetSave(){
     localStorage.removeItem(SAVE_KEY);
     localStorage.removeItem("prestigeSave");
 
+    prestigeUnlocked = false;
     p = 0;
     t = 0;
     value = 0;
@@ -114,6 +115,7 @@ function resetSave(){
     dLevel = 0;
     eLevel = 0;
 
+    updatePrestigeUI();
     updateUI();
 }
 
@@ -715,6 +717,81 @@ function updateUI(){
 }
 
 // ======================
+// Auto buy
+// ======================
+
+let autoBuyA = true;
+let autoBuyB = true;
+let autoBuyC = true;
+let autoBuyD = true;
+let autoBuyE = true;
+
+function toggleAutoA(){
+
+    autoBuyA = !autoBuyA;
+
+    document.getElementById("autoA").textContent =
+        autoBuyA ? "AUTO ON" : "AUTO OFF";
+}
+
+function toggleAutoB(){
+
+    autoBuyB = !autoBuyB;
+
+    document.getElementById("autoB").textContent =
+        autoBuyA ? "AUTO ON" : "AUTO OFF";
+}
+
+function toggleAutoC(){
+
+    autoBuyC = !autoBuyC;
+
+    document.getElementById("autoC").textContent =
+        autoBuyA ? "AUTO ON" : "AUTO OFF";
+}
+
+function toggleAutoD(){
+
+    autoBuyD = !autoBuyD;
+
+    document.getElementById("autoD").textContent =
+        autoBuyA ? "AUTO ON" : "AUTO OFF";
+}
+
+function toggleAutoE(){
+
+    autoBuyE = !autoBuyE;
+
+    document.getElementById("autoE").textContent =
+        autoBuyA ? "AUTO ON" : "AUTO OFF";
+}
+
+
+function autoBuy(){
+
+    if(prestigeUpgrades.autoBuyer >= 1)
+        if(autoBuyA)
+            buyA();
+
+    if(prestigeUpgrades.autoBuyer >= 2)
+        if(autoBuyB)
+            buyB();
+
+    if(prestigeUpgrades.autoBuyer >= 3)
+        if(autoBuyC)
+            buyC();
+
+    if(prestigeUpgrades.autoBuyer >= 4)
+        if(autoBuyD)
+            buyD();
+
+    if(prestigeUpgrades.autoBuyer >= 5)
+        if(autoBuyE)
+            buyE();
+
+}
+
+// ======================
 // LOOP
 // ======================
 
@@ -727,6 +804,8 @@ function loop(){
     t += delta;
 
     value += getGain() * delta;
+
+    autoBuy();
 
     updateUI();
 }

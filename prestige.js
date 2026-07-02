@@ -14,7 +14,8 @@ let prestigeUnlocked = false;
 
 window.prestigeUpgrades = window.prestigeUpgrades || {
     simpleBoost: 0,
-    globalSum: 0
+    globalSum: 0,
+    autoBuyer: 0
 };
 
 
@@ -24,10 +25,10 @@ const pDisplay = document.getElementById("pValue");
 const prestigePanel = document.getElementById("prestigePanel");
 const simpleBoostLevel = document.getElementById("simpleBoostLevel");
 const simpleBoostCost = document.getElementById("simpleBoostCost");
-
 const globalSumLevel = document.getElementById("globalSumLevel");
 const globalSumCost = document.getElementById("globalSumCost");
-
+const autoBuyerLevel = document.getElementById("autoBuyerLevel");
+const autoBuyerCost = document.getElementById("autoBuyerCost");
 // ======================
 // COST FUNCTION
 // 1 p = 1Qa * 2^x
@@ -100,7 +101,7 @@ function doPrestige() {
 function savePrestige() {
     localStorage.setItem("prestigeSave", JSON.stringify({
         p: p,
-        prestigeUnlocked: prestigeUnlocked,
+        prestigeUnlocked,
         prestigeUpgrades: prestigeUpgrades
     }));
 }
@@ -116,7 +117,8 @@ function loadPrestige() {
     prestigeUnlocked = data.prestigeUnlocked || false;
     prestigeUpgrades = data.prestigeUpgrades || {
         simpleBoost: 0,
-        globalSum: 0
+        globalSum: 0,
+        autoBuyer: 0
     };
 }
 
@@ -137,7 +139,13 @@ function getGlobalSumCost(){
         Math.ceil(10 * Math.pow(10, prestigeUpgrades.globalSum))
     );
 }
+function getAutoBuyerCost(){
 
+    return Math.ceil(
+        10 * Math.pow(10, prestigeUpgrades.autoBuyer)
+    );
+
+}
 // ======================
 // BUY PRESTIGE UPG.
 // ======================
@@ -168,11 +176,24 @@ function buyGlobalSum(){
     savePrestige();
     updatePrestigeUI();
 }
+function buyAutoBuyer(){
 
+    const cost = getAutoBuyerCost();
 
-// ======================
-// BUY PRESTIGE UPG.
-// ======================
+    if(p < cost)
+        return;
+
+    if(prestigeUpgrades.autoBuyer >= 5)
+        return;
+
+    p -= cost;
+
+    prestigeUpgrades.autoBuyer++;
+
+    savePrestige();
+
+}
+
 
 
 // ======================
@@ -186,38 +207,83 @@ function updatePrestigeUI() {
 
     let gain = getPrestigeGain();
 
-    // BUTTON
+    // ======================
+    // PRESTIGE BUTTON
+    // ======================
+
     if (gain > 0) {
+
         prestigeBtn.style.display = "block";
         prestigeBtn.textContent = `PRESTIGE +${gain}p`;
-    } else {
+
+    }
+    else{
+
         prestigeBtn.style.display = "none";
+
     }
 
+    // ======================
     // PRESTIGE PANEL
-    if (prestigePanel) {
-        if(prestigeUnlocked){
+    // ======================
 
-            prestigePanel.style.display = "block";
+    if(prestigePanel){
 
-        }
-        else{
+        prestigePanel.style.display =
+            prestigeUnlocked
+                ? "block"
+                : "none";
 
-            prestigePanel.style.display = "none";
-
-        }
     }
 
-    if (pDisplay)
+    // ======================
+    // PRESTIGE POINTS
+    // ======================
+
+    if(pDisplay)
         pDisplay.textContent = p;
 
-    simpleBoostLevel.textContent = prestigeUpgrades.simpleBoost;
-    simpleBoostCost.textContent = getSimpleBoostCost();
+    // ======================
+    // SIMPLE BOOST
+    // ======================
 
-    globalSumLevel.textContent = prestigeUpgrades.globalSum;
-    globalSumCost.textContent = getGlobalSumCost();
+    if(simpleBoostLevel)
+        simpleBoostLevel.textContent =
+            prestigeUpgrades.simpleBoost;
+
+    if(simpleBoostCost)
+        simpleBoostCost.textContent =
+            getSimpleBoostCost();
+
+    // ======================
+    // GLOBAL SUM
+    // ======================
+
+    if(globalSumLevel)
+        globalSumLevel.textContent =
+            prestigeUpgrades.globalSum;
+
+    if(globalSumCost)
+        globalSumCost.textContent =
+            prestigeUpgrades.globalSum >= 5
+                ? "MAX"
+                : getGlobalSumCost();
+
+    // ======================
+    // AUTO BUYER
+    // ======================
+
+    if(autoBuyerLevel)
+        autoBuyerLevel.textContent =
+            prestigeUpgrades.autoBuyer;
+
+    if(autoBuyerCost)
+        autoBuyerCost.textContent =
+            prestigeUpgrades.autoBuyer >= 5
+                ? "MAX"
+                : getAutoBuyerCost();
+
 }
-
 // ======================
 // LOOP
 // ======================
