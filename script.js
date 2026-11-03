@@ -75,7 +75,7 @@ function updateUI(){
  $("eFormula").textContent="e = log"+Math.max(5-eLevel*.01,2).toFixed(2)+"(a*b*c*d)";
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
- for(const [id,on] of [["autoA",autoBuyA],["autoB",autoBuyB],["autoC",autoBuyC],["autoD",autoBuyD],["autoE",autoBuyE]])$(id).textContent=on?"AUTO ON":"AUTO OFF";
+ for(const [id,on] of [["autoA",autoBuyA],["autoB",autoBuyB],["autoC",autoBuyC],["autoD",autoBuyD],["autoE",autoBuyE]])$(id).textContent=on?tr("autoOn"):tr("autoOff");for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
  updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
 function toggleAutoA(){autoBuyA=!autoBuyA;updateUI()}function toggleAutoB(){autoBuyB=!autoBuyB;updateUI()}function toggleAutoC(){autoBuyC=!autoBuyC;updateUI()}function toggleAutoD(){autoBuyD=!autoBuyD;updateUI()}function toggleAutoE(){autoBuyE=!autoBuyE;updateUI()}
