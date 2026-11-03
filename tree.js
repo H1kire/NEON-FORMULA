@@ -45,7 +45,7 @@
  function updateProgress(){const el=document.getElementById("treeProgress");if(el)el.textContent=purchasedCount()+" / "+TOTAL}
  function centerRoot(){if(!canvas)return;scale=.72;offsetX=canvas.clientWidth/2;offsetY=45;draw()}
  window.initUpgradeTree=()=>{
-  if(initialized){canvasSize();draw();return}initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContextr("2d");
+  if(initialized){canvasSize();draw();return}initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContext("2d");
   canvas.addEventListener("pointerdown",e=>{canvas.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,ox:offsetX,oy:offsetY,moved:false}});
   canvas.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;offsetX=drag.ox+dx;offsetY=drag.oy+dy;draw()});
   canvas.addEventListener("pointerup",e=>{if(!drag)return;if(!drag.moved){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;let best=-1,dist=17/scale;for(const n of nodes){const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}selected=best;updateInspector();draw()}drag=null});
