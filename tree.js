@@ -32,20 +32,20 @@
  }
  function updateInspector(){
   const n=nodes[selected],id=document.querySelector(".inspector-id"),title=document.querySelector("#treeInspector h3"),desc=document.querySelector("#treeInspector p"),level=document.getElementById("nodeLevel"),cost=document.getElementById("nodeCost"),btn=document.getElementById("nodeBuy");
-  if(!n){id.textContent="NODE —";title.textContent=t("selectNode");desc.textContent=t("selectNodeDesc");level.textContent="0 / 1";cost.textContent="—";btn.disabled=true;btn.textContent=t("selectNode");return}
+  if(!n){id.textContent="NODE —";title.textContent=tr("selectNode");desc.textContent=tr("selectNodeDesc");level.textContent="0 / 1";cost.textContent="—";btn.disabled=true;btn.textContent=tr("selectNode");return}
   id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · DEPTH "+n.depth;
   title.textContent=["Catalyst","Exponent","Matrix","Resonance","Singularity"][n.id%5]+" Node";
   const effect=((n.effect-1)*100).toFixed(2)+"%";
-  desc.textContent=t("nodeEffect")+" +"+effect+" per level. "+(n.parent<0?"Root node.":"Requires node #"+(n.parent+1)+" to be maxed.");
+  desc.textContent=tr("nodeEffect")+" +"+effect+" per level. "+(n.parent<0?"Root node.":"Requires node #"+(n.parent+1)+" to be maxed.");
   level.textContent=n.level+" / "+n.maxLevel;cost.textContent=typeof format==="function"?format(nodeCost(n)):String(nodeCost(n));
-  btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?t("maxed"):!available(n)?t("lockedText"):value<nodeCost(n)?t("notEnough"):t("buy");
+  btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):value<nodeCost(n)?tr("notEnough"):tr("buy");
  }
  window.refreshTreeLanguage=updateInspector;
  window.buyTreeNode=()=>{const n=nodes[selected];if(!n||!canBuy(n))return;value-=nodeCost(n);n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats()};
  function updateProgress(){const el=document.getElementById("treeProgress");if(el)el.textContent=purchasedCount()+" / "+TOTAL}
  function centerRoot(){if(!canvas)return;scale=.72;offsetX=canvas.clientWidth/2;offsetY=45;draw()}
  window.initUpgradeTree=()=>{
-  if(initialized){canvasSize();draw();return}initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContext("2d");
+  if(initialized){canvasSize();draw();return}initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContextr("2d");
   canvas.addEventListener("pointerdown",e=>{canvas.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,ox:offsetX,oy:offsetY,moved:false}});
   canvas.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;offsetX=drag.ox+dx;offsetY=drag.oy+dy;draw()});
   canvas.addEventListener("pointerup",e=>{if(!drag)return;if(!drag.moved){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;let best=-1,dist=17/scale;for(const n of nodes){const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}selected=best;updateInspector();draw()}drag=null});
