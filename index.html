@@ -1,46 +1,78 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090d12"><meta name="description" content="FORMULA ASCENT — mathematical idle experiment.">
-<title>FORMULA ASCENT — Idle Experiment</title>
+<title>FORMULA ASCENT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body><div class="app-shell">
+<body>
+<div class="app-shell">
 <header class="topbar">
-<a class="brand" href="#"><span class="brand-mark">ƒ</span><span class="brand-copy"><strong>FORMULA</strong><small>ASCENT / IDLE LAB</small></span></a>
-<div class="topbar-status"><span class="status-dot"></span> SYSTEM ONLINE <span class="version-tag">V5.1</span></div>
-<button class="reset-button" onclick="resetSave()" title="Удалить весь прогресс">↺ <span>RESET</span></button>
+<a class="brand" href="#" aria-label="Formula Ascent home"><span class="brand-mark">ƒ</span><span class="brand-copy"><strong>FORMULA ASCENT</strong><small>IDLE EXPERIMENT / 02.1</small></span></a>
+<div class="topbar-status"><span class="status-dot"></span><span data-i18n="systemOnline">SYSTEM ONLINE</span><span class="version-tag">ALPHA</span></div>
+<button class="reset-button" onclick="resetSave()" data-i18n="reset">↺ RESET</button>
 </header>
-<main class="dashboard"><section class="main-column">
+<div class="workspace">
+<main class="content-area">
+<section class="page active" id="page-formula" data-page="formula">
 <section class="hero-panel panel">
-<div class="section-kicker"><span class="kicker-line"></span> YOUR EXPERIMENT <span class="kicker-index">01 / 03</span></div>
-<div class="hero-heading"><div><h1>Build your<br><em>own growth.</em></h1><p class="hero-subtitle">Каждая секунда — новый шаг к бесконечности.</p></div><div class="orbit-art" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit-core">ƒ</span><span class="orbit-pip"></span></div></div>
-<div class="formula-display"><span class="formula-label">ACTIVE FORMULA</span><div class="formula" id="formulaText">f(t)=t²</div><span class="formula-caption">LIVE FUNCTION <i></i> REAL-TIME CALCULATION</span></div>
+<div class="section-kicker"><span class="kicker-line"></span><span data-i18n="yourExperiment">YOUR EXPERIMENT</span><span class="kicker-index">01 / 04</span></div>
+<div class="hero-heading"><div><h1>Build your<br><em>own growth.</em></h1><p class="hero-subtitle" data-i18n="heroSubtitle">Every second is another step toward infinity.</p></div><div class="orbit-art" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit-core">ƒ</span><span class="orbit-pip"></span></div></div>
+<div class="formula-display"><span class="formula-label" data-i18n="activeFormula">ACTIVE FORMULA</span><div class="formula" id="formulaText">f(t)=t²</div><span class="formula-caption">LIVE FUNCTION <i></i> 10 MS UPDATE CYCLE</span></div>
 <div class="metrics-grid">
-<div class="metric-card"><span class="metric-label">ELAPSED TIME</span><strong id="time">0</strong><small>SECONDS</small></div>
-<div class="metric-card metric-primary"><span class="metric-label">TOTAL VALUE</span><strong id="value">0</strong><small>ACCUMULATED</small></div>
-<div class="metric-card"><span class="metric-label">GROWTH RATE</span><strong id="growth">0</strong><small>PER SECOND</small></div>
+<div class="metric-card"><span class="metric-label" data-i18n="elapsedTime">ELAPSED TIME</span><strong id="time">0</strong><small>SECONDS</small></div>
+<div class="metric-card metric-primary"><span class="metric-label" data-i18n="totalValue">TOTAL VALUE</span><strong id="value">0</strong><small>ACCUMULATED</small></div>
+<div class="metric-card"><span class="metric-label" data-i18n="growthRate">GROWTH RATE</span><strong id="growth">0</strong><small>PER SECOND</small></div>
 </div>
-<div class="prestige-strip"><div class="prestige-currency"><span class="currency-icon">✦</span><div><small>ASCENSION POINTS</small><strong id="pValue">0</strong></div></div><div class="prestige-action"><span class="prestige-hint">Reset your run to evolve permanently.</span><button id="prestigeBtn" onclick="doPrestige()" style="display:none;">ASCEND <span>↗</span></button></div></div>
+<div class="prestige-strip"><div class="prestige-currency"><span class="currency-icon">✦</span><div><small>ASCENSION POINTS</small><strong id="pValue">0</strong></div></div><div class="prestige-action"><span class="prestige-hint" data-i18n="prestigeHint">Reset your run to evolve permanently.</span><button id="prestigeBtn" onclick="doPrestige()" style="display:none">ASCEND <span>↗</span></button></div></div>
 </section>
-<section class="upgrades-section"><div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span> EVOLUTION TREE</div><h2>Formula upgrades</h2></div><span class="section-count">05 MODULES</span></div>
+<section class="upgrades-section">
+<div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="evolutionTree">EVOLUTION MODULES</span></div><h2 data-i18n="formulaUpgrades">Formula upgrades</h2></div><span class="section-count">05 MODULES</span></div>
 <div class="upgrades" id="upgradesGrid">
-<article class="upgrade upgrade-a"><div class="upgrade-top"><span class="upgrade-symbol">A</span><button id="autoA" class="auto-toggle" onclick="toggleAutoA()">AUTO ON</button></div><div class="upgrade-title">Root function</div><div class="upgrade-desc" id="aFormula">a = t^(1/3)</div><div class="upgrade-stats"><span>LEVEL <b id="aLevel">0</b></span><span>COST <b id="aCost">1000</b></span></div><button id="btnA" class="buy-button" onclick="buyA()">UNLOCK MODULE <span>↗</span></button></article>
-<article class="upgrade upgrade-b"><div class="upgrade-top"><span class="upgrade-symbol">B</span><button id="autoB" class="auto-toggle" onclick="toggleAutoB()">AUTO ON</button></div><div class="upgrade-title">Power curve</div><div class="upgrade-desc" id="bFormula">b = a^0.50</div><div class="upgrade-stats"><span>LEVEL <b id="bLevel">0</b></span><span>COST <b id="bCost">100K</b></span></div><button id="btnB" class="buy-button" onclick="buyB()">UNLOCK MODULE <span>↗</span></button></article>
-<article class="upgrade upgrade-c"><div class="upgrade-top"><span class="upgrade-symbol">C</span><button id="autoC" class="auto-toggle" onclick="toggleAutoC()">AUTO ON</button></div><div class="upgrade-title">Product field</div><div class="upgrade-desc" id="cFormula">c = a*b/100</div><div class="upgrade-stats"><span>LEVEL <b id="cLevel">0</b></span><span>COST <b id="cCost">10M</b></span></div><button id="btnC" class="buy-button" onclick="buyC()">UNLOCK MODULE <span>↗</span></button></article>
-<article class="upgrade upgrade-d"><div class="upgrade-top"><span class="upgrade-symbol">D</span><button id="autoD" class="auto-toggle" onclick="toggleAutoD()">AUTO ON</button></div><div class="upgrade-title">Sum multiplier</div><div class="upgrade-desc" id="dFormula">d = (a+b+c)*1</div><div class="upgrade-stats"><span>LEVEL <b id="dLevel">0</b></span><span>COST <b id="dCost">1B</b></span></div><button id="btnD" class="buy-button" onclick="buyD()">UNLOCK MODULE <span>↗</span></button></article>
-<article class="upgrade upgrade-e"><div class="upgrade-top"><span class="upgrade-symbol">E</span><button id="autoE" class="auto-toggle" onclick="toggleAutoE()">AUTO ON</button></div><div class="upgrade-title">Logarithmic field</div><div class="upgrade-desc" id="eFormula">e = log₅(a*b*c*d)</div><div class="upgrade-stats"><span>LEVEL <b id="eLevel">0</b></span><span>COST <b id="eCost">1T</b></span></div><button id="btnE" class="buy-button" onclick="buyE()">UNLOCK MODULE <span>↗</span></button></article>
-</div></section></section>
-<aside class="side-column">
-<section class="side-intro"><div class="section-kicker"><span class="kicker-line"></span> RESEARCH LOG</div><h2>Go beyond<br>the <em>limits.</em></h2><p>Improve the equation, multiply your output and unlock ascension technologies.</p><div class="side-decoration" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></section>
-<section id="prestigePanel" class="prestige-panel panel"><div class="section-kicker"><span class="kicker-line"></span> PERMANENT RESEARCH</div><h2>Ascension lab</h2><p class="panel-description">Spend points earned from a reset to permanently enhance your next run.</p>
-<article class="upgrade prestige-upgrade"><div class="upgrade-top"><span class="upgrade-symbol">✦</span><span class="upgrade-category">OUTPUT</span></div><div class="upgrade-title">Simple Boost</div><div class="upgrade-desc">+25% GROWTH / SEC</div><div class="upgrade-stats"><span>LEVEL <b id="simpleBoostLevel">0</b></span><span>COST <b><span id="simpleBoostCost">1</span> P</b></span></div><button class="buy-button" onclick="buySimpleBoost()">RESEARCH <span>↗</span></button></article>
-<article class="upgrade prestige-upgrade"><div class="upgrade-top"><span class="upgrade-symbol">Σ</span><span class="upgrade-category">SCALING</span></div><div class="upgrade-title">Global Sum</div><div class="upgrade-desc">Increase the Σ limit</div><div class="upgrade-stats"><span>LEVEL <b id="globalSumLevel">0</b>/5</span><span>COST <b><span id="globalSumCost">10</span> P</b></span></div><button class="buy-button" onclick="buyGlobalSum()">RESEARCH <span>↗</span></button></article>
-<article class="upgrade prestige-upgrade"><div class="upgrade-top"><span class="upgrade-symbol">⌘</span><span class="upgrade-category">AUTOMATION</span></div><div class="upgrade-title">Auto Buyer</div><div class="upgrade-desc">Automatically buys letter upgrades.</div><div class="upgrade-stats"><span>LEVEL <b id="autoBuyerLevel">0</b>/5</span><span>COST <b><span id="autoBuyerCost">10</span> P</b></span></div><button class="buy-button" onclick="buyAutoBuyer()">RESEARCH <span>↗</span></button></article>
+<article class="upgrade upgrade-a"><div class="upgrade-top"><span class="upgrade-symbol">A</span><button id="autoA" class="auto-toggle" onclick="toggleAutoA()">AUTO ON</button></div><div class="upgrade-title">Root function</div><div class="upgrade-desc" id="aFormula">a = t^(1/3)</div><div class="upgrade-stats"><span>LEVEL <b id="aLevel">0</b></span><span>COST <b id="aCost">1K</b></span></div><button id="btnA" class="buy-button" onclick="buyA()">BUY UPGRADE <span>↗</span></button></article>
+<article class="upgrade upgrade-b"><div class="upgrade-top"><span class="upgrade-symbol">B</span><button id="autoB" class="auto-toggle" onclick="toggleAutoB()">AUTO ON</button></div><div class="upgrade-title">Power curve</div><div class="upgrade-desc" id="bFormula">b = a^0.50</div><div class="upgrade-stats"><span>LEVEL <b id="bLevel">0</b></span><span>COST <b id="bCost">100K</b></span></div><button id="btnB" class="buy-button" onclick="buyB()">BUY UPGRADE <span>↗</span></button></article>
+<article class="upgrade upgrade-c"><div class="upgrade-top"><span class="upgrade-symbol">C</span><button id="autoC" class="auto-toggle" onclick="toggleAutoC()">AUTO ON</button></div><div class="upgrade-title">Product field</div><div class="upgrade-desc" id="cFormula">c = a*b/10</div><div class="upgrade-stats"><span>LEVEL <b id="cLevel">0</b></span><span>COST <b id="cCost">10M</b></span></div><button id="btnC" class="buy-button" onclick="buyC()">BUY UPGRADE <span>↗</span></button></article>
+<article class="upgrade upgrade-d"><div class="upgrade-top"><span class="upgrade-symbol">D</span><button id="autoD" class="auto-toggle" onclick="toggleAutoD()">AUTO ON</button></div><div class="upgrade-title">Sum multiplier</div><div class="upgrade-desc" id="dFormula">d = (a+b+c)*1</div><div class="upgrade-stats"><span>LEVEL <b id="dLevel">0</b></span><span>COST <b id="dCost">1B</b></span></div><button id="btnD" class="buy-button" onclick="buyD()">BUY UPGRADE <span>↗</span></button></article>
+<article class="upgrade upgrade-e"><div class="upgrade-top"><span class="upgrade-symbol">E</span><button id="autoE" class="auto-toggle" onclick="toggleAutoE()">AUTO ON</button></div><div class="upgrade-title">Logarithmic field</div><div class="upgrade-desc" id="eFormula">e = log₅(a*b*c*d)</div><div class="upgrade-stats"><span>LEVEL <b id="eLevel">0</b></span><span>COST <b id="eCost">1T</b></span></div><button id="btnE" class="buy-button" onclick="buyE()">BUY UPGRADE <span>↗</span></button></article>
+</div></section>
 </section>
-<div class="side-note"><span class="note-icon">i</span><p>Progress is saved automatically on this device. Offline production is applied when you return.</p></div>
-</aside></main>
+
+<section class="page" id="page-menu" data-page="menu">
+<div class="page-heading"><div class="section-kicker"><span class="kicker-line"></span> CONTROL CENTER</div><h1 data-i18n="menuTitle">System menu</h1><p data-i18n="menuSubtitle">Manage your experiment and review your progress.</p></div>
+<div class="menu-tabs"><button class="menu-tab active" data-menu-tab="settings" onclick="showMenuTab('settings')" data-i18n="settings">Settings</button><button class="menu-tab" data-menu-tab="statistics" onclick="showMenuTab('statistics')" data-i18n="statistics">Statistics</button><button class="menu-tab" data-menu-tab="account" onclick="showMenuTab('account')" data-i18n="account">Account</button></div>
+<section class="menu-panel active" id="menu-settings"><div class="settings-card"><div><h3 data-i18n="generalSettings">General settings</h3><p data-i18n="generalSettingsDesc">Customize the way the experiment behaves.</p></div>
+<div class="setting-row"><div><strong data-i18n="language">Language</strong><small data-i18n="languageDesc">Interface language</small></div><select id="languageSelect" onchange="setLanguage(this.value)"><option value="en">English</option><option value="ru">Русский</option></select></div>
+<div class="setting-row"><div><strong data-i18n="notation">Number notation</strong><small data-i18n="notationDesc">Choose how large numbers are displayed.</small></div><select id="notationSelect" onchange="setNotation(this.value)"><option value="suffix">Scientific suffixes</option><option value="scientific">Scientific notation</option><option value="engineering">Engineering</option></select></div>
+<div class="setting-row"><div><strong data-i18n="autosave">Autosave</strong><small data-i18n="autosaveDesc">Save progress automatically.</small></div><label class="switch"><input id="autosaveToggle" type="checkbox" checked onchange="setSetting('autosave',this.checked)"><span></span></label></div>
+<div class="setting-row"><div><strong data-i18n="offlineProgress">Offline progress</strong><small data-i18n="offlineProgressDesc">Earn a portion of production while away.</small></div><label class="switch"><input id="offlineToggle" type="checkbox" checked onchange="setSetting('offline',this.checked)"><span></span></label></div>
+<div class="setting-row"><div><strong data-i18n="compactNumbers">Compact numbers</strong><small data-i18n="compactNumbersDesc">Use short number formats in the HUD.</small></div><label class="switch"><input id="compactToggle" type="checkbox" checked onchange="setSetting('compact',this.checked)"><span></span></label></div>
+<div class="setting-row"><div><strong data-i18n="reducedMotion">Reduced motion</strong><small data-i18n="reducedMotionDesc">Reduce decorative animations.</small></div><label class="switch"><input id="motionToggle" type="checkbox" onchange="setSetting('reducedMotion',this.checked)"><span></span></label></div>
+</div></section>
+<section class="menu-panel" id="menu-statistics"><div class="settings-card"><h3 data-i18n="accountStatistics">Account statistics</h3><p data-i18n="statsDesc">Your lifetime experiment records on this device.</p><div class="stats-grid"><div class="stat-tile"><small data-i18n="totalPlayTime">TOTAL PLAY TIME</small><strong id="statPlayTime">0s</strong></div><div class="stat-tile"><small data-i18n="lifetimeValue">LIFETIME VALUE</small><strong id="statLifetime">0</strong></div><div class="stat-tile"><small data-i18n="totalAscensions">TOTAL ASCENSIONS</small><strong id="statAscensions">0</strong></div><div class="stat-tile"><small data-i18n="upgradesPurchased">UPGRADES PURCHASED</small><strong id="statPurchases">0</strong></div><div class="stat-tile"><small data-i18n="treeNodes">TREE NODES MAXED</small><strong id="statTree">0 / 3886</strong></div><div class="stat-tile"><small data-i18n="currentRun">CURRENT RUN</small><strong id="statRun">0s</strong></div></div></div></section>
+<section class="menu-panel" id="menu-account"><div class="settings-card account-placeholder"><div class="account-avatar">?</div><div><h3 data-i18n="accountTitle">Player account</h3><p data-i18n="accountDesc">Cloud account connection is planned for a future update.</p><span class="coming-soon" data-i18n="comingSoon">FIREBASE INTEGRATION · COMING SOON</span></div><button class="buy-button" disabled data-i18n="connectAccount">ACCOUNT CONNECTION UNAVAILABLE</button></div></section>
+</section>
+
+<section class="page" id="page-research" data-page="research"><div class="page-heading"><div class="section-kicker"><span class="kicker-line"></span> RESEARCH DIVISION</div><h1 data-i18n="researchTitle">Experimental upgrades</h1><p data-i18n="researchSubtitle">Ten research projects to tune your production. The final project unlocks the upgrade tree.</p><div class="research-points">✦ <span id="researchPoints">0</span> <small>ASCENSION POINTS</small></div></div><div id="researchGrid" class="research-grid"></div></section>
+
+<section class="page" id="page-tree" data-page="tree"><div class="page-heading tree-heading"><div><div class="section-kicker"><span class="kicker-line"></span> EXPANSION NETWORK</div><h1 data-i18n="treeTitle">Upgrade tree</h1><p data-i18n="treeSubtitle">3,886 nodes. Complete each stage to open the next path.</p></div><div class="tree-progress"><strong id="treeProgress">0 / 3886</strong><small data-i18n="nodesCompleted">NODES COMPLETED</small></div></div>
+<div class="tree-toolbar"><span id="treeStatus" data-i18n="treeStatus">Select a node to inspect its effect.</span><div><button onclick="treeZoom(-1)">−</button><button onclick="treeZoom(1)">+</button><button onclick="treeResetView()" data-i18n="centerTree">CENTER</button></div></div>
+<div class="tree-layout"><div class="tree-canvas-wrap"><canvas id="treeCanvas" aria-label="Interactive upgrade tree"></canvas><div class="tree-legend"><span class="legend-dot available"></span><span data-i18n="available">Available</span><span class="legend-dot purchased"></span><span data-i18n="purchased">Purchased</span><span class="legend-dot locked"></span><span data-i18n="locked">Locked</span></div></div><aside class="tree-inspector" id="treeInspector"><span class="inspector-id">NODE —</span><h3 data-i18n="selectNode">Select a node</h3><p data-i18n="selectNodeDesc">Choose a glowing node on the map to view its effect.</p><div class="inspector-level"><span data-i18n="level">LEVEL</span><strong id="nodeLevel">0 / 1</strong></div><div class="inspector-cost"><span data-i18n="cost">COST</span><strong id="nodeCost">—</strong></div><button id="nodeBuy" class="buy-button" disabled data-i18n="selectNode">SELECT NODE</button></aside></div>
+</section>
+</main>
+
+<nav class="side-nav" aria-label="Main navigation">
+<div class="nav-label">NAVIGATION</div>
+<button class="nav-button" data-page-target="menu" onclick="navigate('menu')"><span class="nav-icon">☰</span><span data-i18n="menu">Menu</span></button>
+<button class="nav-button active" data-page-target="formula" onclick="navigate('formula')"><span class="nav-icon">ƒ</span><span data-i18n="formulaUpgrades">Formula upgrades</span></button>
+<button class="nav-button" data-page-target="research" onclick="navigate('research')"><span class="nav-icon">✦</span><span data-i18n="research">Research</span></button>
+<button class="nav-button locked-nav" id="treeNav" data-page-target="tree" onclick="navigate('tree')" disabled><span class="nav-icon">⌘</span><span data-i18n="upgradeTree">Upgrade tree</span><span class="nav-lock">LOCKED</span></button>
+<div class="nav-footer"><span class="status-dot"></span><small>LOCAL SAVE</small></div>
+</nav>
+</div>
 <footer class="footer"><span>FORMULA ASCENT <b>·</b> IDLE EXPERIMENT</span><span>KEEP ITERATING <i>✳</i></span></footer>
-</div><script src="prestige.js"></script><script src="script.js"></script></body></html>
+</div>
+<script src="prestige.js"></script><script src="tree.js"></script><script src="app-ui.js"></script><script src="script.js"></script>
+</body></html>
