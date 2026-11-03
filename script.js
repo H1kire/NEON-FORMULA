@@ -18,7 +18,8 @@ let cLevel = 0;
 let dLevel = 0;
 let eLevel = 0;
 
-const SAVE_KEY = "neon_formula_idle_v4_5";
+const SAVE_KEY = "formula_ascent_save_v1";
+const LEGACY_SAVE_KEY = "neon_formula_idle_v4_5";
 
 // DOM
 const timeDisplay = document.getElementById("time");
@@ -73,16 +74,18 @@ function saveGame() {
 
 function loadGame() {
 
-    const raw = localStorage.getItem(SAVE_KEY);
+    const raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem(LEGACY_SAVE_KEY);
     if (!raw) return;
 
-    const data = JSON.parse(raw);
+    let data;
+    try { data = JSON.parse(raw); } catch (error) { console.error("Could not load game save:", error); return; }
 
     const now = Date.now();
-    const diff = (now - data.lastTime) / OFFLINE_RATE;
+    const diff = Math.max(0, (now - (Number(data.lastTime) || now)) / OFFLINE_RATE);
 
-    t = data.t || 0;
-    value = data.value || 0;
+    t = Number(data.t) || 0;
+    value = Number(data.value) || 0;
+    if (data.p !== undefined && typeof p !== "undefined") p = Number(data.p) || 0;
 
 
     aLevel = data.aLevel || 0;
@@ -102,6 +105,7 @@ function loadGame() {
 function resetSave(){
 
     localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(LEGACY_SAVE_KEY);
     localStorage.removeItem("prestigeSave");
 
     prestigeUnlocked = false;
@@ -739,7 +743,7 @@ function toggleAutoB(){
     autoBuyB = !autoBuyB;
 
     document.getElementById("autoB").textContent =
-        autoBuyA ? "AUTO ON" : "AUTO OFF";
+        autoBuyB ? "AUTO ON" : "AUTO OFF";
 }
 
 function toggleAutoC(){
@@ -747,7 +751,7 @@ function toggleAutoC(){
     autoBuyC = !autoBuyC;
 
     document.getElementById("autoC").textContent =
-        autoBuyA ? "AUTO ON" : "AUTO OFF";
+        autoBuyC ? "AUTO ON" : "AUTO OFF";
 }
 
 function toggleAutoD(){
@@ -755,7 +759,7 @@ function toggleAutoD(){
     autoBuyD = !autoBuyD;
 
     document.getElementById("autoD").textContent =
-        autoBuyA ? "AUTO ON" : "AUTO OFF";
+        autoBuyD ? "AUTO ON" : "AUTO OFF";
 }
 
 function toggleAutoE(){
@@ -763,7 +767,7 @@ function toggleAutoE(){
     autoBuyE = !autoBuyE;
 
     document.getElementById("autoE").textContent =
-        autoBuyA ? "AUTO ON" : "AUTO OFF";
+        autoBuyE ? "AUTO ON" : "AUTO OFF";
 }
 
 
