@@ -1,20 +1,24 @@
 # FORMULA ASCENT
 
-Formula Ascent is a browser-based mathematical idle experiment. Build a growing function, improve its coefficients, unlock automation and reset your run to earn permanent Ascension upgrades.
+Formula Ascent is a browser-based mathematical idle experiment. Grow a formula, invest in five core modules, earn Ascension points and unlock permanent research.
 
-## Core loop
-1. Let the base function grow over time: f(t) = t².
-2. Spend accumulated value on five formula modules: A, B, C, D and E.
-3. Improve the output through dynamic formula modifiers.
-4. Reach the required value and Ascend to earn prestige points.
-5. Invest prestige points in permanent boosts, Global Sum and Auto Buyer.
-6. Return later — offline progress is calculated when the game loads.
+## Core gameplay
+- The simulation and visible HUD update every 10 milliseconds.
+- Production is deliberately slower and module prices scale more aggressively.
+- Five core formula modules (A–E) modify the production equation.
+- Ascension points fund permanent research and the legacy Ascension Lab.
+- Ten experimental research upgrades improve production and formula modules. The eleventh project unlocks the Upgrade Tree.
+- The Upgrade Tree contains exactly 3,886 procedurally arranged nodes. Nodes can have multiple levels; child nodes remain locked until their parent is fully upgraded.
+- Settings include English/Russian language, number notation, autosave, offline progress, compact numbers and reduced motion.
+- Statistics and a placeholder account page are available. Firebase account linking is planned for a later update.
 
 ## Run locally
-Open index.html in a modern browser. No build step or framework is required.
+Open `index.html` in a modern browser. No build step or framework is required.
 
 ## Project structure
-- index.html — application layout and game interface.
-- style.css — responsive visual system.
-- script.js — idle loop, formula calculations, upgrades and regular save.
-- prestige.js — Ascension currency and permanent research.
+- `index.html` — application pages and navigation.
+- `style.css` — responsive interface and visual system.
+- `script.js` — 10 ms idle simulation, formulas, module upgrades and local saves.
+- `prestige.js` — Ascension currency and permanent upgrades.
+- `app-ui.js` — localization, settings, statistics and research upgrades.
+- `tree.js` — procedural 3,886-node upgrade network and node progression.
