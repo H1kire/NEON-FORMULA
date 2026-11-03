@@ -27,6 +27,7 @@ function loadGame(){
  }catch(err){console.error("Save data could not be loaded",err)}
 }
 function integrateOffline(seconds){const start=t;return BASE_PRODUCTION*metaBonus("production")*metaBonus("time")*((Math.pow(start+seconds+1,3)-Math.pow(start+1,3))/3)*.82}
+function manualSave(){saveGame(true);saveMeta();savePrestige();const button=document.querySelector(".small-action");if(button){const old=button.textContent;button.textContent=FA_META.language==="ru"?"СОХРАНЕНО":"SAVED";setTimeout(()=>button.textContent=old,1200)}}
 function resetSave(){
  if(!confirm(FA_META.language==="ru"?"Удалить весь прогресс, включая исследования и древо?":"Delete all progress, including research and the tree?"))return;
  [SAVE_KEY,LEGACY_SAVE_KEY,OLD_SAVE_KEY,"prestigeSave","faMeta","faTree"].forEach(k=>localStorage.removeItem(k));
@@ -78,7 +79,7 @@ function updateUI(){
  updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
 function toggleAutoA(){autoBuyA=!autoBuyA;updateUI()}function toggleAutoB(){autoBuyB=!autoBuyB;updateUI()}function toggleAutoC(){autoBuyC=!autoBuyC;updateUI()}function toggleAutoD(){autoBuyD=!autoBuyD;updateUI()}function toggleAutoE(){autoBuyE=!autoBuyE;updateUI()}
-function autoBuy(){const factor=metaBonus("auto");if(prestigeUpgrades.autoBuyer>=1&&autoBuyA&&value>=getACost())buyA();if(prestigeUpgrades.autoBuyer>=2&&autoBuyB&&value>=getBCost())buyB();if(prestigeUpgrades.autoBuyer>=3&&autoBuyC&&value>=getCCost())buyC();if(prestigeUpgrades.autoBuyer>=4&&autoBuyD&&value>=getDCost())buyD();if(prestigeUpgrades.autoBuyer>=5&&autoBuyE&&value>=getECost())buyE();void factor}
+function autoBuy(){const researchAuto=Math.floor((FA_META.research[7]||0)/2);const unlocked=Math.max(prestigeUpgrades.autoBuyer||0,researchAuto);if(unlocked>=1&&autoBuyA&&value>=getACost())buyA();if(unlocked>=2&&autoBuyB&&value>=getBCost())buyB();if(unlocked>=3&&autoBuyC&&value>=getCCost())buyC();if(unlocked>=4&&autoBuyD&&value>=getDCost())buyD();if(unlocked>=5&&autoBuyE&&value>=getECost())buyE()}
 function loop(){
  const now=performance.now(),delta=Math.min((now-lastFrame)/1000,.25);lastFrame=now;
  t+=delta;const gain=getGain()*delta;value+=gain;FA_META.stats.totalPlayTime+=delta;FA_META.stats.lifetimeValue+=gain;
