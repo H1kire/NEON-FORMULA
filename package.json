@@ -1,10 +1,10 @@
 {
-  "name": "expIDLE",
-  "version": "1.0.0",
-  "description": "",
+  "name": "formula-ascent",
+  "version": "2.0.0",
+  "private": true,
+  "description": "A browser-based mathematical idle experiment.",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "private": true
+    "start": "npx http-server ."
+  }
 }
