@@ -11,8 +11,8 @@ const aLevelDisplay=$("aLevel"),bLevelDisplay=$("bLevel"),cLevelDisplay=$("cLeve
 const btnA=$("btnA"),btnB=$("btnB"),btnC=$("btnC"),btnD=$("btnD"),btnE=$("btnE");
 const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dCostDisplay=$("dCost"),eCostDisplay=$("eCost");
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
-function saveGame(){
- if(FA_META.settings.autosave===false)return;
+function saveGame(force=false){
+ if(!force&&FA_META.settings.autosave===false)return;
  const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,autoBuyA,autoBuyB,autoBuyC,autoBuyD,autoBuyE,lastTime:Date.now()};
  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
 }
@@ -33,7 +33,7 @@ function resetSave(){
  location.reload();
 }
 function format(n){
- if(!Number.isFinite(n))return "∞";if(n<1000)return Math.floor(n).toString();
+ if(!Number.isFinite(n))return "∞";if(n<1000)return Math.floor(n).toString();if(FA_META.settings.compact===false&&n<1e15)return Math.floor(n).toLocaleString("en-US");
  if(FA_META.notation==="scientific")return n.toExponential(2);
  if(FA_META.notation==="engineering"){const e=Math.floor(Math.log10(n)/3)*3;return (n/Math.pow(10,e)).toFixed(2)+"e"+e}
  const units=["K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","UDc","DDc","TDc","QaDc","QiDc","SxDc","SpDc","OcDc","NoDc","Vg","UVg","DVg","TVg","QaVg","QiVg","SxVg","SpVg","OcVg","NoVg","Tg","UTg","DTg","TTg","QaTg","QiTg","SxTg","SpTg","OcTg","NoTg","Qd","UQd","DQd","TQd","QaQd","QiQd","SxQd","SpQd","OcQd","NoQd","Qn","UQn","DQn","TQn","QaQn","QiQn","SxQn","SpQn","OcQn","NoQn","Se","USe","DSe","TSe","QaSe","QiSe","SxSe","SpSe","OcSe","NoSe","St","USt","DSt","TSt","QaSt","QiSt","SxSt","SpSt","OcSt","NoSt","Og","UOg","DOg","TOg","QaOg","QiOg","SxOg","SpOg","OcOg","NoOg","Ng","UNg","DNg","TNg","QaNg","QiNg","SxNg","SpNg","OcNg","NoNg","Ce","UCe"];
@@ -75,7 +75,7 @@ function updateUI(){
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
  for(const [id,on] of [["autoA",autoBuyA],["autoB",autoBuyB],["autoC",autoBuyC],["autoD",autoBuyD],["autoE",autoBuyE]])$(id).textContent=on?"AUTO ON":"AUTO OFF";
- updateFormulaText();if(window.refreshResearch)window.refreshResearch();if(window.refreshTree)window.refreshTree();
+ updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
 function toggleAutoA(){autoBuyA=!autoBuyA;updateUI()}function toggleAutoB(){autoBuyB=!autoBuyB;updateUI()}function toggleAutoC(){autoBuyC=!autoBuyC;updateUI()}function toggleAutoD(){autoBuyD=!autoBuyD;updateUI()}function toggleAutoE(){autoBuyE=!autoBuyE;updateUI()}
 function autoBuy(){const factor=metaBonus("auto");if(prestigeUpgrades.autoBuyer>=1&&autoBuyA&&value>=getACost())buyA();if(prestigeUpgrades.autoBuyer>=2&&autoBuyB&&value>=getBCost())buyB();if(prestigeUpgrades.autoBuyer>=3&&autoBuyC&&value>=getCCost())buyC();if(prestigeUpgrades.autoBuyer>=4&&autoBuyD&&value>=getDCost())buyD();if(prestigeUpgrades.autoBuyer>=5&&autoBuyE&&value>=getECost())buyE();void factor}
