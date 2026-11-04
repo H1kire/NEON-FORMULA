@@ -1,7 +1,7 @@
 /* KaTeX typography is deliberately neutral: the game theme owns all colors and surfaces. */
 .upgrade-desc.math-formula {
   display: block;
-  min-height: 3.4em;
+  min-height: 32em;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
@@ -13,7 +13,7 @@
 }
 .upgrade-desc.math-formula .katex {
   color: inherit;
-  font-size: 3em;
+  font-size: 30em;
   white-space: nowrap;
 }
 .formula.math-formula {
