@@ -42,7 +42,7 @@
  }
  window.refreshTreeLanguage=updateInspector;
  window.buyTreeNode=()=>{const n=nodes[selected];if(!n||!canBuy(n))return;gp-=nodeCost(n);savePrestige();n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats()};
- function updateProgress(){const el=document.getElementById("treeProgress");if(el)el.textContent=purchasedCount()+" / "+TOTAL}
+ function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
  function centerRoot(){if(!canvas)return;scale=.72;offsetX=canvas.clientWidth/2;offsetY=45;draw()}
  window.initUpgradeTree=()=>{
   if(initialized){canvasSize();draw();return}initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContext("2d");
