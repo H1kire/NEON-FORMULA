@@ -32,5 +32,47 @@ if((css.match(/{/g)||[]).length!==(css.match(/}/g)||[]).length)fail("CSS brace m
 for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 if(pkg&&(!pkg.scripts?.check||!pkg.scripts?.start))fail("Missing npm scripts");
+const formatMatch=sources["assets/js/script.js"].match(/function format\(n\)\{[\s\S]*?\n\}/);
+if(!formatMatch)fail("Could not locate number formatter");
+else{
+  const context={FA_META:{language:"en",settings:{compact:true},notation:"standard"}};
+  try{
+    vm.runInNewContext(formatMatch[0]+";globalThis.__format=format;",context);
+    if(context.__format(999999999999999)!=="1.00Qa")fail("Suffix rollover failed near 1 Qa");
+    if(context.__format(1e300)!=="1.00Ce")fail("Ce suffix mapping failed");
+    if(context.__format(1.79e308)!=="1.79e+308")fail("Scientific overflow notation failed");
+    pass("Number-format boundary tests");
+  }catch(error){fail("Number-format runtime test: "+error.message)}
+}
+const prestigeSource=sources["assets/js/prestige.js"];
+const thresholdMatch=prestigeSource.match(/function countThresholds\([\s\S]*?\}\nfunction getPrestigeGain/);
+if(!thresholdMatch)fail("Could not locate prestige threshold calculator");
+else{
+  const countSource=thresholdMatch[0].split("\nfunction getPrestigeGain")[0],context={};
+  try{
+    vm.runInNewContext(countSource+";globalThis.__count=countThresholds;",context);
+    for(const [scale,base,divisor] of [[1e15,1.05,1],[1000,1.1,2.5]]){
+      for(const x of [2,3,4]){
+        const threshold=scale*Math.pow(base,x/divisor);
+        if(context.__count(threshold,scale,base,divisor)!==x-1)fail("Prestige threshold exact-boundary error at x="+x);
+        if(context.__count(threshold*(1-1e-12),scale,base,divisor)!==x-2)fail("Prestige threshold below-boundary error at x="+x);
+      }
+    }
+    pass("AP and GP threshold boundary tests");
+  }catch(error){fail("Prestige threshold runtime test: "+error.message)}
+}
+try{
+  const memory=new Map(),mockWindow={localStorage:{getItem:key=>memory.has(key)?memory.get(key):null,setItem:(key,value)=>memory.set(key,String(value)),removeItem:key=>memory.delete(key)}};
+  vm.runInNewContext(sources["assets/js/storage.js"],{window:mockWindow,console:{warn:()=>{}}});
+  const api=mockWindow.FAStorage;
+  if(!api.setJSON("audit",{ok:true})||api.getJSON("audit").ok!==true||!api.remove("audit"))fail("Storage manager read/write/remove test failed");
+  const blocked={};Object.defineProperty(blocked,"localStorage",{get(){throw new Error("storage blocked")}});
+  vm.runInNewContext(sources["assets/js/storage.js"],{window:blocked,console:{warn:()=>{}}});
+  if(blocked.FAStorage.setJSON("audit",{ok:true})!==false||blocked.FAStorage.getJSON("audit","fallback")!=="fallback")fail("Storage-unavailable fallback test failed");
+  pass("Storage manager and unavailable-storage tests");
+}catch(error){fail("Storage manager runtime test: "+error.message)}
+if(!sources["assets/js/script.js"].includes('const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer");
+if(!sources["assets/js/script.js"].includes('$("manualSaveBtn")'))fail("Manual save button must use its explicit ID");
+
 if(errors.length){process.stderr.write("\nAUDIT FAILED: "+errors.length+" issue(s)\n");for(const e of errors)process.stderr.write("  FAIL "+e+"\n");process.exitCode=1}else{process.stdout.write("\nAUDIT PASSED");if(warnings.length)process.stdout.write(" with warnings");process.stdout.write(".\n")}
 for(const w of warnings)process.stdout.write("  WARN "+w+"\n");
