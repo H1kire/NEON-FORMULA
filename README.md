@@ -16,6 +16,19 @@ Formula Ascent is a browser-based mathematical idle experiment with two prestige
 - Settings include English/Russian language, number notation, autosave, offline progress, compact numbers and reduced motion.
 - Statistics and a placeholder account page are available. Firebase account linking is planned for a later update.
 
+## Formula modules A–E
+
+Each purchased module is a multiplier; an unpurchased module contributes exactly `1`. The formulas are evaluated in dependency order:
+
+- **A — Radical scaling:** `a = (1 + t / 86,400)^(1 / r)`, where `r = max(2.63 − 0.01 × min(A level, 63), 2)`.
+- **B — Lambert function:** `b = 1 + W(a) / qB`. `W` is the principal real Lambert W function and `qB = 20 / (B level scale × Research B bonus)`.
+- **C — Logarithmic composition:** `c = 1 + ln(1 + a·b) / qC`, with `qC = 40 / (C level scale × Research C bonus)`.
+- **D — Error function:** `d = 1 + erf(√ln(1 + a·b·c·sD)) / 20`. Its level and research bonuses increase `sD` (the input scale), not the cap; D approaches but never exceeds `1.05`.
+- **E — Integral accumulation:** `e = 1 + atan(a·b·c·d·sE) / 100`. This is the exact result of the proposed integral, since `∫₀ˣ du/(1+u²) = atan(x)`. E approaches but never exceeds `1 + π/200 ≈ 1.01571`.
+
+B and C retain slow unbounded growth. D and E keep their original fixed caps; their levels only accelerate the approach to those caps. Level scaling and research bonuses are gradual, and all active module multipliers remain at least 1.
+
+**Score timing note:** `getGain()` is a production rate per second, not the final Score value at time `t`. The game accumulates `getGain() × elapsed_seconds` into Score. With no modules or other bonuses, the current baseline rate is `0.08 × (t + 1)²`; integrating that rate reaches 1 Qa accumulated Score in about **334,716 seconds (3.87 days)** of uninterrupted play. This is different from solving `t² = 1 Qa` (about 31.6 million seconds).
 ## Project structure
 
 ```text
