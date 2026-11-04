@@ -1,0 +1,32 @@
+/* KaTeX typography is deliberately neutral: the game theme owns all colors and surfaces. */
+.upgrade-desc.math-formula {
+  display: block;
+  min-height: 2.15em;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 5px 3px 7px;
+  text-align: center;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line, rgba(130,147,142,.35)) transparent;
+}
+.upgrade-desc.math-formula .katex {
+  color: inherit;
+  font-size: .96em;
+  white-space: nowrap;
+}
+.formula.math-formula {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+.formula.math-formula .katex {
+  color: inherit;
+  font-size: 1em;
+  white-space: nowrap;
+}
