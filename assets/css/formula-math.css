@@ -1,19 +1,20 @@
 /* KaTeX typography is deliberately neutral: the game theme owns all colors and surfaces. */
 .upgrade-desc.math-formula {
   display: block;
-  min-height: 12em;
+  min-height: 1.5em;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 8px 5px 10px;
+  padding: 2px 5px 3px;
   text-align: center;
   white-space: nowrap;
   scrollbar-width: thin;
   scrollbar-color: var(--line, rgba(130,147,142,.35)) transparent;
 }
+/* A-E formulas use the same 10px typography as ordinary upgrade descriptions. */
 .upgrade-desc.math-formula .katex {
   color: inherit;
-  font-size: 10em;
+  font-size: 1em;
   white-space: nowrap;
 }
 .formula.math-formula {
@@ -25,7 +26,8 @@
   white-space: nowrap;
   scrollbar-width: thin;
 }
-.formula.math-formula .katex {
+/* Only the main f(t) display receives the larger mathematical typography. */
+#formulaText.math-formula .katex {
   color: inherit;
   font-size: 3em;
   white-space: nowrap;
