@@ -25,7 +25,7 @@ function loadGame(){
   aLevel=Math.max(0,Number(d.aLevel)||0);bLevel=Math.max(0,Number(d.bLevel)||0);cLevel=Math.max(0,Number(d.cLevel)||0);dLevel=Math.max(0,Number(d.dLevel)||0);eLevel=Math.max(0,Number(d.eLevel)||0);
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
   if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
-  if(sourceKey!==SAVE_KEY&&FAStorage.setJSON(SAVE_KEY,d))FAStorage.remove(sourceKey);
+  if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey);
  }catch(err){console.error("Save data could not be loaded",err)}
 }
 function integrateOffline(seconds){const origin=t,steps=Math.min(28800,Math.max(1,Math.ceil(seconds))),step=seconds/steps;let total=0;try{for(let i=0;i<steps;i++){t=origin+(i+.5)*step;total=Math.min(Number.MAX_VALUE,total+getGain()*step)}}finally{t=origin}return Math.min(Number.MAX_VALUE,total*.82)}
