@@ -105,16 +105,15 @@ function getC(){
 }
 function getD(){
  if(dLevel<=0)return 1;
- const abc=safeProduct(getA(),getB(),getC());
- const divisor=20/(levelScale(dLevel)*metaBonus("sigma"));
- return 1+erfApprox(Math.sqrt(Math.log1p(abc)))/divisor;
+ // Module levels and research accelerate the approach to erf's fixed 1.05 cap.
+ const abc=safeProduct(getA(),getB(),getC(),levelScale(dLevel),metaBonus("sigma"));
+ return 1+erfApprox(Math.sqrt(Math.log1p(abc)))/20;
 }
 function getE(){
  if(eLevel<=0)return 1;
- const abcd=safeProduct(getA(),getB(),getC(),getD());
- const divisor=100/(levelScale(eLevel)*metaBonus("log"));
- // Integral from 0 to abcd of 1/(1+u^2) du = atan(abcd).
- return 1+Math.atan(abcd)/divisor;
+ // Integral from 0 to x of 1/(1+u^2) du = atan(x); its cap stays 1 + pi/200.
+ const abcd=safeProduct(getA(),getB(),getC(),getD(),levelScale(eLevel),metaBonus("log"));
+ return 1+Math.atan(abcd)/100;
 }
 function getGain(){
  let boost=(1+(prestigeUpgrades.simpleBoost||0)*.25)*metaBonus("production")*metaBonus("time");
@@ -137,8 +136,8 @@ function updateUI(){
  $("aFormula").textContent="a = (1 + t / 86,400)^(1/"+Math.max(2.63-Math.min(aLevel,63)*.01,2).toFixed(2)+")";
  $("bFormula").textContent="b = 1 + W(a)/"+(20/(levelScale(bLevel)*metaBonus("power"))).toFixed(2);
  $("cFormula").textContent="c = 1 + ln(1 + a·b)/"+(40/(levelScale(cLevel)*metaBonus("product"))).toFixed(2);
- $("dFormula").textContent="d = 1 + erf(√ln(1 + a·b·c))/"+(20/(levelScale(dLevel)*metaBonus("sigma"))).toFixed(2);
- $("eFormula").textContent="e = 1 + atan(a·b·c·d)/"+(100/(levelScale(eLevel)*metaBonus("log"))).toFixed(2);
+ $("dFormula").textContent="d = 1 + erf(√ln(1 + a·b·c × "+(levelScale(dLevel)*metaBonus("sigma")).toFixed(2)+"))/20";
+ $("eFormula").textContent="e = 1 + atan(a·b·c·d × "+(levelScale(eLevel)*metaBonus("log")).toFixed(2)+")/100";
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
