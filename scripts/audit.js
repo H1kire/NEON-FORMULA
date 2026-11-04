@@ -3,10 +3,10 @@ const fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const root=path.resolve(__dirname,".."),errors=[],warnings=[];
 const read=file=>fs.readFileSync(path.join(root,file),"utf8"),exists=file=>fs.existsSync(path.join(root,file));
 const fail=message=>errors.push(message),pass=message=>process.stdout.write("  OK  "+message+"\n");
-const required=["index.html","README.md","package.json","assets/css/style.css","assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/script.js"];
+const required=["index.html","README.md","package.json","assets/css/style.css","assets/css/formula-math.css","assets/vendor/katex/katex.min.css","assets/vendor/katex/katex.min.js","assets/vendor/katex/fonts","assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js"];
 for(const file of required){if(!exists(file))fail("Missing "+file);else pass("Found "+file)}
 if(exists(".idea"))warnings.push(".idea should not be committed.");
-const html=read("index.html"),css=read("assets/css/style.css"),jsFiles=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/script.js"];
+const html=read("index.html"),css=read("assets/css/style.css"),mathCss=read("assets/css/formula-math.css"),jsFiles=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js"];
 const sources=Object.fromEntries(jsFiles.map(file=>[file,read(file)]));
 for(const file of jsFiles){try{new vm.Script(sources[file],{filename:file});pass("Syntax "+file)}catch(error){fail("Syntax "+file+": "+error.message)}}
 let pkg;try{pkg=JSON.parse(read("package.json"));pass("Valid package.json")}catch(error){fail("Invalid package.json: "+error.message)}
@@ -16,7 +16,7 @@ const idSet=new Set(ids);
 for(const file of jsFiles)for(const m of sources[file].matchAll(/getElementById\(["']([^"']+)["']\)/g))if(!idSet.has(m[1]))fail(file+" missing HTML ID #"+m[1]);
 const scriptRefs=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(m=>m[1]);
 for(const src of scriptRefs)if(!exists(src))fail("Missing script "+src);
-const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/script.js"];
+const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/vendor/katex/katex.min.js","assets/js/formula-renderer.js","assets/js/script.js"];
 if(order.join("|")!==scriptRefs.join("|"))fail("Script order incorrect");else pass("Script dependency order");
 for(const m of html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css)["']/g)){if(!exists(m[1]))fail("Missing CSS "+m[1]);else pass("CSS path "+m[1])}
 const globals=new Set();
@@ -28,7 +28,7 @@ if(!en||!ru)fail("Localization dictionaries not found");else{const ek=keySet(en[
 const sourceHtml=html.replace(/<!--[\s\S]*?-->/g,""),voidTags=new Set(["area","base","br","col","embed","hr","img","input","link","meta","param","source","track","wbr"]),stack=[];
 for(const m of sourceHtml.matchAll(/<\/?([a-zA-Z][\w:-]*)\b[^>]*>/g)){const token=m[0],tag=m[1].toLowerCase();if(token.startsWith("</")){const open=stack.pop();if(open!==tag)fail("HTML nesting mismatch at "+token+" (open "+(open||"none")+")")}else if(!voidTags.has(tag)&&!token.endsWith("/>"))stack.push(tag)}
 if(stack.length)fail("Unclosed HTML tags "+stack.join(","));else pass("HTML nesting");
-if((css.match(/{/g)||[]).length!==(css.match(/}/g)||[]).length)fail("CSS brace mismatch");else pass("CSS braces");
+if((css.match(/{/g)||[]).length!==(css.match(/}/g)||[]).length||(mathCss.match(/{/g)||[]).length!==(mathCss.match(/}/g)||[]).length)fail("CSS brace mismatch");else pass("CSS braces");
 for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 if(pkg&&(!pkg.scripts?.check||!pkg.scripts?.start))fail("Missing npm scripts");
@@ -44,6 +44,13 @@ else{
     pass("Number-format boundary tests");
   }catch(error){fail("Number-format runtime test: "+error.message)}
 }
+const rendererSource=sources["assets/js/formula-renderer.js"],renderCalls=[],renderElement={id:"math",classList:{add:()=>{} }};
+try{
+  const rendererContext={window:{katex:{render:(latex)=>renderCalls.push(latex)}},document:{getElementById:()=>renderElement}};
+  vm.runInNewContext(rendererSource+";window.FAFormula.render('math','x^2');window.FAFormula.render('math','x^2');window.FAFormula.render('math','x^3');",rendererContext);
+  if(renderCalls.length!==2)fail("Formula renderer cache did not skip an unchanged expression");
+  else pass("KaTeX adapter rendering and cache test");
+}catch(error){fail("Formula renderer test: "+error.message)}
 const formulaSource=sources["assets/js/script.js"],formulaBlock=formulaSource.slice(formulaSource.indexOf("// Stable helpers"),formulaSource.indexOf("function getGain()"));
 if(!formulaBlock||formulaBlock.includes("function getGain"))fail("Could not locate A-E formula helpers");
 else{
