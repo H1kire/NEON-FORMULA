@@ -16,7 +16,7 @@
  function persist(){localStorage.setItem("faTree",JSON.stringify(nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level}))))}
  function nodeCost(n){return Math.ceil(n.cost*Math.pow(1.55,n.level))}
  function available(n){return n.parent===-1||nodes[n.parent].level>=nodes[n.parent].maxLevel}
- function canBuy(n){return available(n)&&n.level<n.maxLevel&&value>=nodeCost(n)}
+ function canBuy(n){return available(n)&&n.level<n.maxLevel&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
  function canvasSize(){if(!canvas)return;const r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.floor(r.width*dpr));canvas.height=Math.max(1,Math.floor(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
  function draw(){
@@ -37,11 +37,11 @@
   title.textContent=["Catalyst","Exponent","Matrix","Resonance","Singularity"][n.id%5]+" Node";
   const effect=((n.effect-1)*100).toFixed(2)+"%";
   desc.textContent=tr("nodeEffect")+" +"+effect+" per level. "+(n.parent<0?"Root node.":"Requires node #"+(n.parent+1)+" to be maxed.");
-  level.textContent=n.level+" / "+n.maxLevel;cost.textContent=typeof format==="function"?format(nodeCost(n)):String(nodeCost(n));
-  btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):value<nodeCost(n)?tr("notEnough"):tr("buy");
+  level.textContent=n.level+" / "+n.maxLevel;cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
+  btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
  }
  window.refreshTreeLanguage=updateInspector;
- window.buyTreeNode=()=>{const n=nodes[selected];if(!n||!canBuy(n))return;value-=nodeCost(n);n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats()};
+ window.buyTreeNode=()=>{const n=nodes[selected];if(!n||!canBuy(n))return;gp-=nodeCost(n);savePrestige();n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats()};
  function updateProgress(){const el=document.getElementById("treeProgress");if(el)el.textContent=purchasedCount()+" / "+TOTAL}
  function centerRoot(){if(!canvas)return;scale=.72;offsetX=canvas.clientWidth/2;offsetY=45;draw()}
  window.initUpgradeTree=()=>{
