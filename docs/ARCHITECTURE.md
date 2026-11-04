@@ -37,3 +37,10 @@ All reads and writes must go through `FAStorage`. Keep legacy run keys in the mi
 - Run `npm run start` for local browser testing.
 - The audit checks JavaScript syntax, HTML IDs/nesting, script/style paths, event handlers, localization keys and storage access. It is static and does not replace browser testing.
 - Keep GitHub Pages pointed at the repository root. `index.html` remains in the root and references files under `assets/`.
+
+## Mathematical rendering
+
+- KaTeX 0.16.22 is vendored under `assets/vendor/katex/`; its CSS and fonts stay together so all assets resolve locally.
+- `assets/js/formula-renderer.js` is loaded after KaTeX and before the simulation. It owns rendering only; game logic supplies LaTeX strings.
+- The renderer caches each element's last expression, avoiding repeated typesetting during the 10 ms game loop.
+- Keep the existing UI colors, panels, spacing and responsive design. KaTeX should inherit text color and only provide mathematical glyphs/layout.
