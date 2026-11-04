@@ -3,7 +3,6 @@ const TICK=10, AUTOSAVE_INTERVAL=5000, BASE_PRODUCTION=0.08;
 let lastFrame=Date.now(),t=0,value=0;
 // prestigeUpgrades is owned by prestige.js; avoid a duplicate global lexical declaration.
 let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0;
-let autoBuyA=true,autoBuyB=true,autoBuyC=true,autoBuyD=true,autoBuyE=true;
 const SAVE_KEY="formula_ascent_save_v2",LEGACY_SAVE_KEY="formula_ascent_save_v1",OLD_SAVE_KEY="neon_formula_idle_v4_5";
 const $=id=>document.getElementById(id);
 const timeDisplay=$("time"),valueDisplay=$("value"),growthDisplay=$("growth"),formulaDisplay=$("formulaText");
@@ -13,7 +12,7 @@ const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dC
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
 function saveGame(force=false){
  if(!force&&FA_META.settings.autosave===false)return;
- const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,autoBuyA,autoBuyB,autoBuyC,autoBuyD,autoBuyE,lastTime:Date.now()};
+ const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,lastTime:Date.now()};
  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
 }
 function loadGame(){
@@ -21,7 +20,6 @@ function loadGame(){
  try{
   const d=JSON.parse(raw);t=Math.max(0,Number(d.t)||0);value=Math.max(0,Number(d.value)||0);
   aLevel=Math.max(0,Number(d.aLevel)||0);bLevel=Math.max(0,Number(d.bLevel)||0);cLevel=Math.max(0,Number(d.cLevel)||0);dLevel=Math.max(0,Number(d.dLevel)||0);eLevel=Math.max(0,Number(d.eLevel)||0);
-  autoBuyA=d.autoBuyA!==false;autoBuyB=d.autoBuyB!==false;autoBuyC=d.autoBuyC!==false;autoBuyD=d.autoBuyD!==false;autoBuyE=d.autoBuyE!==false;
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
   if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;t+=away;value+=integrateOffline(away);}
  }catch(err){console.error("Save data could not be loaded",err)}
@@ -82,11 +80,10 @@ function updateUI(){
  $("eFormula").textContent="e = log"+Math.max(5-eLevel*.01,2).toFixed(2)+"(a*b*c*d)";
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
- for(const [id,on] of [["autoA",autoBuyA],["autoB",autoBuyB],["autoC",autoBuyC],["autoD",autoBuyD],["autoE",autoBuyE]])$(id).textContent=on?tr("autoOn"):tr("autoOff");for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
+ for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
  updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
-function toggleAutoA(){autoBuyA=!autoBuyA;updateUI()}function toggleAutoB(){autoBuyB=!autoBuyB;updateUI()}function toggleAutoC(){autoBuyC=!autoBuyC;updateUI()}function toggleAutoD(){autoBuyD=!autoBuyD;updateUI()}function toggleAutoE(){autoBuyE=!autoBuyE;updateUI()}
-function autoBuy(){const researchAuto=Math.floor((FA_META.research[7]||0)/2);const unlocked=Math.max(prestigeUpgrades.autoBuyer||0,researchAuto);if(unlocked>=1&&autoBuyA&&value>=getACost())buyA();if(unlocked>=2&&autoBuyB&&value>=getBCost())buyB();if(unlocked>=3&&autoBuyC&&value>=getCCost())buyC();if(unlocked>=4&&autoBuyD&&value>=getDCost())buyD();if(unlocked>=5&&autoBuyE&&value>=getECost())buyE()}
+function autoBuy(){const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;const costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost()],buyers=[buyA,buyB,buyC,buyD,buyE];for(let i=0;i<5;i++)if(a.unlocked[i]&&a.enabled[i]&&value>=costs[i])buyers[i]()}
 function loop(){
  const now=performance.now(),delta=Math.min((now-lastFrame)/1000,.25);lastFrame=now;
  t+=delta;const gain=getGain()*delta;value+=gain;FA_META.stats.totalPlayTime+=delta;FA_META.stats.lifetimeValue+=gain;
