@@ -1,0 +1,38 @@
+name: Vendor KaTeX
+
+on:
+  push:
+    branches: ["тест"]
+    paths:
+      - ".github/workflows/vendor-katex.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v4
+        with:
+          ref: тест
+          fetch-depth: 0
+      - name: Download pinned KaTeX package
+        run: |
+          npm pack katex@0.16.22
+          mkdir -p /tmp/katex-package assets/vendor/katex
+          tar -xzf katex-0.16.22.tgz -C /tmp/katex-package package/dist
+          cp -R /tmp/katex-package/package/dist/. assets/vendor/katex/
+      - name: Commit local KaTeX distribution
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/vendor/katex
+          if git diff --cached --quiet; then
+            echo "KaTeX assets are already up to date."
+            exit 0
+          fi
+          git commit -m "Vendor KaTeX 0.16.22 locally"
+          git push origin HEAD:тест
