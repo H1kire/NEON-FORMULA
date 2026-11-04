@@ -129,15 +129,28 @@ function getGrowthPerSecond(){return getGain()}
 function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost);btn.classList.toggle("bad",value<cost)}
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
-function updateFormulaText(){let f=(prestigeUpgrades.globalSum||0)===0?"f(t)=t²":"f(t)=Σ₁→"+prestigeUpgrades.globalSum+"((t+i)²";if(aLevel)f+=" × a";if(bLevel)f+=" × b";if(cLevel)f+=" × c";if(dLevel)f+=" × d";if(eLevel)f+=" × e";if(prestigeUpgrades.globalSum)f+=")";formulaDisplay.textContent=f}
+function updateFormulaText(){
+ const n=prestigeUpgrades.globalSum||0;
+ let f=n===0?"f(t)=t^{2}":"f(t)=\\sum_{i=1}^{"+n+"}(t+i)^2";
+ if(aLevel)f+=" \\cdot a";if(bLevel)f+=" \\cdot b";if(cLevel)f+=" \\cdot c";if(dLevel)f+=" \\cdot d";if(eLevel)f+=" \\cdot e";
+ if(window.FAFormula)FAFormula.render("formulaText",f,{displayMode:true});else formulaDisplay.textContent=f;
+}
 function updateUI(){
  timeDisplay.textContent=t.toFixed(1);valueDisplay.textContent=format(value);growthDisplay.textContent=format(getGrowthPerSecond());
  aLevelDisplay.textContent=aLevel;bLevelDisplay.textContent=bLevel;cLevelDisplay.textContent=cLevel;dLevelDisplay.textContent=dLevel;eLevelDisplay.textContent=eLevel;
+ if(window.FAFormula){
+  FAFormula.render("aFormula","a=\\left(1+\\frac{t}{86400}\\right)^{\\frac{1}{"+Math.max(2.63-Math.min(aLevel,63)*.01,2).toFixed(2)+"}}");
+  FAFormula.render("bFormula","b=1+\\frac{W(a)}{"+(20/(levelScale(bLevel)*metaBonus("power"))).toFixed(2)+"}");
+  FAFormula.render("cFormula","c=1+\\frac{\\ln(1+a\\cdot b)}{"+(40/(levelScale(cLevel)*metaBonus("product"))).toFixed(2)+"}");
+  FAFormula.render("dFormula","d=1+\\frac{\\operatorname{erf}\\left(\\sqrt{\\ln\\left(1+abc\\cdot "+(levelScale(dLevel)*metaBonus("sigma")).toFixed(2)+"\\right)}\\right)}{20}");
+  FAFormula.render("eFormula","e=1+\\frac{\\arctan\\left(abcd\\cdot "+(levelScale(eLevel)*metaBonus("log")).toFixed(2)+"\\right)}{100}");
+ }else{
  $("aFormula").textContent="a = (1 + t / 86,400)^(1/"+Math.max(2.63-Math.min(aLevel,63)*.01,2).toFixed(2)+")";
  $("bFormula").textContent="b = 1 + W(a)/"+(20/(levelScale(bLevel)*metaBonus("power"))).toFixed(2);
  $("cFormula").textContent="c = 1 + ln(1 + a·b)/"+(40/(levelScale(cLevel)*metaBonus("product"))).toFixed(2);
  $("dFormula").textContent="d = 1 + erf(√ln(1 + a·b·c × "+(levelScale(dLevel)*metaBonus("sigma")).toFixed(2)+"))/20";
  $("eFormula").textContent="e = 1 + atan(a·b·c·d × "+(levelScale(eLevel)*metaBonus("log")).toFixed(2)+")/100";
+ }
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
