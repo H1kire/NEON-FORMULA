@@ -8,8 +8,9 @@ Formula Ascent is a browser-based mathematical idle experiment with two prestige
 - Ascension Points (AP): each next AP threshold is `1 Qa × 1.05^x`, where `x` starts at 2 for every new run and increases by 1 for each additional AP available from that run's Score. AP earned or spent in earlier Ascensions during the same Genesis cycle does not affect `x`.
 - Ascension resets the current run but keeps AP, Research Division upgrades and Ascension upgrades.
 - Research Division contains ten cheaper AP-funded upgrades. The one-time Genesis Gate costs exactly 1,000 AP and permanently unlocks the Upgrade Tree and Genesis Prestige.
-- Genesis Prestige awards Genesis Points (GP) using only currently held AP: each next GP threshold is `1,000 current AP × 1.03^x`, where `x` is the next lifetime GP index. Spending GP on tree nodes does not reduce this index.
+- Genesis Prestige awards Genesis Points (GP) using only currently held AP: each next GP threshold is `1,000 × 1.1^(x/2.5)`, where `x` starts at 2 and increases by 1 for each additional GP available from the current AP balance. Only current AP counts; AP spent on Research Division is excluded.
 - Genesis Prestige is the second global soft reset. It resets the run, current AP, Research Division levels and Ascension upgrades. It preserves Genesis Points, the GP lifetime index, the Genesis Gate unlock and all purchased tree nodes.
+- Research Division's eighth upgrade unlocks a dedicated automation tab. Each A–E module's automation is purchased separately for `10^letter_index` AP, can be toggled independently, and can be paused globally.
 - The Upgrade Tree contains exactly 3,886 nodes. Tree nodes cost GP; child nodes remain locked until their parent is fully upgraded.
 - Settings include English/Russian language, number notation, autosave, offline progress, compact numbers and reduced motion.
 - Statistics and a placeholder account page are available. Firebase account linking is planned for a later update.
