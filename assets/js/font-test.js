@@ -26,5 +26,6 @@
     formulaSlider.value = "2";
     apply();
   });
+  if (window.FAFormula && window.katex) window.FAFormula.render("fontFormulaPreview", "x^2+y^2=z^2");
   apply();
 })();
