@@ -55,14 +55,70 @@ function getBCost(){return 100000*Math.pow(2.35,bLevel)}
 function getCCost(){return 10000000*Math.pow(2.3,cLevel)}
 function getDCost(){return 1000000000*Math.pow(2.25,dLevel)}
 function getECost(){return 1000000000000*Math.pow(2.2,eLevel)}
-function getA(){if(aLevel<=0)return 1;const root=Math.max(3-aLevel*.01,2);return Math.pow(Math.max(t,1),1/root)}
-function getB(){if(bLevel<=0)return 1;return Math.pow(getA(),(.5+bLevel*.01)*metaBonus("power"))}
-function getC(){if(cLevel<=0)return 1;const div=10-cLevel;if(div>1)return getA()*getB()/div;return getA()*getB()*(1+((cLevel-10)*.01))*metaBonus("product")}
-function getD(){if(dLevel<=0)return 1;return(getA()+getB()+getC())*(1+dLevel*.05)*metaBonus("sigma")}
-function getE(){if(eLevel<=0)return 1;const base=Math.max(5-eLevel*.01,2),inside=Math.max(getA()*getB()*getC()*getD(),1);return Math.log(inside)/Math.log(base)*metaBonus("log")}
+// Stable helpers for the special functions used by modules A-E.
+function safeProduct(...values){
+ let result=1;
+ for(const value of values){
+  if(!Number.isFinite(value)||value<=0)return value===0?0:Number.MAX_VALUE;
+  if(result>Number.MAX_VALUE/value)return Number.MAX_VALUE;
+  result*=value;
+ }
+ return result;
+}
+// Principal real branch of Lambert W for x >= 1, solved in log-space.
+function lambertW(x){
+ if(!(x>0))return 0;
+ const logX=Math.log(x);
+ let w=x<3?x/(1+x):Math.max(1e-12,logX-Math.log(Math.max(logX,1e-12)));
+ for(let i=0;i<12;i++){
+  const g=w+Math.log(w)-logX;
+  const delta=(2*g*w*(w+1))/(2*(w+1)*(w+1)+g);
+  w=Math.max(1e-12,w-delta);
+  if(Math.abs(delta)<1e-13*Math.max(1,w))break;
+ }
+ return w;
+}
+// Abramowitz-Stegun approximation; sufficient for a smooth idle-game multiplier.
+function erfApprox(x){
+ x=Math.max(0,Number(x)||0);
+ if(x===0)return 0;
+ const p=0.3275911,a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429;
+ const z=1/(1+p*x);
+ const poly=(((((a5*z+a4)*z)+a3)*z+a2)*z+a1)*z;
+ return Math.min(1,Math.max(0,1-poly*Math.exp(-x*x)));
+}
+function levelScale(level,cap=100){return 1+Math.min(Math.max(0,level),cap)*.02}
+function getA(){
+ if(aLevel<=0)return 1;
+ const root=Math.max(2.63-Math.min(aLevel,63)*.01,2);
+ return Math.pow(1+t/86400,1/root);
+}
+function getB(){
+ if(bLevel<=0)return 1;
+ const divisor=20/(levelScale(bLevel)*metaBonus("power"));
+ return 1+lambertW(getA())/divisor;
+}
+function getC(){
+ if(cLevel<=0)return 1;
+ const divisor=40/(levelScale(cLevel)*metaBonus("product"));
+ return 1+Math.log1p(safeProduct(getA(),getB()))/divisor;
+}
+function getD(){
+ if(dLevel<=0)return 1;
+ const abc=safeProduct(getA(),getB(),getC());
+ const divisor=20/(levelScale(dLevel)*metaBonus("sigma"));
+ return 1+erfApprox(Math.sqrt(Math.log1p(abc)))/divisor;
+}
+function getE(){
+ if(eLevel<=0)return 1;
+ const abcd=safeProduct(getA(),getB(),getC(),getD());
+ const divisor=100/(levelScale(eLevel)*metaBonus("log"));
+ // Integral from 0 to abcd of 1/(1+u^2) du = atan(abcd).
+ return 1+Math.atan(abcd)/divisor;
+}
 function getGain(){
  let boost=(1+(prestigeUpgrades.simpleBoost||0)*.25)*metaBonus("production")*metaBonus("time");
- const base=getA()*getB()*getC()*getD()*getE();
+ const base=safeProduct(getA(),getB(),getC(),getD(),getE());
  let result;
  if((prestigeUpgrades.globalSum||0)===0)result=Math.pow(t+1,2)*base*boost;
  else{let sum=0;for(let i=1;i<=prestigeUpgrades.globalSum;i++)sum+=Math.pow(t+i,2);result=sum*base*boost}
@@ -78,11 +134,11 @@ function updateFormulaText(){let f=(prestigeUpgrades.globalSum||0)===0?"f(t)=t²
 function updateUI(){
  timeDisplay.textContent=t.toFixed(1);valueDisplay.textContent=format(value);growthDisplay.textContent=format(getGrowthPerSecond());
  aLevelDisplay.textContent=aLevel;bLevelDisplay.textContent=bLevel;cLevelDisplay.textContent=cLevel;dLevelDisplay.textContent=dLevel;eLevelDisplay.textContent=eLevel;
- $("aFormula").textContent="a = t^(1/"+Math.max(3-aLevel*.01,2).toFixed(2)+")";
- $("bFormula").textContent="b = a^"+(.5+bLevel*.01).toFixed(2);
- const div=10-cLevel;$("cFormula").textContent=div>1?"c = a*b/"+div:"c = a*b*"+(1+(cLevel-10)*.01).toFixed(2);
- $("dFormula").textContent="d = (a+b+c)*"+(1+dLevel*.05).toFixed(2);
- $("eFormula").textContent="e = log"+Math.max(5-eLevel*.01,2).toFixed(2)+"(a*b*c*d)";
+ $("aFormula").textContent="a = (1 + t / 86,400)^(1/"+Math.max(2.63-Math.min(aLevel,63)*.01,2).toFixed(2)+")";
+ $("bFormula").textContent="b = 1 + W(a)/"+(20/(levelScale(bLevel)*metaBonus("power"))).toFixed(2);
+ $("cFormula").textContent="c = 1 + ln(1 + a·b)/"+(40/(levelScale(cLevel)*metaBonus("product"))).toFixed(2);
+ $("dFormula").textContent="d = 1 + erf(√ln(1 + a·b·c))/"+(20/(levelScale(dLevel)*metaBonus("sigma"))).toFixed(2);
+ $("eFormula").textContent="e = 1 + atan(a·b·c·d)/"+(100/(levelScale(eLevel)*metaBonus("log"))).toFixed(2);
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
