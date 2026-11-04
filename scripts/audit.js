@@ -39,7 +39,7 @@ else{
   try{
     vm.runInNewContext(formatMatch[0]+";globalThis.__format=format;",context);
     if(context.__format(999999999999999)!=="1.00Qa")fail("Suffix rollover failed near 1 Qa");
-    if(context.__format(1e300)!=="1.00Ce")fail("Ce suffix mapping failed");
+    if(context.__format(1e303)!=="1.00Ce")fail("Ce suffix mapping failed");
     if(context.__format(1.79e308)!=="1.79e+308")fail("Scientific overflow notation failed");
     pass("Number-format boundary tests");
   }catch(error){fail("Number-format runtime test: "+error.message)}
