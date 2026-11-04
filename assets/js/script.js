@@ -131,14 +131,16 @@ function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.p
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
 function updateFormulaText(){
  const n=prestigeUpgrades.globalSum||0;
- let f=n===0?"f(t)=t^{2}":"f(t)=\\sum_{i=1}^{"+n+"}(t+i)^2";
- if(aLevel)f+=" \\cdot a";if(bLevel)f+=" \\cdot b";if(cLevel)f+=" \\cdot c";if(dLevel)f+=" \\cdot d";if(eLevel)f+=" \\cdot e";
- if(window.FAFormula)FAFormula.render("formulaText",f,{displayMode:true});else formulaDisplay.textContent=f;
+ let latex=n===0?"f(t)=t^{2}":"f(t)=\\sum_{i=1}^{"+n+"}(t+i)^2";
+ let plain=n===0?"f(t)=t²":"f(t)=Σ₁→"+n+"((t+i)²";
+ if(aLevel){latex+=" \\cdot a";plain+=" × a"}if(bLevel){latex+=" \\cdot b";plain+=" × b"}if(cLevel){latex+=" \\cdot c";plain+=" × c"}if(dLevel){latex+=" \\cdot d";plain+=" × d"}if(eLevel){latex+=" \\cdot e";plain+=" × e"}
+ if(n)plain+=")";
+ if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
  timeDisplay.textContent=t.toFixed(1);valueDisplay.textContent=format(value);growthDisplay.textContent=format(getGrowthPerSecond());
  aLevelDisplay.textContent=aLevel;bLevelDisplay.textContent=bLevel;cLevelDisplay.textContent=cLevel;dLevelDisplay.textContent=dLevel;eLevelDisplay.textContent=eLevel;
- if(window.FAFormula){
+ if(window.FAFormula&&window.katex){
   FAFormula.render("aFormula","a=\\left(1+\\frac{t}{86400}\\right)^{\\frac{1}{"+Math.max(2.63-Math.min(aLevel,63)*.01,2).toFixed(2)+"}}");
   FAFormula.render("bFormula","b=1+\\frac{W(a)}{"+(20/(levelScale(bLevel)*metaBonus("power"))).toFixed(2)+"}");
   FAFormula.render("cFormula","c=1+\\frac{\\ln(1+a\\cdot b)}{"+(40/(levelScale(cLevel)*metaBonus("product"))).toFixed(2)+"}");
