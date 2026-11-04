@@ -29,6 +29,10 @@ Each purchased module is a multiplier; an unpurchased module contributes exactly
 B and C retain slow unbounded growth. D and E keep their original fixed caps; their levels only accelerate the approach to those caps. Level scaling and research bonuses are gradual, and all active module multipliers remain at least 1.
 
 **Score timing note:** `getGain()` is a production rate per second, not the final Score value at time `t`. The game accumulates `getGain() × elapsed_seconds` into Score. With no modules or other bonuses, the current baseline rate is `0.08 × (t + 1)²`; integrating that rate reaches 1 Qa accumulated Score in about **334,716 seconds (3.87 days)** of uninterrupted play. This is different from solving `t² = 1 Qa` (about 31.6 million seconds).
+## Mathematical rendering
+
+The game vendors KaTeX 0.16.22 locally under `assets/vendor/katex/` (including its fonts). No runtime CDN or external math-rendering API is used. `assets/js/formula-renderer.js` is a presentation-only adapter; it renders the current formula strings into the existing UI and caches unchanged expressions so the 10 ms simulation loop does not repeatedly typeset identical math. KaTeX does not participate in Score, AP, GP, upgrade, or save calculations.
+
 ## Project structure
 
 ```text
