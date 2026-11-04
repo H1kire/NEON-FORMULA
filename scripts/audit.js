@@ -44,6 +44,27 @@ else{
     pass("Number-format boundary tests");
   }catch(error){fail("Number-format runtime test: "+error.message)}
 }
+const formulaSource=sources["assets/js/script.js"],formulaBlock=formulaSource.slice(formulaSource.indexOf("// Stable helpers"),formulaSource.indexOf("function getGain()"));
+if(!formulaBlock||formulaBlock.includes("function getGain"))fail("Could not locate A-E formula helpers");
+else{
+  const context={};
+  try{
+    vm.runInNewContext("let aLevel=1,bLevel=1,cLevel=1,dLevel=1,eLevel=1,t=0;const metaBonus=()=>1;"+formulaBlock+String.raw`
+      const w1=lambertW(1),w10=lambertW(10);
+      if(Math.abs(w1-0.5671432904097838)>1e-10)throw new Error("Lambert W(1) mismatch");
+      if(Math.abs(w10*Math.exp(w10)-10)>1e-8)throw new Error("Lambert W residual mismatch");
+      if(Math.abs(erfApprox(1)-0.8427007)>1e-5)throw new Error("erf approximation mismatch");
+      const values=[getA(),getB(),getC(),getD(),getE()];
+      if(values.some(v=>v<1||!Number.isFinite(v)))throw new Error("A-E multiplier below 1 or non-finite");
+      t=1e12;aLevel=bLevel=cLevel=dLevel=eLevel=100;
+      const d=getD(),e=getE();
+      if(d>1.05+1e-10)throw new Error("D exceeded its 1.05 cap");
+      if(e>1+Math.PI/200+1e-10)throw new Error("E exceeded its integral cap");
+      globalThis.__formulaTest={w1,w10,d,e};
+    `,context);
+    pass("A-E special-function and multiplier-cap tests");
+  }catch(error){fail("A-E formula runtime test: "+error.message)}
+}
 const prestigeSource=sources["assets/js/prestige.js"];
 const thresholdMatch=prestigeSource.match(/function countThresholds\([\s\S]*?\}\nfunction getPrestigeGain/);
 if(!thresholdMatch)fail("Could not locate prestige threshold calculator");
