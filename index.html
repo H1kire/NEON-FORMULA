@@ -40,7 +40,27 @@
 <article class="upgrade upgrade-c"><div class="upgrade-top"><span class="upgrade-symbol">C</span></div><div class="upgrade-title" data-i18n="productFieldTitle">Product field</div><div class="upgrade-desc" id="cFormula">c = a*b/10</div><div class="upgrade-stats"><span>LEVEL <b id="cLevel">0</b></span><span>COST <b id="cCost">10M</b></span></div><button id="btnC" class="buy-button" onclick="buyC()">BUY UPGRADE <span>↗</span></button></article>
 <article class="upgrade upgrade-d"><div class="upgrade-top"><span class="upgrade-symbol">D</span></div><div class="upgrade-title" data-i18n="sumMultiplierTitle">Sum multiplier</div><div class="upgrade-desc" id="dFormula">d = (a+b+c)*1</div><div class="upgrade-stats"><span>LEVEL <b id="dLevel">0</b></span><span>COST <b id="dCost">1B</b></span></div><button id="btnD" class="buy-button" onclick="buyD()">BUY UPGRADE <span>↗</span></button></article>
 <article class="upgrade upgrade-e"><div class="upgrade-top"><span class="upgrade-symbol">E</span></div><div class="upgrade-title" data-i18n="logarithmicFieldTitle">Logarithmic field</div><div class="upgrade-desc" id="eFormula">e = log₅(a*b*c*d)</div><div class="upgrade-stats"><span>LEVEL <b id="eLevel">0</b></span><span>COST <b id="eCost">1T</b></span></div><button id="btnE" class="buy-button" onclick="buyE()">BUY UPGRADE <span>↗</span></button></article>
-</div></div><section id="automationModulePanel" class="module-panel" style="display:none"><div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="automationKicker">AUTOMATION CONTROL</span></div><h2 data-i18n="automationTitle">Module automation</h2></div><button class="small-action" id="automationPauseBtn" onclick="toggleAutomationPause()">PAUSE ALL</button></div><p class="automation-description" data-i18n="automationDescription">Unlock each letter module separately with Ascension Points. Pause stops every automatic purchase.</p><div id="automationGrid" class="automation-grid"></div></section></section></section>
+</div>
+<div class="font-test-panel panel" id="fontTestPanel">
+  <div class="font-test-heading">
+    <div><div class="section-kicker"><span class="kicker-line"></span> TEMPORARY DISPLAY TEST</div><h3>Font size tuning</h3><p>Change both sizes live. The main f(t) formula stays unchanged.</p></div>
+    <button type="button" class="small-action" id="fontTestReset">RESET</button>
+  </div>
+  <div class="font-test-controls">
+    <label class="font-test-control" for="fontTextSize">
+      <span><strong>Ordinary text</strong><output id="fontTextOutput">1.0em</output></span>
+      <small>Upgrade titles and regular card text</small>
+      <input id="fontTextSize" type="range" min="0.6" max="3" step="0.1" value="1">
+    </label>
+    <label class="font-test-control" for="fontFormulaSize">
+      <span><strong>Mathematical formulas A–E</strong><output id="fontFormulaOutput">2.0em</output></span>
+      <small>KaTeX expressions inside the upgrade cards</small>
+      <input id="fontFormulaSize" type="range" min="0.5" max="10" step="0.1" value="2">
+    </label>
+  </div>
+  <div class="font-test-preview"><span>TEXT PREVIEW: Aa Bb 123</span><span id="fontFormulaPreview">FORMULA PREVIEW: x² + y² = z²</span></div>
+</div>
+<section id="automationModulePanel" class="module-panel" style="display:none"><div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="automationKicker">AUTOMATION CONTROL</span></div><h2 data-i18n="automationTitle">Module automation</h2></div><button class="small-action" id="automationPauseBtn" onclick="toggleAutomationPause()">PAUSE ALL</button></div><p class="automation-description" data-i18n="automationDescription">Unlock each letter module separately with Ascension Points. Pause stops every automatic purchase.</p><div id="automationGrid" class="automation-grid"></div></section></section></section>
 
 <section class="page" id="page-menu" data-page="menu">
 <div class="page-heading"><div class="section-kicker"><span class="kicker-line"></span> CONTROL CENTER</div><h1 data-i18n="menuTitle">System menu</h1><p data-i18n="menuSubtitle">Manage your experiment and review your progress.</p></div>
@@ -84,6 +104,6 @@
 <footer class="footer"><span>FORMULA ASCENT <b>·</b> IDLE EXPERIMENT</span><span>KEEP ITERATING <i>✳</i></span></footer>
 </div>
 <script src="assets/js/storage.js"></script><script src="assets/js/prestige.js"></script><script src="assets/js/tree.js"></script><script src="assets/js/app-ui.js"></script>
-<script src="assets/vendor/katex/katex.min.js"></script><script src="assets/js/formula-renderer.js"></script>
+<script src="assets/vendor/katex/katex.min.js"></script><script src="assets/js/formula-renderer.js"></script><script src="assets/js/font-test.js"></script>
 <script src="assets/js/script.js"></script>
 </body></html>
