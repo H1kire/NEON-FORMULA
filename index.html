@@ -6,7 +6,7 @@
 <title>FORMULA ASCENT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <div class="app-shell">
@@ -47,7 +47,7 @@
 <div class="setting-row"><div><strong data-i18n="language">Language</strong><small data-i18n="languageDesc">Interface language</small></div><select id="languageSelect" onchange="setLanguage(this.value)"><option value="en">English</option><option value="ru">Русский</option></select></div>
 <div class="setting-row"><div><strong data-i18n="notation">Number notation</strong><small data-i18n="notationDesc">Choose how large numbers are displayed.</small></div><select id="notationSelect" onchange="setNotation(this.value)"><option value="standard" data-i18n="standardNotation">Standard</option><option value="scientific">Scientific notation</option><option value="engineering">Engineering</option></select></div>
 <div class="setting-row"><div><strong data-i18n="autosave">Autosave</strong><small data-i18n="autosaveDesc">Save progress automatically.</small></div><label class="switch"><input id="autosaveToggle" type="checkbox" checked onchange="setSetting('autosave',this.checked)"><span></span></label></div>
-<div class="setting-row"><div><strong data-i18n="manualSave">Save now</strong><small data-i18n="manualSaveDesc">Write your current progress to this device.</small></div><button class="small-action" onclick="manualSave()" data-i18n="saveNow">SAVE NOW</button></div>
+<div class="setting-row"><div><strong data-i18n="manualSave">Save now</strong><small data-i18n="manualSaveDesc">Write your current progress to this device.</small></div><button class="small-action" id="manualSaveBtn" onclick="manualSave()" data-i18n="saveNow">SAVE NOW</button></div>
 <div class="setting-row"><div><strong data-i18n="offlineProgress">Offline progress</strong><small data-i18n="offlineProgressDesc">Earn a portion of production while away.</small></div><label class="switch"><input id="offlineToggle" type="checkbox" checked onchange="setSetting('offline',this.checked)"><span></span></label></div>
 <div class="setting-row"><div><strong data-i18n="compactNumbers">Compact numbers</strong><small data-i18n="compactNumbersDesc">Use short number formats in the HUD.</small></div><label class="switch"><input id="compactToggle" type="checkbox" checked onchange="setSetting('compact',this.checked)"><span></span></label></div>
 <div class="setting-row"><div><strong data-i18n="reducedMotion">Reduced motion</strong><small data-i18n="reducedMotionDesc">Reduce decorative animations.</small></div><label class="switch"><input id="motionToggle" type="checkbox" onchange="setSetting('reducedMotion',this.checked)"><span></span></label></div>
@@ -81,5 +81,5 @@
 </div>
 <footer class="footer"><span>FORMULA ASCENT <b>·</b> IDLE EXPERIMENT</span><span>KEEP ITERATING <i>✳</i></span></footer>
 </div>
-<script src="prestige.js"></script><script src="tree.js"></script><script src="app-ui.js"></script><script src="script.js"></script>
+<script src="assets/js/storage.js"></script><script src="assets/js/prestige.js"></script><script src="assets/js/tree.js"></script><script src="assets/js/app-ui.js"></script><script src="assets/js/script.js"></script>
 </body></html>

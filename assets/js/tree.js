@@ -7,13 +7,13 @@
   const x=(pos+.5)*spread-4600+noise,y=depth*108+Math.sin(id*.23)*17;
   nodes.push({id,depth,parent:id===0?-1:Math.floor((id-1)/2),maxLevel:1+((id*17+depth*7)%5),level:0,x,y,cost:Math.floor(250*Math.pow(1.055,depth)*(1+(id%7)*.035)),effect:1+((id*13)%5)*.0025});
  }
- try{const saved=JSON.parse(localStorage.getItem("faTree")||"[]");saved.forEach(v=>{if(nodes[v.id])nodes[v.id].level=Math.min(nodes[v.id].maxLevel,Math.max(0,Number(v.level)||0))})}catch{}
- let selected=-1,scale=.7,offsetX=0,offsetY=35,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1;
+ const saved=FAStorage.getJSON("faTree",[]);if(Array.isArray(saved))saved.forEach(v=>{const id=Number(v?.id);if(Number.isInteger(id)&&id>=0&&id<TOTAL){const level=Math.floor(Number(v.level)||0);nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level))}});
+ let selected=-1,scale=.7,offsetX=0,offsetY=35,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.level>=n.maxLevel?1:0),0);
  window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;
- function persist(){localStorage.setItem("faTree",JSON.stringify(nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level}))))}
+ function persist(){return FAStorage.setJSON("faTree",nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level})))}
  function nodeCost(n){return Math.ceil(n.cost*Math.pow(1.55,n.level))}
  function available(n){return n.parent===-1||nodes[n.parent].level>=nodes[n.parent].maxLevel}
  function canBuy(n){return available(n)&&n.level<n.maxLevel&&gp>=nodeCost(n)}
@@ -56,6 +56,6 @@
  };
  window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(.2,Math.min(2.5,scale*(dir>0?1.18:.85)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
  window.treeResetView=()=>{centerRoot();updateInspector()};
- window.refreshTree=()=>{if(!initialized||!document.getElementById("page-tree").classList.contains("active"))return;draw();updateInspector();updateProgress()};
+ window.refreshTree=()=>{if(!initialized||!document.getElementById("page-tree").classList.contains("active"))return;const now=performance.now();if(now-lastTreeRefresh<100)return;lastTreeRefresh=now;draw();updateInspector();updateProgress()};
  updateProgress();
 })();

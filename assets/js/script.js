@@ -11,24 +11,28 @@ const btnA=$("btnA"),btnB=$("btnB"),btnC=$("btnC"),btnD=$("btnD"),btnE=$("btnE")
 const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dCostDisplay=$("dCost"),eCostDisplay=$("eCost");
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
 function saveGame(force=false){
- if(!force&&FA_META.settings.autosave===false)return;
+ if(!force&&FA_META.settings.autosave===false)return false;
  const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,lastTime:Date.now()};
- localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+ return FAStorage.setJSON(SAVE_KEY,data);
 }
 function loadGame(){
- const raw=localStorage.getItem(SAVE_KEY)||localStorage.getItem(LEGACY_SAVE_KEY)||localStorage.getItem(OLD_SAVE_KEY);if(!raw)return;
+ let sourceKey=SAVE_KEY,d=FAStorage.getJSON(SAVE_KEY,null);
+ if(!d){sourceKey=LEGACY_SAVE_KEY;d=FAStorage.getJSON(LEGACY_SAVE_KEY,null)}
+ if(!d){sourceKey=OLD_SAVE_KEY;d=FAStorage.getJSON(OLD_SAVE_KEY,null)}
+ if(!d||typeof d!=="object")return;
  try{
-  const d=JSON.parse(raw);t=Math.max(0,Number(d.t)||0);value=Math.max(0,Number(d.value)||0);
+  t=Math.max(0,Number(d.t)||0);value=Math.min(Number.MAX_VALUE,Math.max(0,Number(d.value)||0));
   aLevel=Math.max(0,Number(d.aLevel)||0);bLevel=Math.max(0,Number(d.bLevel)||0);cLevel=Math.max(0,Number(d.cLevel)||0);dLevel=Math.max(0,Number(d.dLevel)||0);eLevel=Math.max(0,Number(d.eLevel)||0);
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
-  if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;t+=away;value+=integrateOffline(away);}
+  if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;t+=away;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));}
+  if(sourceKey!==SAVE_KEY&&FAStorage.setJSON(SAVE_KEY,d))FAStorage.remove(sourceKey);
  }catch(err){console.error("Save data could not be loaded",err)}
 }
-function integrateOffline(seconds){const start=t;return BASE_PRODUCTION*metaBonus("production")*metaBonus("time")*((Math.pow(start+seconds+1,3)-Math.pow(start+1,3))/3)*.82}
-function manualSave(){saveGame(true);saveMeta();savePrestige();const button=document.querySelector(".small-action");if(button){const old=button.textContent;button.textContent=FA_META.language==="ru"?"СОХРАНЕНО":"SAVED";setTimeout(()=>button.textContent=old,1200)}}
+function integrateOffline(seconds){const origin=t,steps=Math.min(28800,Math.max(1,Math.ceil(seconds))),step=seconds/steps;let total=0;try{for(let i=0;i<steps;i++){t=origin+(i+.5)*step;total=Math.min(Number.MAX_VALUE,total+getGain()*step)}}finally{t=origin}return Math.min(Number.MAX_VALUE,total*.82)}
+function manualSave(){const results=[saveGame(true),saveMeta(),savePrestige()],ok=results.every(Boolean);const button=$("manualSaveBtn");if(button){const old=button.textContent;button.textContent=ok?(FA_META.language==="ru"?"СОХРАНЕНО":"SAVED"):(FA_META.language==="ru"?"ОШИБКА СОХРАНЕНИЯ":"SAVE FAILED");setTimeout(()=>button.textContent=old,1600)}}
 function resetSave(){
  if(!confirm(FA_META.language==="ru"?"Удалить весь прогресс, включая исследования и древо?":"Delete all progress, including research and the tree?"))return;
- [SAVE_KEY,LEGACY_SAVE_KEY,OLD_SAVE_KEY,"prestigeSave","faMeta","faTree"].forEach(k=>localStorage.removeItem(k));
+ FAStorage.removeMany([SAVE_KEY,LEGACY_SAVE_KEY,OLD_SAVE_KEY,"prestigeSave","faMeta","faTree"]);
  location.reload();
 }
 function format(n){
@@ -42,7 +46,8 @@ function format(n){
  const group=Math.floor(Math.log10(n)/3),index=group-2;
  if(index<0)return Math.floor(n).toLocaleString(FA_META.language==="ru"?"ru-RU":"en-US");
  if(index>=units.length)return n.toExponential(2);
- const scaled=n/Math.pow(1000,group);
+ let scaled=n/Math.pow(1000,group);
+ if(Number(scaled.toFixed(2))>=1000){group++;index++;if(index>=units.length)return n.toExponential(2);scaled=n/Math.pow(1000,group)}
  return scaled.toFixed(2)+units[index];
 }
 function getACost(){return 1000*Math.pow(2.5,aLevel)*metaBonus("rootCost")}
@@ -63,7 +68,7 @@ function getGain(){
  else{let sum=0;for(let i=1;i<=prestigeUpgrades.globalSum;i++)sum+=Math.pow(t+i,2);result=sum*base*boost}
  result*=BASE_PRODUCTION;
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result*=treeProductionMultiplier();
- return Number.isFinite(result)?result:0;
+ return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
 }
 function getGrowthPerSecond(){return getGain()}
 function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost);btn.classList.toggle("bad",value<cost)}
@@ -83,10 +88,10 @@ function updateUI(){
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
  updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
-function autoBuy(){const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;const costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost()],buyers=[buyA,buyB,buyC,buyD,buyE];for(let i=0;i<5;i++)if(a.unlocked[i]&&a.enabled[i]&&value>=costs[i])buyers[i]()}
+function autoBuy(){const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;const efficiency=metaBonus("auto"),costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost()].map(cost=>cost/efficiency),actions=[()=>aLevel++,()=>bLevel++,()=>cLevel++,()=>dLevel++,()=>eLevel++];for(let i=0;i<5;i++)if(a.unlocked[i]&&a.enabled[i]&&value>=costs[i])purchase(costs[i],actions[i])}
 function loop(){
  const now=performance.now(),delta=Math.min((now-lastFrame)/1000,.25);lastFrame=now;
- t+=delta;const gain=getGain()*delta;value+=gain;FA_META.stats.totalPlayTime+=delta;FA_META.stats.lifetimeValue+=gain;
+ t+=delta;const gain=getGain()*delta;value=Math.min(Number.MAX_VALUE,value+gain);FA_META.stats.totalPlayTime+=delta;FA_META.stats.lifetimeValue=Math.min(Number.MAX_VALUE,FA_META.stats.lifetimeValue+gain);
  autoBuy();updateUI();
 }
 loadGame();updateUI();lastFrame=performance.now();

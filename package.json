@@ -1,10 +1,14 @@
 {
   "name": "formula-ascent",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "description": "A browser-based mathematical idle experiment.",
-  "main": "script.js",
+  "main": "assets/js/script.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "npx http-server ."
+    "start": "node scripts/server.js",
+    "check": "node scripts/audit.js"
   }
 }
