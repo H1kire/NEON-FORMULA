@@ -1,4 +1,4 @@
-/* KaTeX typography: sizing is controlled by the temporary font test panel. */
+/* KaTeX typography: match ordinary upgrade text at 14 pt (Word size 14). */
 .upgrade-desc.math-formula {
   display: block;
   min-height: 1.5em;
@@ -13,7 +13,7 @@
 }
 .upgrade-desc.math-formula .katex {
   color: inherit;
-  font-size: var(--fa-test-formula-size, 2em);
+  font-size: 14pt;
   white-space: nowrap;
 }
 .formula.math-formula {
@@ -25,9 +25,9 @@
   white-space: nowrap;
   scrollbar-width: thin;
 }
-/* Keep the main f(t) display independent from the test controls. */
+/* The main f(t) formula uses the same 14 pt size. */
 #formulaText.math-formula .katex {
   color: inherit;
-  font-size: 3em;
+  font-size: 14pt;
   white-space: nowrap;
 }
