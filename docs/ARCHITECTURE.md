@@ -44,4 +44,4 @@ All reads and writes must go through `FAStorage`. Keep legacy run keys in the mi
 - `assets/js/formula-renderer.js` is loaded after KaTeX and before the simulation. It owns rendering only; game logic supplies LaTeX strings.
 - The renderer caches each element's last expression, avoiding repeated typesetting during the 10 ms game loop.
 - Keep the existing UI colors, panels, spacing and responsive design. KaTeX should inherit text color and only provide mathematical glyphs/layout.
-- Ordinary upgrade-card text and all rendered formulas use a fixed `14pt` font size (Word size 14); there is no runtime font-size test panel.
+- Other windows retain their original typography. Inside `#formulaModulePanel`, upgrade titles, descriptions and A–E KaTeX formulas use `16pt`; the main `#formulaText` formula uses `25pt`. There is no runtime font-size test panel.

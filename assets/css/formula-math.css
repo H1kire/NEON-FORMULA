@@ -1,4 +1,4 @@
-/* KaTeX typography: match ordinary upgrade text at 14 pt (Word size 14). */
+/* Formula cards use 16 pt; the main f(t) formula uses 25 pt. */
 .upgrade-desc.math-formula {
   display: block;
   min-height: 1.5em;
@@ -13,7 +13,7 @@
 }
 .upgrade-desc.math-formula .katex {
   color: inherit;
-  font-size: 14pt;
+  font-size: 16pt;
   white-space: nowrap;
 }
 .formula.math-formula {
@@ -25,9 +25,9 @@
   white-space: nowrap;
   scrollbar-width: thin;
 }
-/* The main f(t) formula uses the same 14 pt size. */
+/* f(t) is 11 pt larger than the 14 pt base: 25 pt. */
 #formulaText.math-formula .katex {
   color: inherit;
-  font-size: 14pt;
+  font-size: 25pt;
   white-space: nowrap;
 }

@@ -29,6 +29,7 @@ const sourceHtml=html.replace(/<!--[\s\S]*?-->/g,""),voidTags=new Set(["area","b
 for(const m of sourceHtml.matchAll(/<\/?([a-zA-Z][\w:-]*)\b[^>]*>/g)){const token=m[0],tag=m[1].toLowerCase();if(token.startsWith("</")){const open=stack.pop();if(open!==tag)fail("HTML nesting mismatch at "+token+" (open "+(open||"none")+")")}else if(!voidTags.has(tag)&&!token.endsWith("/>"))stack.push(tag)}
 if(stack.length)fail("Unclosed HTML tags "+stack.join(","));else pass("HTML nesting");
 if((css.match(/{/g)||[]).length!==(css.match(/}/g)||[]).length||(mathCss.match(/{/g)||[]).length!==(mathCss.match(/}/g)||[]).length)fail("CSS brace mismatch");else pass("CSS braces");
+if(!css.includes(".upgrade-title{color:#e2ebe8;font-size:13px;font-weight:700}")||!css.includes(".upgrade-desc{color:#82938e;font:10px var(--mono);")||!css.includes("#formulaModulePanel .upgrade-title{font-size:16pt}")||!css.includes("#formulaModulePanel .upgrade-desc:not(.math-formula){font-size:16pt}")||!mathCss.includes("font-size: 16pt;")||!mathCss.includes("font-size: 25pt;"))fail("Formula typography sizes do not match the 16 pt / 25 pt specification");else pass("Formula typography sizes and original interface defaults");
 for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 if(pkg&&(!pkg.scripts?.check||!pkg.scripts?.start))fail("Missing npm scripts");
