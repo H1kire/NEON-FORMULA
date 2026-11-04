@@ -24,7 +24,7 @@ function loadGame(){
   t=Math.max(0,Number(d.t)||0);value=Math.min(Number.MAX_VALUE,Math.max(0,Number(d.value)||0));
   aLevel=Math.max(0,Number(d.aLevel)||0);bLevel=Math.max(0,Number(d.bLevel)||0);cLevel=Math.max(0,Number(d.cLevel)||0);dLevel=Math.max(0,Number(d.dLevel)||0);eLevel=Math.max(0,Number(d.eLevel)||0);
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
-  if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;t+=away;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));}
+  if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
   if(sourceKey!==SAVE_KEY&&FAStorage.setJSON(SAVE_KEY,d))FAStorage.remove(sourceKey);
  }catch(err){console.error("Save data could not be loaded",err)}
 }
