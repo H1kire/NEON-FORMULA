@@ -3,16 +3,17 @@
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+ // Wave-distorted Fermat spiral.
+ // r = k*sqrt(n), theta = n*goldenAngle + waveAmplitude*sin(waveFrequency*n).
+ // k=95 controls spacing; the wave gently bends the spiral without breaking ID order.
  const positions=[];
- const directions=[[1,0],[0,1],[-1,0],[0,-1]];
- let gridX=0,gridY=0,direction=0,segmentLength=1,segmentProgress=0,segmentsAtLength=0;
+ const goldenAngle=Math.PI*(3-Math.sqrt(5));
+ const spiralSpacing=95;
+ const waveAmplitude=.12,waveFrequency=.08;
  for(let id=0;id<TOTAL;id++){
-  positions.push({x:gridX*90+(id===0?0:(Math.sin(id*12.9898)*8)),y:gridY*90+(id===0?0:(Math.cos(id*7.233)*8))});
-  gridX+=directions[direction][0];gridY+=directions[direction][1];segmentProgress++;
-  if(segmentProgress===segmentLength){
-   segmentProgress=0;direction=(direction+1)%4;segmentsAtLength++;
-   if(segmentsAtLength===2){segmentsAtLength=0;segmentLength++}
-  }
+  const radius=spiralSpacing*Math.sqrt(id);
+  const angle=id*goldenAngle+waveAmplitude*Math.sin(waveFrequency*id);
+  positions.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle)});
  }
  const addEdge=(a,b)=>{
   if(a===b||a<0||b<0)return;
@@ -27,7 +28,7 @@
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
-  // IDs follow a square spiral in order; each consecutive ID occupies a nearby grid cell.
+  // Node IDs increase outward along the wave-distorted Fermat spiral.
   const x=positions[id].x,y=positions[id].y;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
