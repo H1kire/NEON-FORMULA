@@ -13,7 +13,7 @@
  for(let id=1;id<TOTAL;id++){
   let x,y;
   if(id<=coreCount){
-   const i=id-1,radius=32+18.3*Math.sqrt(i),angle=i*goldenAngle;
+   const i=id-1,radius=32+18.8*Math.sqrt(i),angle=i*goldenAngle;
    x=radius*Math.cos(angle);y=radius*Math.sin(angle);
   }else{
    const armIndex=id-coreCount-1,arm=armIndex%armCount;
