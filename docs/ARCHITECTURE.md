@@ -4,7 +4,7 @@
 
 1. `assets/js/storage.js` installs `window.FAStorage` before any subsystem reads or writes persistent data.
 2. `assets/js/prestige.js` restores AP/GP state and exposes prestige actions.
-3. `assets/js/tree.js` constructs the deterministic 3,886-node irregular multi-link graph, assigns the four node shapes/level limits and restores purchased nodes.
+3. `assets/js/tree.js` constructs the deterministic 3,886-node irregular multi-link graph arranged in square-spiral ID order, assigns the four node shapes/level limits and restores purchased nodes.
 4. `assets/js/app-ui.js` restores settings/research, localization and menu panels.
 5. `assets/js/script.js` restores the active run and starts the 10 ms simulation loop.
 
@@ -16,7 +16,7 @@ The order is intentional because later systems use globals exposed by earlier sc
 - CSS owns presentation and responsive breakpoints.
 - Storage owns guarded browser persistence access and error handling.
 - Prestige owns AP/GP calculations and reset boundaries.
-- Tree owns node generation, progression and canvas rendering. Its current graph uses square content nodes (1 level), circle standard nodes (2–100 levels), triangle major nodes (10 levels) and pentagon hyper nodes (5 levels). The root is a square costing 1 GP; it is the only purchasable node in this release, while the rest of the graph is visible but reserved for future upgrades.
+- Tree owns node generation, progression and canvas rendering. Its current graph uses square content nodes (1 level), circle standard nodes (2–100 levels), triangle major nodes (10 levels) and pentagon hyper nodes (5 levels). Node IDs follow a square spiral so sequential IDs remain spatially close. Edges are rendered only when both endpoints are open; open connections glow green, the selected route and its available neighboring edges glow blue, and glow intensity fades with zoom-out. Node radii are tripled and connection widths are 1.5×. The root is a square costing 1 GP; it is the only purchasable node in this release, while the rest of the graph is visible but reserved for future upgrades.
 - UI owns settings, localization, research cards and menu navigation.
 - Simulation owns Score production, formula modules, automation and run saves.
 
