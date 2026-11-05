@@ -34,20 +34,22 @@ function getEffectiveLetterLevel(level){
  const efficiency=Math.max(1,metaBonus("efficiency"));
  return Math.max(0,level)*efficiency;
 }
+function getExpandedParameterLimit(baseLimit,role="divisor"){
+ const scale=1+0.01*Math.max(0,metaBonus("limitExpansion"));
+ return role==="exponent"?baseLimit*scale:baseLimit/scale;
+}
 function getLetterParameter(base,target,level){
  const effective=getEffectiveLetterLevel(level);
  const progress=effective/(300+effective);
  return base+(target-base)*progress;
 }
 function getLetterParameters(){
- const expansion=Math.max(0,metaBonus("limitExpansion"));
- const divisorScale=1+0.01*expansion;
  return {
-  a:getLetterParameter(1.81,1.20/divisorScale,aLevel),
-  b:getLetterParameter(0.652,0.90*divisorScale,bLevel),
-  c:getLetterParameter(1.66,1.10/divisorScale,cLevel),
-  d:getLetterParameter(11.7,7/divisorScale,dLevel),
-  e:getLetterParameter(2.057,1.30/divisorScale,eLevel)
+  a:getLetterParameter(1.81,getExpandedParameterLimit(1.20,"divisor"),aLevel),
+  b:getLetterParameter(0.652,getExpandedParameterLimit(0.90,"exponent"),bLevel),
+  c:getLetterParameter(1.66,getExpandedParameterLimit(1.10,"divisor"),cLevel),
+  d:getLetterParameter(11.7,getExpandedParameterLimit(7,"divisor"),dLevel),
+  e:getLetterParameter(2.057,getExpandedParameterLimit(1.30,"divisor"),eLevel)
  };
 }
 function getLetterPrice(base,level){
@@ -85,6 +87,8 @@ function getA(){return formulaState.a}function getB(){return formulaState.b}func
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
  getParameter:getLetterParameter,
+ getExpandedLimit:getExpandedParameterLimit,
+ getDependencyStrength:()=>Math.max(1,metaBonus("coupling")),
  getParameters:getLetterParameters,
  getLetterPrice:getLetterPrice,
  getState:()=>({...formulaState})
