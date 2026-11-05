@@ -65,10 +65,10 @@ function updateFormulaState(timeSeconds){
  const old=formulaState,p=getLetterParameters(),coupling=Math.max(1,metaBonus("coupling"));
  const next={
   a:safePow(1+Math.max(0,timeSeconds)/60,(1+Math.log(Math.max(1,old.c))*coupling)/Math.max(1e-12,p.a)),
-  b:1+Math.max(0,safePow(Math.max(1,old.a),p.b)-1)/1.055,
+  b:1+Math.max(0,safePow(Math.max(1,old.a),p.b*coupling)-1)/1.055,
   c:1+safeLogProduct(old.a,old.b,old.c,coupling)/Math.max(1e-12,p.c),
   d:1+Math.sqrt(safeProduct(old.a,old.b,old.c,coupling))/Math.max(1e-12,p.d),
-  e:1+safeLogProduct(old.b,old.d,metaBonus("eInput"))/Math.max(1e-12,p.e)
+  e:1+safeLogProduct(old.b,old.d,metaBonus("eInput"),coupling)/Math.max(1e-12,p.e)
  };
  for(const key of ["a","b","c","d","e"])if(!Number.isFinite(next[key])||next[key]<1)next[key]=Number.MAX_VALUE;
  formulaState=next;
@@ -173,16 +173,16 @@ function updateUI(){
  const p=getLetterParameters(),coupling=metaBonus("coupling"),eInput=metaBonus("eInput");
  if(window.FAFormula&&window.katex){
   FAFormula.render("aFormula","a=\\left(1+\\frac{t}{60}\\right)^{\\frac{1+\\ln(c)"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+"}{"+p.a.toFixed(4)+"}}");
-  FAFormula.render("bFormula","b=1+\\frac{a^{"+p.b.toFixed(4)+"}-1}{1.055}");
+  FAFormula.render("bFormula","b=1+\\frac{a^{"+(p.b*coupling).toFixed(4)+"}-1}{1.055}");
   FAFormula.render("cFormula","c_{n+1}=1+\\frac{\\ln(1+abc_n"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+ ")}{"+p.c.toFixed(4)+"}");
   FAFormula.render("dFormula","d=1+\\frac{\\sqrt{abc"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+"}}{"+p.d.toFixed(4)+"}");
-  FAFormula.render("eFormula","e=1+\\frac{\\ln(1+bd"+(eInput===1?"":"\\cdot "+eInput.toFixed(2))+ ")}{"+p.e.toFixed(4)+"}");
+  FAFormula.render("eFormula","e=1+\\frac{\\ln(1+bd"+(eInput*coupling===1?"":"\\cdot "+(eInput*coupling).toFixed(2))+ ")}{"+p.e.toFixed(4)+"}");
  }else{
   $("aFormula").textContent="a = (1 + t / 60)^((1 + ln(c)"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.a.toFixed(4)+")";
-  $("bFormula").textContent="b = 1 + (a^"+p.b.toFixed(4)+" - 1) / 1.055";
+  $("bFormula").textContent="b = 1 + (a^"+(p.b*coupling).toFixed(4)+" - 1) / 1.055";
   $("cFormula").textContent="c[n+1] = 1 + ln(1 + a*b*c[n]"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.c.toFixed(4);
   $("dFormula").textContent="d = 1 + sqrt(a*b*c"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.d.toFixed(4);
-  $("eFormula").textContent="e = 1 + ln(1 + b*d"+(eInput===1?"":" × "+eInput.toFixed(2))+") / "+p.e.toFixed(4);
+  $("eFormula").textContent="e = 1 + ln(1 + b*d"+(eInput*coupling===1?"":" × "+(eInput*coupling).toFixed(2))+") / "+p.e.toFixed(4);
  }
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
