@@ -12,7 +12,7 @@ Formula Ascent is a browser-based mathematical idle experiment with two prestige
 - Genesis Points (GP) use only currently held AP: each next GP threshold is `1,000 × 1.1^(x/2.5)`, where `x` starts at 2 and increases by 1 for each additional GP available from the current AP balance.
 - Genesis Prestige resets the current run, AP, Research Division, automation unlocks and Ascension upgrades. It preserves GP, the Genesis Gate and purchased tree nodes.
 - Each A–E automation module is purchased separately for `10^letter_index` AP, can be toggled independently, and can be paused globally.
-- The Upgrade Tree contains exactly 3,886 nodes. Tree nodes cost GP; child nodes remain locked until their parent is fully upgraded.
+- The Upgrade Tree contains 3,886 nodes arranged as a deterministic, irregular multi-link network rather than a binary tree. Nodes use four shapes: squares unlock content (one level), circles are standard upgrades (2–100 levels), triangles are major upgrades (10 levels), and pentagons are hyper upgrades (5 levels). In the initial release, only the root square is purchasable and costs 1 GP; all other nodes are reserved for future content.
 - Settings include English/Russian language, number notation, autosave, offline progress, compact numbers and reduced motion.
 - Statistics and a placeholder account page are available. Firebase account linking is planned for a later update.
 
@@ -84,7 +84,7 @@ FORMULA-ASCENT/
 - `assets/css/style.css` — responsive visual system.
 - `assets/js/storage.js` — guarded localStorage access.
 - `assets/js/prestige.js` — Ascension and Genesis prestige layers.
-- `assets/js/tree.js` — procedural 3,886-node upgrade network.
+- `assets/js/tree.js` — deterministic 3,886-node irregular multi-link upgrade network with four node types.
 - `assets/js/app-ui.js` — localization, settings, statistics and Research Division.
 - `assets/js/script.js` — idle simulation, formulas, automation and run saves.
 - `scripts/audit.js` — static project checks.
