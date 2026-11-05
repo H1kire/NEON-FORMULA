@@ -70,6 +70,7 @@ if(!timingSource.includes("for(let i=0;i<=prestigeUpgrades.globalSum;i++)"))fail
 if(timingSource.includes("BASE_PRODUCTION")||timingSource.includes("Math.pow(t+1,2),base,boost"))fail("Legacy production coefficient or time offset remains active");
 if(!timingSource.includes("setInterval(loop,TICK)"))fail("The 10 ms game loop scheduler is missing");
 if(!timingSource.includes("const averageRate=rateBefore+(rateAfter-rateBefore)*0.5"))fail("Production accumulation must use trapezoidal integration");
+if(!timingSource.includes("const rateAfter=getGain(),averageRate=rateBefore+(rateAfter-rateBefore)*0.5;"))fail("Offline production must use trapezoidal integration too");
 if(!timingSource.includes("const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;"))fail("Elapsed tick time must not be silently capped or discarded");
 if(!timingSource.includes("valueDisplay.textContent=formatPrecise(value,2);growthDisplay.textContent=formatPrecise(getGrowthPerSecond(),2);"))fail("HUD must display fractional total value and growth rate");
 if(!timingSource.includes("function formatPrecise(n,digits=2)"))fail("Precise HUD number formatter is missing");
