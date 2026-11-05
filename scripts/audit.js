@@ -52,26 +52,16 @@ try{
   if(renderCalls.length!==2)fail("Formula renderer cache did not skip an unchanged expression");
   else pass("KaTeX adapter rendering and cache test");
 }catch(error){fail("Formula renderer test: "+error.message)}
-const formulaSource=sources["assets/js/script.js"],formulaBlock=formulaSource.slice(formulaSource.indexOf("// Stable helpers"),formulaSource.indexOf("function getGain()"));
-if(!formulaBlock||formulaBlock.includes("function getGain"))fail("Could not locate A-E formula helpers");
+const formulaSource=sources["assets/js/script.js"],formulaBlock=formulaSource.slice(formulaSource.indexOf("function safeProduct"),formulaSource.indexOf("function getGain()"));
+if(!formulaBlock||formulaBlock.includes("function getGain"))fail("Could not locate recursive A-E formula helpers");
 else{
   const context={};
   try{
-    vm.runInNewContext("let aLevel=1,bLevel=1,cLevel=1,dLevel=1,eLevel=1,t=0;const metaBonus=()=>1;"+formulaBlock+String.raw`
-      const w1=lambertW(1),w10=lambertW(10);
-      if(Math.abs(w1-0.5671432904097838)>1e-10)throw new Error("Lambert W(1) mismatch");
-      if(Math.abs(w10*Math.exp(w10)-10)>1e-8)throw new Error("Lambert W residual mismatch");
-      if(Math.abs(erfApprox(1)-0.8427007)>1e-5)throw new Error("erf approximation mismatch");
-      const values=[getA(),getB(),getC(),getD(),getE()];
-      if(values.some(v=>v<1||!Number.isFinite(v)))throw new Error("A-E multiplier below 1 or non-finite");
-      t=1e12;aLevel=bLevel=cLevel=dLevel=eLevel=100;
-      const d=getD(),e=getE();
-      if(d>1.05+1e-10)throw new Error("D exceeded its 1.05 cap");
-      if(e>1+Math.PI/200+1e-10)throw new Error("E exceeded its integral cap");
-      globalThis.__formulaTest={w1,w10,d,e};
-    `,context);
-    pass("A-E special-function and multiplier-cap tests");
-  }catch(error){fail("A-E formula runtime test: "+error.message)}
+    const prefix="let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0;let formulaState={a:1,b:1,c:1,d:1,e:1};let formulaSteps=0,formulaAccumulator=0;const bonuses={};const metaBonus=type=>bonuses[type]??1;const window={};";
+    const tests="for(let i=1;i<=300;i++)updateFormulaState(i);const product=formulaState.a*formulaState.b*formulaState.c*formulaState.d*formulaState.e;if(Math.abs(product-1096.8707881151995)>0.01)throw new Error(\\"Five-minute baseline multiplier mismatch: \\"+product);if(Object.values(formulaState).some(v=>v<1||!Number.isFinite(v)))throw new Error(\\"A-E produced an invalid multiplier\\");aLevel=300;const half=getLetterParameters().a;if(Math.abs(half-1.505)>1e-9)throw new Error(\\"300-level soft-cap midpoint mismatch: \\"+half);bonuses.efficiency=1.4;if(!(getLetterParameters().a<half))throw new Error(\\"Research 1 does not improve global letter efficiency\\");bonuses.limitExpansion=20;const expanded=getLetterParameters();if(!(expanded.a<1.2&&expanded.b>1))throw new Error(\\"Research 4 does not expand divisor/exponent limits\\");bonuses.efficiency=1;bonuses.limitExpansion=0;bonuses.letterDiscount=1;bonuses.priceGrowthLevel=0;aLevel=0;if(getACost()!==1000)throw new Error(\\"First A purchase price changed\\");aLevel=1;if(getACost()!==1030)throw new Error(\\"Successive letter price growth mismatch\\");bonuses.letterDiscount=.01;if(getACost()!==11)throw new Error(\\"99% discount boundary mismatch\\");globalThis.__formulaTest={product,values:{...formulaState},half,expanded};";
+    vm.runInNewContext(prefix+formulaBlock+tests,context);
+    pass("Recursive A-E five-minute baseline, global research, soft-cap and price tests");
+  }catch(error){fail("Recursive A-E formula runtime test: "+error.message)}
 }
 const prestigeSource=sources["assets/js/prestige.js"];
 const thresholdMatch=prestigeSource.match(/function countThresholds\([\s\S]*?\}\nfunction getPrestigeGain/);
