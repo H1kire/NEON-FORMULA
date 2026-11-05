@@ -5,13 +5,16 @@
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
  // Wave-distorted Fermat spiral.
  // r = k*sqrt(n), theta = n*goldenAngle + waveAmplitude*sin(waveFrequency*n).
- // k=95 controls spacing; the wave gently bends the spiral without breaking ID order.
+ // k=95 is the requested base density. The display-clearance factor compensates
+ // for the deliberately enlarged nodes at the default camera zoom (0.28).
+ // This keeps the first ring from collapsing underneath the root node.
  const positions=[];
  const goldenAngle=Math.PI*(3-Math.sqrt(5));
- const spiralSpacing=95;
+ const spiralSpacing=95,displayClearance=4.5;
+ const effectiveSpacing=spiralSpacing*displayClearance;
  const waveAmplitude=.12,waveFrequency=.08;
  for(let id=0;id<TOTAL;id++){
-  const radius=spiralSpacing*Math.sqrt(id);
+  const radius=effectiveSpacing*Math.sqrt(id);
   const angle=id*goldenAngle+waveAmplitude*Math.sin(waveFrequency*id);
   positions.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle)});
  }
