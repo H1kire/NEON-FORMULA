@@ -1,5 +1,5 @@
 // FORMULA ASCENT — core idle simulation and universal letter mathematics
-const TICK=10, AUTOSAVE_INTERVAL=5000, BASE_PRODUCTION=0.08;
+const TICK=10, AUTOSAVE_INTERVAL=5000;
 let lastFrame=Date.now(),t=0,value=0;
 let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0;
 const SAVE_KEY="formula_ascent_save_v2",LEGACY_SAVE_KEY="formula_ascent_save_v1",OLD_SAVE_KEY="neon_formula_idle_v4_5";
@@ -158,8 +158,8 @@ function getGain(){
  const boost=(1+(prestigeUpgrades.simpleBoost||0)*.25)*metaBonus("production")*metaBonus("time");
  const base=safeProduct(getA(),getB(),getC(),getD(),getE());
  let result;
- if((prestigeUpgrades.globalSum||0)===0)result=safeProduct(Math.pow(t+1,2),base,boost,BASE_PRODUCTION);
- else{let sum=0;for(let i=1;i<=prestigeUpgrades.globalSum;i++)sum=Math.min(Number.MAX_VALUE,sum+Math.pow(t+i,2));result=safeProduct(sum,base,boost,BASE_PRODUCTION)}
+ if((prestigeUpgrades.globalSum||0)===0)result=safeProduct(t*t,base,boost);
+ else{let sum=0;for(let i=0;i<=prestigeUpgrades.globalSum;i++)sum=Math.min(Number.MAX_VALUE,sum+Math.pow(t+i,2));result=safeProduct(sum,base,boost)}
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
 }
