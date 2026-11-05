@@ -127,8 +127,11 @@ function integrateOffline(seconds){
  const origin=t,steps=Math.min(28800,Math.max(1,Math.ceil(seconds))),step=seconds/steps;let total=0;
  try{
   for(let i=0;i<steps;i++){
+   t=origin+i*step;
+   const rateBefore=getGain();
    t=origin+(i+1)*step;advanceFormulaClock(step);
-   total=Math.min(Number.MAX_VALUE,total+safeProduct(getGain(),step));
+   const rateAfter=getGain(),averageRate=rateBefore+(rateAfter-rateBefore)*0.5;
+   total=Math.min(Number.MAX_VALUE,total+safeProduct(averageRate,step));
   }
  }finally{t=origin}
  return Math.min(Number.MAX_VALUE,total*.82);
