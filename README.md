@@ -23,8 +23,12 @@ The five formula modules are active from the beginning; their multipliers are al
 The production formula is:
 
 \[
-f(t)=t^2\cdot a\cdot b\cdot c\cdot d\cdot e
+f(t)=t^2\cdot\sum_{i=0}^{n}w_i\prod_{\ell\in\mathcal L}\ell
 \]
+
+Here (t^2) stays outside the sum and every letter multiplier belongs to the product inside it. The base term has weight (w_0=1); each purchased Global Sum level adds one term with weight (w_{i>0}=1+0.25L), where (L) is the Ascension Legacy (Simple Boost) level. Therefore the effective sum multiplier is (1+n(1+0.25L)). New letter modules register their getter with `window.registerFormulaLetter` so they are included automatically.
+
+Global Sum costs 1 AP initially and its next purchase costs 1,000 times more each time: 1, 1,000, 1,000,000, 1,000,000,000, 1,000,000,000,000 AP. The existing five-purchase limit remains.
 
 - **A — Power Foundation:** \(a=(1+t/60)^{(1+\ln(c))/1.81}\). C feeds back into A's exponent.
 - **B — Root Amplifier:** \(b=1+(a^{0.652}-1)/1.055\).
