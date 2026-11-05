@@ -65,8 +65,10 @@ else{
 }
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
-if(!timingSource.includes("result=safeProduct(t*t,base,boost)"))fail("Base production must match f(t)=t^2 without an extra coefficient or time offset");
-if(!timingSource.includes("for(let i=0;i<=prestigeUpgrades.globalSum;i++)"))fail("Global Sum must retain the base t^2 term");
+if(!timingSource.includes("safeProduct(t*t,getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the global sum and include the letter product inside it");
+if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE]"))fail("All current letter multipliers must be registered inside the global sum");
+if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
+if(!timingSource.includes("return 1+n*(1+0.25*legacy)"))fail("Ascension Legacy must increase the effective Global Sum level by 25% per level");
 if(timingSource.includes("BASE_PRODUCTION")||timingSource.includes("Math.pow(t+1,2),base,boost"))fail("Legacy production coefficient or time offset remains active");
 if(!timingSource.includes("setInterval(loop,TICK)"))fail("The 10 ms game loop scheduler is missing");
 if(!timingSource.includes("const averageRate=rateBefore+(rateAfter-rateBefore)*0.5"))fail("Production accumulation must use trapezoidal integration");
@@ -75,16 +77,32 @@ if(!timingSource.includes("const now=performance.now(),delta=Math.max(0,(now-las
 if(!timingSource.includes("valueDisplay.textContent=formatPrecise(value,2);growthDisplay.textContent=formatPrecise(getGrowthPerSecond(),2);"))fail("HUD must display fractional total value and growth rate");
 if(!timingSource.includes("function formatPrecise(n,digits=2)"))fail("Precise HUD number formatter is missing");
 else pass("10 ms tick, accurate elapsed-time integration and HUD precision checks");
-const gainSource=timingSource.slice(timingSource.indexOf("function getGain()"),timingSource.indexOf("function getGrowthPerSecond()"));
+const gainSource=timingSource.slice(timingSource.indexOf("function getGlobalSumMultiplier()"),timingSource.indexOf("function getGrowthPerSecond()"));
 try{
-  const gainContext={t:10,prestigeUpgrades:{simpleBoost:0,globalSum:0},metaBonus:()=>1,getA:()=>1,getB:()=>1,getC:()=>1,getD:()=>1,getE:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),FA_META:{treeUnlocked:false}};
+  const gainContext={t:10,prestigeUpgrades:{simpleBoost:0,globalSum:0},metaBonus:()=>1,getLetterProduct:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),FA_META:{treeUnlocked:false}};
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
-  if(gainContext.__gain!==100)fail("Base production at t=10 must be exactly 100 before letter multipliers");
+  if(gainContext.__gain!==100)fail("Base production at t=10 must remain exactly 100 before Global Sum");
   gainContext.prestigeUpgrades.globalSum=1;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
-  if(gainContext.__gain!==221)fail("Global Sum must add terms without removing the base t^2 term");
-  pass("Production rate boundary tests at t=10 and Global Sum");
+  if(gainContext.__gain!==200)fail("One Global Sum purchase must double the letter product without changing t squared");
+  gainContext.prestigeUpgrades.simpleBoost=1;
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
+  if(gainContext.__gain!==225)fail("One Ascension Legacy level must add 25% to the Global Sum contribution");
+  gainContext.prestigeUpgrades.globalSum=0;
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
+  if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
+  pass("Production tests: base, Global Sum and Ascension Legacy scaling");
 }catch(error){fail("Production rate runtime test: "+error.message)}
+const prestigeSource= sources["assets/js/prestige.js"];
+try{
+ const costSource=prestigeSource.match(/function getGlobalSumCost\(\)[\s\S]*?\}/)?.[0];
+ if(!costSource)throw new Error("Global Sum cost function missing");
+ const costContext={prestigeUpgrades:{globalSum:0}};
+ vm.runInNewContext(costSource+";globalThis.__cost=getGlobalSumCost;",costContext);
+ const costs=[1,1000,1000000,1000000000,1000000000000];
+ for(let level=0;level<5;level++){costContext.prestigeUpgrades.globalSum=level;if(costContext.__cost()!==costs[level])throw new Error("Wrong AP cost at level "+level+": "+costContext.__cost())}
+ pass("Global Sum AP costs follow 1 × 1,000^level");
+}catch(error){fail("Global Sum cost test: "+error.message)}
 
 
 const prestigeSource=sources["assets/js/prestige.js"];
