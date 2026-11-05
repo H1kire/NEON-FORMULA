@@ -24,7 +24,7 @@ The order is intentional because later systems use globals exposed by earlier sc
 
 | Key | Owner | Data |
 |---|---|---|
-| `formula_ascent_save_v2` | Simulation | Timer, Score, A–E levels and last-save timestamp |
+| `formula_ascent_save_v2` | Simulation | Timer, Score, A–E levels, recursive formula state, one-second accumulator and last-save timestamp |
 | `prestigeSave` | Prestige | AP, GP and Ascension upgrade levels |
 | `faMeta` | UI | Locale, settings, Research Division, automation and statistics |
 | `faTree` | Tree | Purchased node IDs and levels |
@@ -37,6 +37,16 @@ All reads and writes must go through `FAStorage`. Keep legacy run keys in the mi
 - Run `npm run start` for local browser testing.
 - The audit checks JavaScript syntax, HTML IDs/nesting, script/style paths, event handlers, localization keys and storage access. It is static and does not replace browser testing.
 - Keep GitHub Pages pointed at the repository root. `index.html` remains in the root and references files under `assets/`.
+
+## Recursive formula engine
+
+- The base multipliers A–E are active from the beginning and feed production as `t² × A × B × C × D × E`.
+- `formulaState` stores the five multipliers. `advanceFormulaClock` advances the engine at one synchronous step per real second, independently of the 10 ms production/render loop.
+- Each step reads a frozen previous state and calculates all five next values before replacing the state. C is recursive; A and C form a feedback loop.
+- `FAMathSystem` exposes generic effective-level, parameter-curve, parameter-limit and letter-price helpers so future letters can use the same Research 1–5 rules.
+- Letter parameter progress is `L_eff / (300 + L_eff)`. Research 1 increases `L_eff` globally; Research 4 expands each parameter in its mathematically appropriate direction; Research 5 strengthens dependency inputs.
+- Research 2 applies a global discount capped at 99%. Research 3 slows the 3% per-purchase cost escalation. The original first-purchase prices are retained.
+- The recursive state and fractional one-second accumulator are saved with the run. Ascension and Genesis Prestige reset both alongside the run timer.
 
 ## Mathematical rendering
 
