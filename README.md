@@ -45,7 +45,7 @@ With no letter upgrades or Research levels, the synchronous baseline reaches app
 
 ### Research Division
 
-The first five projects form the global letter-progression layer: Mathematical Efficiency (unlimited), Discount Engineering (up to 99%), Price Stabilization (unlimited), Deep Mathematical Optimization (unlimited), and Dependency Resonance (unlimited). Research 6–10 retain the time, automation, production and prestige specializations. Research 8 (index 7) unlocks the letter automation panel. The one-time Genesis Gate remains the 1,000 AP final research unlock.
+The first five projects form the global letter-progression layer: Mathematical Efficiency (unlimited), Discount Engineering (up to 99%), Price Stabilization (unlimited), Deep Mathematical Optimization (unlimited), and Dependency Resonance (unlimited). Research 6–10 retain E-input, time, automation, production and prestige specializations. Research 8 (index 7) unlocks the letter automation panel. The one-time Genesis Gate remains the 1,000 AP final research unlock.
 
 ## Mathematical rendering
 
