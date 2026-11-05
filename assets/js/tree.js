@@ -111,7 +111,7 @@
   ctx.strokeStyle="rgba(120,157,144,.055)";ctx.lineWidth=1/scale;
   for(let x=Math.floor(left/200)*200;x<right;x+=200){ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke()}
   for(let y=Math.floor(top/200)*200;y<bottom;y+=200){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
-  const bluePath=selectedPath(),fade=Math.max(.28,Math.min(1,(scale-.12)/.72));
+  const bluePath=selectedPath(),fade=Math.max(.22,Math.min(1,scale/.28));
   for(const [a,b] of edges){
    const p=nodes[a],n=nodes[b];
    if(!edgeOpen(a,b))continue;
