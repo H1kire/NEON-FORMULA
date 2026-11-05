@@ -26,7 +26,7 @@ The production formula is:
 f(t)=t^2\cdot\sum_{i=0}^{n}w_i\prod_{\ell\in\mathcal L}\ell
 \]
 
-Here (t^2) stays outside the sum and every letter multiplier belongs to the product inside it. The base term has weight (w_0=1); each purchased Global Sum level adds one term with weight (w_{i>0}=1+0.25L), where (L) is the Ascension Legacy (Simple Boost) level. Therefore the effective sum multiplier is (1+n(1+0.25L)). New letter modules register their getter with `window.registerFormulaLetter` so they are included automatically.
+Here **t²** stays outside the sum and every letter multiplier belongs to the product inside it. The base term has weight **w₀ = 1**; each purchased Global Sum level adds one term with weight **wᵢ = 1 + 0.25L** for i > 0, where **L** is the Ascension Legacy (Simple Boost) level. Therefore the effective sum multiplier is **1 + n(1 + 0.25L)**. New letter modules register their getter with `window.registerFormulaLetter` so they are included automatically.
 
 Global Sum costs 1 AP initially and its next purchase costs 1,000 times more each time: 1, 1,000, 1,000,000, 1,000,000,000, 1,000,000,000,000 AP. The existing five-purchase limit remains.
 
