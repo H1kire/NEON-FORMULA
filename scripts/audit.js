@@ -37,7 +37,7 @@ for(const token of ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5'
  if(!treeSource.includes(token))fail("Upgrade tree structure missing expected feature: "+token);
 else pass("Upgrade tree typed-node and multi-link structure");
 if(!treeSource.includes('type==="pentagon"?1.5+random()'))fail("Hyper nodes must retain intentionally powerful effects");
-for(const token of ['const positions=[]','const armCount=4,spiralSpacing=95,displayClearance=4.5','const coreRadius=spiralSpacing*displayClearance','const radialStep=coreRadius/3.5','const winding=2.35,armJitter=.045','const arm=(id-1)%armCount','const armStep=Math.floor((id-1)/armCount)','Math.log1p(radius/coreRadius)','const MIN_SCALE=.0028,MAX_SCALE=2.5','scale=Math.max(MIN_SCALE','function edgeOpen(a,b)','if(!edgeOpen(a,b))continue','function selectedPath()','rgba(75,151,255,','105,226,157,','scale/.28','n.id===selected?22.5:n.id===0?19.5:12.3','isBlue?2.25:1.5','dist=31/scale'])
+for(const token of ['const positions=[]','const armCount=4,spiralSpacing=95,displayClearance=4.5','const coreRadius=spiralSpacing*displayClearance','const radialStep=coreRadius/3.5','const winding=2.35,armJitter=.045','const arm=(id-1)%armCount','const armStep=Math.floor((id-1)/armCount)','Math.log1p(radius/coreRadius)','const MIN_SCALE=.0001,MAX_SCALE=2.5','scale=Math.max(MIN_SCALE','function edgeOpen(a,b)','if(!edgeOpen(a,b))continue','function selectedPath()','rgba(75,151,255,','105,226,157,','scale/.28','n.id===selected?22.5:n.id===0?19.5:12.3','isBlue?2.25:1.5','dist=31/scale'])
  if(!treeSource.includes(token))fail("Upgrade tree visual/navigation feature missing: "+token);
 pass("Upgrade tree four-arm galaxy layout, expanded camera zoom-out, open-edge glow, selected route and enlarged nodes");
 
