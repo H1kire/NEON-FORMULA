@@ -41,6 +41,9 @@ All reads and writes must go through `FAStorage`. Keep legacy run keys in the mi
 ## Recursive formula engine
 
 - The base multipliers A–E are active from the beginning and feed production as `t² × A × B × C × D × E`.
+- With no Global Sum levels, instantaneous production is exactly `t² × A × B × C × D × E × active boosts`; there is no hidden 0.08 coefficient or +1 time offset. Global Sum adds the extra squared-time terms while retaining the base `t²` term.
+- The production/render loop remains scheduled every 10 ms. It measures actual elapsed time and integrates Score with the trapezoidal average of the production rate at the start and end of each tick; delayed frames do not silently discard elapsed time.
+- The HUD displays two decimal places for time, current Score and growth rate while values are below the compact-number threshold.
 - `formulaState` stores the five multipliers. `advanceFormulaClock` advances the engine at one synchronous step per real second, independently of the 10 ms production/render loop.
 - Each step reads a frozen previous state and calculates all five next values before replacing the state. C is recursive; A and C form a feedback loop.
 - `FAMathSystem` exposes generic effective-level, parameter-curve, parameter-limit and letter-price helpers so future letters can use the same Research 1–5 rules.
