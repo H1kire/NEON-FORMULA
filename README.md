@@ -26,9 +26,9 @@ The production formula is:
 f(t)=t^2\cdot\sum_{i=0}^{n}w_i\prod_{\ell\in\mathcal L}\ell
 \]
 
-Here **t²** stays outside the sum and every letter multiplier belongs to the product inside it. The base term has weight **w₀ = 1**; each purchased Global Sum level adds one term with weight **wᵢ = 1 + 0.25L** for i > 0, where **L** is the Ascension Legacy (Simple Boost) level. Therefore the effective sum multiplier is **1 + n(1 + 0.25L)**. New letter modules register their getter with `window.registerFormulaLetter` so they are included automatically.
+Here **t²** stays outside both grouped factors: the sum of weights **(Σ wᵢ)** and the product of all letter multipliers **(Π letter multipliers)**. The base term has weight **w₀ = 1**; each purchased Global Sum level adds one term with weight **wᵢ = 1 + 0.25L** for i > 0, where **L** is the Ascension Legacy level. Therefore the effective sum multiplier is **1 + n(1 + 0.25L)**. New letter modules register their getter with `window.registerFormulaLetter` so they are included automatically.
 
-Global Sum costs 1 AP initially and its next purchase costs 1,000 times more each time: 1, 1,000, 1,000,000, 1,000,000,000, 1,000,000,000,000 AP. The existing five-purchase limit remains.
+Global Sum costs 1 AP initially and its next purchase costs 1,000 times more each time: 1, 1,000, 1,000,000, 1,000,000,000, 1,000,000,000,000 AP. The existing five-purchase limit remains. Ascension Legacy starts at 125 AP; each additional level costs 125 times more, following `125 × 125^L`, where `L` is the number of levels already purchased.
 
 - **A — Power Foundation:** \(a=(1+t/60)^{(1+\ln(c))/1.81}\). C feeds back into A's exponent.
 - **B — Root Amplifier:** \(b=1+(a^{0.652}-1)/1.055\).
