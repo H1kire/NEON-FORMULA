@@ -65,6 +65,9 @@ else{
 }
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
+if(!timingSource.includes("result=safeProduct(t*t,base,boost)"))fail("Base production must match f(t)=t^2 without an extra coefficient or time offset");
+if(!timingSource.includes("for(let i=0;i<=prestigeUpgrades.globalSum;i++)"))fail("Global Sum must retain the base t^2 term");
+if(timingSource.includes("BASE_PRODUCTION")||timingSource.includes("Math.pow(t+1,2),base,boost"))fail("Legacy production coefficient or time offset remains active");
 if(!timingSource.includes("setInterval(loop,TICK)"))fail("The 10 ms game loop scheduler is missing");
 if(!timingSource.includes("const averageRate=rateBefore+(rateAfter-rateBefore)*0.5"))fail("Production accumulation must use trapezoidal integration");
 if(!timingSource.includes("const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;"))fail("Elapsed tick time must not be silently capped or discarded");
