@@ -163,7 +163,7 @@ function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
 function updateFormulaText(){
- const latex="f(t)=t^{2}\\\\cdot a\\\\cdot b\\\\cdot c\\\\cdot d\\\\cdot e";
+ const latex="f(t)=t^{2}\\cdot a\\cdot b\\cdot c\\cdot d\\cdot e";
  const plain="f(t)=t² × a × b × c × d × e";
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
@@ -172,11 +172,11 @@ function updateUI(){
  aLevelDisplay.textContent=aLevel;bLevelDisplay.textContent=bLevel;cLevelDisplay.textContent=cLevel;dLevelDisplay.textContent=dLevel;eLevelDisplay.textContent=eLevel;
  const p=getLetterParameters(),coupling=metaBonus("coupling"),eInput=metaBonus("eInput");
  if(window.FAFormula&&window.katex){
-  FAFormula.render("aFormula","a=\\\\left(1+\\\\frac{t}{60}\\\\right)^{\\\\frac{1+\\\\ln(c)"+(coupling===1?"":"\\\\cdot "+coupling.toFixed(2))+"}{"+p.a.toFixed(4)+"}}");
-  FAFormula.render("bFormula","b=1+\\\\frac{a^{"+p.b.toFixed(4)+"}-1}{1.055}");
-  FAFormula.render("cFormula","c_{n+1}=1+\\\\frac{\\\\ln(1+abc_n"+(coupling===1?"":"\\\\cdot "+coupling.toFixed(2))+ ")}{"+p.c.toFixed(4)+"}");
-  FAFormula.render("dFormula","d=1+\\\\frac{\\\\sqrt{abc"+(coupling===1?"":"\\\\cdot "+coupling.toFixed(2))+"}}{"+p.d.toFixed(4)+"}");
-  FAFormula.render("eFormula","e=1+\\\\frac{\\\\ln(1+bd"+(eInput===1?"":"\\\\cdot "+eInput.toFixed(2))+ ")}{"+p.e.toFixed(4)+"}");
+  FAFormula.render("aFormula","a=\\left(1+\\frac{t}{60}\\right)^{\\frac{1+\\ln(c)"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+"}{"+p.a.toFixed(4)+"}}");
+  FAFormula.render("bFormula","b=1+\\frac{a^{"+p.b.toFixed(4)+"}-1}{1.055}");
+  FAFormula.render("cFormula","c_{n+1}=1+\\frac{\\ln(1+abc_n"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+ ")}{"+p.c.toFixed(4)+"}");
+  FAFormula.render("dFormula","d=1+\\frac{\\sqrt{abc"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+"}}{"+p.d.toFixed(4)+"}");
+  FAFormula.render("eFormula","e=1+\\frac{\\ln(1+bd"+(eInput===1?"":"\\cdot "+eInput.toFixed(2))+ ")}{"+p.e.toFixed(4)+"}");
  }else{
   $("aFormula").textContent="a = (1 + t / 60)^((1 + ln(c)"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.a.toFixed(4)+")";
   $("bFormula").textContent="b = 1 + (a^"+p.b.toFixed(4)+" - 1) / 1.055";
