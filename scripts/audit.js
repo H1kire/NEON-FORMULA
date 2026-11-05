@@ -75,6 +75,17 @@ if(!timingSource.includes("const now=performance.now(),delta=Math.max(0,(now-las
 if(!timingSource.includes("valueDisplay.textContent=formatPrecise(value,2);growthDisplay.textContent=formatPrecise(getGrowthPerSecond(),2);"))fail("HUD must display fractional total value and growth rate");
 if(!timingSource.includes("function formatPrecise(n,digits=2)"))fail("Precise HUD number formatter is missing");
 else pass("10 ms tick, accurate elapsed-time integration and HUD precision checks");
+const gainSource=timingSource.slice(timingSource.indexOf("function getGain()"),timingSource.indexOf("function getGrowthPerSecond()"));
+try{
+  const gainContext={t:10,prestigeUpgrades:{simpleBoost:0,globalSum:0},metaBonus:()=>1,getA:()=>1,getB:()=>1,getC:()=>1,getD:()=>1,getE:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),FA_META:{treeUnlocked:false}};
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
+  if(gainContext.__gain!==100)fail("Base production at t=10 must be exactly 100 before letter multipliers");
+  gainContext.prestigeUpgrades.globalSum=1;
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
+  if(gainContext.__gain!==221)fail("Global Sum must add terms without removing the base t^2 term");
+  pass("Production rate boundary tests at t=10 and Global Sum");
+}catch(error){fail("Production rate runtime test: "+error.message)}
+
 
 const prestigeSource=sources["assets/js/prestige.js"];
 const thresholdMatch=prestigeSource.match(/function countThresholds\([\s\S]*?\}\nfunction getPrestigeGain/);
