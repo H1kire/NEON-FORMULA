@@ -63,6 +63,15 @@ else{
     pass("Recursive A-E five-minute baseline, global research, soft-cap and price tests");
   }catch(error){fail("Recursive A-E formula runtime test: "+error.message)}
 }
+const timingSource=sources["assets/js/script.js"];
+if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
+if(!timingSource.includes("setInterval(loop,TICK)"))fail("The 10 ms game loop scheduler is missing");
+if(!timingSource.includes("const averageRate=rateBefore+(rateAfter-rateBefore)*0.5"))fail("Production accumulation must use trapezoidal integration");
+if(!timingSource.includes("const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;"))fail("Elapsed tick time must not be silently capped or discarded");
+if(!timingSource.includes("valueDisplay.textContent=formatPrecise(value,2);growthDisplay.textContent=formatPrecise(getGrowthPerSecond(),2);"))fail("HUD must display fractional total value and growth rate");
+if(!timingSource.includes("function formatPrecise(n,digits=2)"))fail("Precise HUD number formatter is missing");
+else pass("10 ms tick, accurate elapsed-time integration and HUD precision checks");
+
 const prestigeSource=sources["assets/js/prestige.js"];
 const thresholdMatch=prestigeSource.match(/function countThresholds\([\s\S]*?\}\nfunction getPrestigeGain/);
 if(!thresholdMatch)fail("Could not locate prestige threshold calculator");
