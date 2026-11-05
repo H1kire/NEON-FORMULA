@@ -28,3 +28,5 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 /* Formula Upgrades typography: card text and formulas are 16 pt. */
 #formulaModulePanel .upgrade-title{font-size:16pt}
 #formulaModulePanel .upgrade-desc:not(.math-formula){font-size:16pt}
+
+.tree-legend{max-width:calc(100% - 20px);flex-wrap:wrap}.legend-shape{display:inline-block;flex:none;width:9px;height:9px;margin-left:5px;border:1px solid currentColor;background:rgba(120,157,144,.22)}.legend-shape.square{color:#6bd8cf;border-radius:1px}.legend-shape.circle{color:#9ab5a7;border-radius:50%}.legend-shape.triangle{color:#f0a66d;clip-path:polygon(50% 0,100% 100%,0 100%);background:#f0a66d;border:0}.legend-shape.pentagon{color:#d68bff;clip-path:polygon(50% 0,100% 38%,81% 100%,19% 100%,0 38%);background:#d68bff;border:0}
