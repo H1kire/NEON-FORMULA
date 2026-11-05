@@ -39,7 +39,7 @@ The previous A–E system is preserved as an inactive reference in `docs/LEGACY_
 ### Letter upgrades
 
 - The first purchase prices remain A=1,000, B=100,000, C=10,000,000, D=1,000,000,000 and E=1,000,000,000,000 Score.
-- Without Research, each subsequent purchase costs 3% more than the previous level. Research 2 discounts the current price by 1% per level, capped at 99%; Research 3 reduces the extra per-level price growth.
+- The first purchase prices remain unchanged. With no price research, each subsequent level multiplies the previous price by \\(2^3=8\\): `price = basePrice × (2^3)^level`. Research 2 reduces the exponent 3 by 0.1% per research level, capped at 99% (990 levels). Research 3 reduces the base 2 by 0.01% per level, down to a floor of 1.00.
 - Each letter has its own parameter: A/C/D/E improve by lowering a divisor; B improves by raising its exponent.
 - Parameter progress uses a smooth curve \(L_{eff}/(300+L_{eff})\). The curve is still meaningful at level 100 and has diminishing returns beyond roughly level 300.
 - Research 1 globally increases effective letter levels by 4% per research level. Research 4 globally expands parameter limits: divisors can pass below 1.00, while exponents can rise above 1.00.
