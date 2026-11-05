@@ -163,6 +163,11 @@ function getGain(){
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
 }
+function formatPrecise(n,digits=2){
+ if(!Number.isFinite(n))return "∞";
+ if(n>=1e6)return format(n);
+ return n.toFixed(digits);
+}
 function getGrowthPerSecond(){return getGain()}
 function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost);btn.classList.toggle("bad",value<cost)}
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
@@ -173,7 +178,7 @@ function updateFormulaText(){
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
- timeDisplay.textContent=t.toFixed(1);valueDisplay.textContent=format(value);growthDisplay.textContent=format(getGrowthPerSecond());
+ timeDisplay.textContent=t.toFixed(2);valueDisplay.textContent=formatPrecise(value,2);growthDisplay.textContent=formatPrecise(getGrowthPerSecond(),2);
  aLevelDisplay.textContent=aLevel;bLevelDisplay.textContent=bLevel;cLevelDisplay.textContent=cLevel;dLevelDisplay.textContent=dLevel;eLevelDisplay.textContent=eLevel;
  const p=getLetterParameters(),coupling=metaBonus("coupling"),eInput=metaBonus("eInput");
  if(window.FAFormula&&window.katex){
@@ -200,9 +205,16 @@ function autoBuy(){
  for(let i=0;i<5;i++)if(a.unlocked[i]&&a.enabled[i]&&value>=costs[i])purchase(costs[i],actions[i]);
 }
 function loop(){
- const now=performance.now(),delta=Math.min((now-lastFrame)/1000,.25);lastFrame=now;
+ const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;
+ const rateBefore=getGain();
  t+=delta;advanceFormulaClock(delta);
- const gain=safeProduct(getGain(),delta);value=Math.min(Number.MAX_VALUE,value+gain);FA_META.stats.totalPlayTime+=delta;FA_META.stats.lifetimeValue=Math.min(Number.MAX_VALUE,FA_META.stats.lifetimeValue+gain);
+ const rateAfter=getGain();
+ // Trapezoidal integration reduces per-tick accumulation error while retaining the 10 ms loop.
+ const averageRate=rateBefore+(rateAfter-rateBefore)*0.5;
+ const gain=safeProduct(averageRate,delta);
+ value=Math.min(Number.MAX_VALUE,value+gain);
+ FA_META.stats.totalPlayTime+=delta;
+ FA_META.stats.lifetimeValue=Math.min(Number.MAX_VALUE,FA_META.stats.lifetimeValue+gain);
  autoBuy();updateUI();
 }
 loadGame();updateUI();lastFrame=performance.now();
