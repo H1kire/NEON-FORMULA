@@ -182,8 +182,8 @@ function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
 function updateFormulaText(){
- const latex="f(t)=t^{2}\\cdot\\sum_{i=0}^{"+(prestigeUpgrades.globalSum||0)+"}w_i\\prod_{\\ell\\in\\mathcal{L}}\\ell";
- const plain="f(t)=t² × Σ(i=0…"+(prestigeUpgrades.globalSum||0)+") wᵢ × Π(all letter modules)";
+ const latex="\\begin{aligned}f(t)&=t^{2}\\cdot\\sum_{i=0}^{"+(prestigeUpgrades.globalSum||0)+"}w_i\\prod_{\\ell\\in\\mathcal{L}}\\ell\\\\w_0&=1,\\quad w_{i>0}=1+0.25L\\end{aligned}";
+ const plain="f(t)=t² × Σ(i=0…"+(prestigeUpgrades.globalSum||0)+") wᵢ × Π(all letter modules),  w₀=1, wᵢ>0=1+0.25L";
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
