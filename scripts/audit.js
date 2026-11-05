@@ -105,7 +105,6 @@ try{
 }catch(error){fail("Global Sum cost test: "+error.message)}
 
 
-const prestigeSource=sources["assets/js/prestige.js"];
 const thresholdMatch=prestigeSource.match(/function countThresholds\([\s\S]*?\}\nfunction getPrestigeGain/);
 if(!thresholdMatch)fail("Could not locate prestige threshold calculator");
 else{
