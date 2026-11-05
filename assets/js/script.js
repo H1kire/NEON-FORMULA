@@ -85,6 +85,9 @@ function advanceFormulaClock(delta){
 }
 function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;formulaAccumulator=0}
 function getA(){return formulaState.a}function getB(){return formulaState.b}function getC(){return formulaState.c}function getD(){return formulaState.d}function getE(){return formulaState.e}
+const formulaLetterGetters=[getA,getB,getC,getD,getE];
+window.registerFormulaLetter=getter=>{if(typeof getter==="function"&&!formulaLetterGetters.includes(getter))formulaLetterGetters.push(getter)};
+function getLetterProduct(){return safeProduct(...formulaLetterGetters.map(getter=>getter()))}
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
  getParameter:getLetterParameter,
@@ -157,12 +160,15 @@ function format(n){
  if(Number(scaled.toFixed(2))>=1000){group++;index++;if(index>=units.length)return n.toExponential(2);scaled=n/Math.pow(1000,group)}
  return scaled.toFixed(2)+units[index];
 }
+function getGlobalSumMultiplier(){
+ const n=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
+ const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
+ return 1+n*(1+0.25*legacy);
+}
 function getGain(){
- const boost=(1+(prestigeUpgrades.simpleBoost||0)*.25)*metaBonus("production")*metaBonus("time");
- const base=safeProduct(getA(),getB(),getC(),getD(),getE());
- let result;
- if((prestigeUpgrades.globalSum||0)===0)result=safeProduct(t*t,base,boost);
- else{let sum=0;for(let i=0;i<=prestigeUpgrades.globalSum;i++)sum=Math.min(Number.MAX_VALUE,sum+Math.pow(t+i,2));result=safeProduct(sum,base,boost)}
+ const letterProduct=getLetterProduct();
+ const boost=metaBonus("production")*metaBonus("time");
+ let result=safeProduct(t*t,getGlobalSumMultiplier(),letterProduct,boost);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
 }
@@ -176,8 +182,8 @@ function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
 function updateFormulaText(){
- const latex="f(t)=t^{2}\\cdot a\\cdot b\\cdot c\\cdot d\\cdot e";
- const plain="f(t)=t² × a × b × c × d × e";
+ const latex="f(t)=t^{2}\\cdot\\sum_{i=0}^{"+(prestigeUpgrades.globalSum||0)+"}w_i\\prod_{\\ell\\in\\mathcal{L}}\\ell";
+ const plain="f(t)=t² × Σ(i=0…"+(prestigeUpgrades.globalSum||0)+") wᵢ × Π(all letter modules)";
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
