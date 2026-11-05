@@ -19,11 +19,12 @@
   return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
  };
  for(let id=0;id<TOTAL;id++){
-  const type=typeFor(id),cluster=clusters[Math.floor(random()*clusters.length)];
-  const angle=random()*Math.PI*2,radius=Math.sqrt(random())*(id===0?0:1);
-  const spread=type==="pentagon"?310:type==="triangle"?270:235;
-  const x=id===0?0:cluster.x+Math.cos(angle)*spread*radius+(random()-.5)*100;
-  const y=id===0?0:cluster.y+Math.sin(angle)*spread*radius+(random()-.5)*100;
+  const type=typeFor(id);
+  // IDs follow a continuous outward spiral: nearby numbers stay spatially close.
+  const angle=id*.055+(random()-.5)*.025;
+  const radius=id===0?0:12+id*.12+(random()-.5)*18;
+  const x=id===0?0:Math.cos(angle)*radius+(random()-.5)*18;
+  const y=id===0?0:Math.sin(angle)*radius+(random()-.5)*18;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
   const cost=type==="square"?1:type==="pentagon"?100000:type==="triangle"?1000:100;
@@ -40,7 +41,7 @@
   n.parent=nearest;addEdge(id,nearest);
   const extraCount=1+(random()<.34?1:0)+(random()<.1?1:0);
   for(let k=0;k<extraCount;k++){
-   const candidate=Math.floor(random()*id);
+   const candidate=Math.max(0,id-48+Math.floor(random()*49));
    if(candidate!==nearest)addEdge(id,candidate);
   }
  }
@@ -64,6 +65,23 @@
  function available(n){return n.id===0&&n.level<n.maxLevel}
  function canBuy(n){return available(n)&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
+ function edgeOpen(a,b){return status(nodes[a])!=="locked"&&status(nodes[b])!=="locked"}
+ function selectedPath(){
+  if(selected<0)return new Set();
+  const previous=new Int32Array(TOTAL);previous.fill(-1);
+  const queue=[0];previous[0]=0;
+  for(let q=0;q<queue.length;q++){
+   const id=queue[q];if(id===selected)break;
+   for(const next of nodes[id].links){
+    if(previous[next]!==-1||!edgeOpen(id,next))continue;
+    previous[next]=id;queue.push(next);
+   }
+  }
+  const path=new Set();
+  if(previous[selected]===-1)return path;
+  let current=selected;while(current!==0){const parent=previous[current];path.add(Math.min(current,parent)+":"+Math.max(current,parent));current=parent}
+  return path;
+ }
  function pathNode(x,y,r,type){
   ctx.beginPath();
   if(type==="circle"){ctx.arc(x,y,r,0,Math.PI*2);return}
@@ -89,23 +107,28 @@
   ctx.strokeStyle="rgba(120,157,144,.055)";ctx.lineWidth=1/scale;
   for(let x=Math.floor(left/200)*200;x<right;x+=200){ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke()}
   for(let y=Math.floor(top/200)*200;y<bottom;y+=200){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
+  const bluePath=selectedPath(),fade=Math.max(.28,Math.min(1,(scale-.12)/.72));
   for(const [a,b] of edges){
    const p=nodes[a],n=nodes[b];
+   if(!edgeOpen(a,b))continue;
    if((p.x<left-30&&n.x<left-30)||(p.x>right+30&&n.x>right+30)||(p.y<top-30&&n.y<top-30)||(p.y>bottom+30&&n.y>bottom+30))continue;
-   const active=p.level>0||n.level>0;
-   ctx.strokeStyle=active?"rgba(107,216,207,.5)":"rgba(120,157,144,.16)";
-   ctx.lineWidth=(active?1.8:1)/scale;
-   ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke();
+   const key=a+":"+b,isBlue=bluePath.has(key)||(a===selected&&status(n)==="available")||(b===selected&&status(p)==="available");
+   const alpha=fade*(isBlue?.9:.72);
+   ctx.save();ctx.lineCap="round";ctx.lineWidth=(isBlue?2.25:1.5)/scale;
+   ctx.strokeStyle="rgba("+(isBlue?"75,151,255,":"105,226,157,")+alpha+")";
+   ctx.shadowColor=isBlue?"rgba(65,139,255,.95)":"rgba(87,231,145,.8)";
+   ctx.shadowBlur=(isBlue?13:9)/scale;
+   ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke();ctx.restore();
   }
   for(const n of nodes){
    if(n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;
-   const s=status(n),r=(n.id===selected?7.5:n.id===0?6.5:4.1)/scale;
+   const s=status(n),r=(n.id===selected?22.5:n.id===0?19.5:12.3)/scale;
    const color=nodeColor(n,s);
    pathNode(n.x,n.y,r,n.type);
    ctx.fillStyle=s==="locked"?"rgba(40,54,51,.9)":color;ctx.fill();
    ctx.strokeStyle=s==="available"?"#d5ff9d":s==="purchased"?"#9af4eb":n.type==="pentagon"?"rgba(214,139,255,.9)":n.type==="triangle"?"rgba(240,166,109,.85)":n.type==="square"?"rgba(107,216,207,.85)":"rgba(137,157,148,.65)";
-   ctx.lineWidth=(s==="available"||n.id===selected?1.8:1.15)/scale;ctx.stroke();
-   if(s==="available"){ctx.beginPath();ctx.arc(n.x,n.y,r+5/scale,0,Math.PI*2);ctx.strokeStyle="rgba(184,243,107,.38)";ctx.lineWidth=1/scale;ctx.stroke()}
+   ctx.lineWidth=(s==="available"||n.id===selected?2.7:1.7)/scale;ctx.stroke();
+   if(s==="available"){ctx.beginPath();ctx.arc(n.x,n.y,r+9/scale,0,Math.PI*2);ctx.strokeStyle="rgba(184,243,107,.38)";ctx.lineWidth=1/scale;ctx.stroke()}
    if(n.id===selected){ctx.beginPath();ctx.arc(n.x,n.y,r+9/scale,0,Math.PI*2);ctx.strokeStyle="rgba(107,216,207,.65)";ctx.lineWidth=1/scale;ctx.stroke()}
   }
   ctx.restore();
@@ -137,7 +160,7 @@
    if(!drag)return;
    if(!drag.moved){
     const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;
-    let best=-1,dist=17/scale;
+    let best=-1,dist=31/scale;
     for(const n of nodes){const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}
     selected=best;updateInspector();draw();
    }
