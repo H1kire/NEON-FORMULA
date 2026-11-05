@@ -34,6 +34,8 @@ f(t)=t^2\cdot a\cdot b\cdot c\cdot d\cdot e
 
 With no letter upgrades or Research levels, the synchronous baseline reaches approximately **1,096.87×** combined A–E multiplier after 300 real seconds. This is a mathematical baseline, not a promise about a save that already contains upgrades.
 
+The previous A–E system is preserved as an inactive reference in `docs/LEGACY_FORMULAS.md`.
+
 ### Letter upgrades
 
 - The first purchase prices remain A=1,000, B=100,000, C=10,000,000, D=1,000,000,000 and E=1,000,000,000,000 Score.
