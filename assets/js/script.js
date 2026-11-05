@@ -53,9 +53,10 @@ function getLetterParameters(){
  };
 }
 function getLetterPrice(base,level){
- const growth=1+0.03/(1+0.05*Math.max(0,metaBonus("priceGrowthLevel")));
- const discount=Math.max(0.01,Math.min(1,metaBonus("letterDiscount")));
- const raw=base*Math.pow(growth,Math.max(0,level))*discount;
+ const exponent=Math.max(0.03,3*(1-Math.min(0.99,Math.max(0,metaBonus("letterExponentReduction")))));
+ const baseFactor=Math.max(1,2*(1-Math.min(0.5,Math.max(0,metaBonus("letterBaseReduction")))));
+ const growth=Math.pow(baseFactor,exponent);
+ const raw=base*Math.pow(growth,Math.max(0,level));
  return Number.isFinite(raw)?Math.min(Number.MAX_VALUE,Math.ceil(raw)):Number.MAX_VALUE;
 }
 function getACost(){return getLetterPrice(LETTER_BASE_COSTS.a,aLevel)}
