@@ -3,30 +3,30 @@
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
- // Milky-Way-style layout: a dense central bulge and four widening spiral arms.
- // The visible node size is unchanged. A sunflower distribution keeps the core
- // compact without stacking large nodes on top of one another.
+ // Eight wave branches: sine and cosine-shaped curves in four directions
+ // from the XY origin (0°, 45°, 90°, 135°). The cosine wave is shifted so
+ // that it also begins at the origin instead of starting at its maximum.
  const positions=[],graphPositions=[];
  positions.push({x:0,y:0});
- const coreCount=320,goldenAngle=Math.PI*(3-Math.sqrt(5));
- const armCount=4,armStart=400,armRadialStep=8,armWinding=3.2;
+ const directionCount=4,wavesPerDirection=2;
+ const waveAmplitude=145,waveLength=2200;
+ const waveFrequency=Math.PI*2/waveLength;
+ const alongStep=24,firstDistance=100;
  for(let id=1;id<TOTAL;id++){
-  let x,y;
-  if(id<=coreCount){
-   const i=id-1,radius=32+18.8*Math.sqrt(i),angle=i*goldenAngle;
-   x=radius*Math.cos(angle);y=radius*Math.sin(angle);
-  }else{
-   const armIndex=id-coreCount-1,arm=armIndex%armCount;
-   const armStep=Math.floor(armIndex/armCount);
-   const radius=armStart+armStep*armRadialStep;
-   const angle=arm*Math.PI*2/armCount+armWinding*Math.log(radius/armStart)
-     +.003*Math.sin(armStep*.11+arm*1.4);
-   x=radius*Math.cos(angle);y=radius*Math.sin(angle);
-  }
+  const slot=id-1,family=slot%(directionCount*wavesPerDirection);
+  const step=Math.floor(slot/(directionCount*wavesPerDirection));
+  const direction=Math.floor(family/wavesPerDirection);
+  const waveType=family%wavesPerDirection;
+  const angle=direction*Math.PI/4;
+  const distance=firstDistance+step*alongStep;
+  const phase=distance*waveFrequency;
+  const displacement=waveAmplitude*(waveType===0?Math.sin(phase):1-Math.cos(phase));
+  const x=distance*Math.cos(angle)-displacement*Math.sin(angle);
+  const y=distance*Math.sin(angle)+displacement*Math.cos(angle);
   positions.push({x,y});
  }
- // Keep the existing graph topology exactly intact: links are recalculated from
- // the previous layout's coordinates, while only the visible coordinates change.
+ // Preserve the previous graph topology by using the previous coordinates
+ // only for nearest-neighbor selection; displayed coordinates are the waves above.
  graphPositions.push({x:0,y:0});
  const oldCoreRadius=95*4.5,oldRadialStep=oldCoreRadius/3.5;
  for(let id=1;id<TOTAL;id++){
@@ -49,7 +49,7 @@
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
-  // Node IDs advance round-robin through the four galaxy arms.
+  // Node IDs advance round-robin through the eight sine/cosine wave branches.
   const x=positions[id].x,y=positions[id].y;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
