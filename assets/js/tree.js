@@ -3,23 +3,38 @@
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
- // Four-arm logarithmic spiral galaxy with a dense central core.
- // IDs are assigned round-robin across the arms; within each arm they progress
- // steadily from the core toward the outer edge. The 95 base density and 4.5x
- // visual-clearance factor are retained, with radial spacing tuned for large nodes.
- const positions=[];
- const armCount=4,spiralSpacing=95,displayClearance=4.5;
- const coreRadius=spiralSpacing*displayClearance;
- const radialStep=coreRadius/3.5;
- const winding=2.35,armJitter=.045;
+ // Milky-Way-style layout: a dense central bulge and four widening spiral arms.
+ // The visible node size is unchanged. A sunflower distribution keeps the core
+ // compact without stacking large nodes on top of one another.
+ const positions=[],graphPositions=[];
  positions.push({x:0,y:0});
+ const coreCount=320,goldenAngle=Math.PI*(3-Math.sqrt(5));
+ const armCount=4,armStart=400,armRadialStep=8,armWinding=3.2;
  for(let id=1;id<TOTAL;id++){
-  const arm=(id-1)%armCount;
-  const armStep=Math.floor((id-1)/armCount);
-  const radius=coreRadius+armStep*radialStep;
-  const angle=arm*Math.PI*2/armCount+winding*Math.log1p(radius/coreRadius)
-    +armJitter*Math.sin(armStep*.19+arm*1.7);
-  positions.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle)});
+  let x,y;
+  if(id<=coreCount){
+   const i=id-1,radius=32+18.3*Math.sqrt(i),angle=i*goldenAngle;
+   x=radius*Math.cos(angle);y=radius*Math.sin(angle);
+  }else{
+   const armIndex=id-coreCount-1,arm=armIndex%armCount;
+   const armStep=Math.floor(armIndex/armCount);
+   const radius=armStart+armStep*armRadialStep;
+   const angle=arm*Math.PI*2/armCount+armWinding*Math.log(radius/armStart)
+     +.003*Math.sin(armStep*.11+arm*1.4);
+   x=radius*Math.cos(angle);y=radius*Math.sin(angle);
+  }
+  positions.push({x,y});
+ }
+ // Keep the existing graph topology exactly intact: links are recalculated from
+ // the previous layout's coordinates, while only the visible coordinates change.
+ graphPositions.push({x:0,y:0});
+ const oldCoreRadius=95*4.5,oldRadialStep=oldCoreRadius/3.5;
+ for(let id=1;id<TOTAL;id++){
+  const arm=(id-1)%4,armStep=Math.floor((id-1)/4);
+  const radius=oldCoreRadius+armStep*oldRadialStep;
+  const angle=arm*Math.PI*2/4+2.35*Math.log1p(radius/oldCoreRadius)
+    +.045*Math.sin(armStep*.19+arm*1.7);
+  graphPositions.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle)});
  }
  const addEdge=(a,b)=>{
   if(a===b||a<0||b<0)return;
@@ -46,7 +61,7 @@
   const n=nodes[id],start=Math.max(0,id-48);
   let nearest=start,best=Infinity;
   for(let j=start;j<id;j++){
-   const p=nodes[j],dx=n.x-p.x,dy=n.y-p.y,d=dx*dx+dy*dy;
+   const p=graphPositions[j],q=graphPositions[id],dx=q.x-p.x,dy=q.y-p.y,d=dx*dx+dy*dy;
    if(d<best){best=d;nearest=j}
   }
   n.parent=nearest;addEdge(id,nearest);
