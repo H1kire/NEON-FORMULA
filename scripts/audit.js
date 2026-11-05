@@ -66,6 +66,8 @@ else{
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
 if(!timingSource.includes("safeProduct(t*t,getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the global sum and include the letter product inside it");
+if(!timingSource.includes("\\left(\\sum_{i=0}^{"))fail("Displayed formula must group the Global Sum in parentheses");
+if(!timingSource.includes("}w_i\\right)\\cdot\\left(\\prod_{"))fail("Displayed formula must group the letter product in parentheses");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE]"))fail("All current letter multipliers must be registered inside the global sum");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
 if(!timingSource.includes("return 1+n*(1+0.25*legacy)"))fail("Ascension Legacy must increase the effective Global Sum level by 25% per level");
@@ -102,6 +104,13 @@ try{
  const costs=[1,1000,1000000,1000000000,1000000000000];
  for(let level=0;level<5;level++){costContext.prestigeUpgrades.globalSum=level;if(costContext.__cost()!==costs[level])throw new Error("Wrong AP cost at level "+level+": "+costContext.__cost())}
  pass("Global Sum AP costs follow 1 × 1,000^level");
+ const legacyCostSource=prestigeSource.match(/function getSimpleBoostCost\(\)[\s\S]*?\}/)?.[0];
+ if(!legacyCostSource)throw new Error("Ascension Legacy cost function missing");
+ const legacyContext={prestigeUpgrades:{simpleBoost:0}};
+ vm.runInNewContext(legacyCostSource+";globalThis.__legacyCost=getSimpleBoostCost;",legacyContext);
+ const legacyCosts=[125,15625,1953125,244140625,30517578125];
+ for(let level=0;level<legacyCosts.length;level++){legacyContext.prestigeUpgrades.simpleBoost=level;if(legacyContext.__legacyCost()!==legacyCosts[level])throw new Error("Wrong Ascension Legacy AP cost at level "+level+": "+legacyContext.__legacyCost())}
+ pass("Ascension Legacy AP costs follow 125 × 125^level");
 }catch(error){fail("Global Sum cost test: "+error.message)}
 
 
