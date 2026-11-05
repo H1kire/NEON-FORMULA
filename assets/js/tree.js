@@ -1,60 +1,154 @@
-// FORMULA ASCENT — 3,886-node procedural branching upgrade network
+// FORMULA ASCENT — 3,886-node chaotic multi-link upgrade network
 (() => {
- const TOTAL=3886,nodes=[];
+ const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
+ let seed=0xFA2026;
+ const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+ const clusters=Array.from({length:14},(_,i)=>({
+  x:Math.cos(i*2.399963)* (360+Math.floor(i/4)*250),
+  y:Math.sin(i*2.399963)* (250+Math.floor(i/4)*170)
+ }));
+ const addEdge=(a,b)=>{
+  if(a===b||a<0||b<0)return;
+  const lo=Math.min(a,b),hi=Math.max(a,b),key=lo+":"+hi;
+  if(edgeKeys.has(key))return;
+  edgeKeys.add(key);edges.push([lo,hi]);
+ };
+ const typeFor=id=>{
+  if(id===0)return "square";
+  const roll=random();
+  return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
+ };
  for(let id=0;id<TOTAL;id++){
-  const depth=Math.floor(Math.log2(id+1)),first=Math.pow(2,depth)-1,pos=id-first,count=Math.pow(2,depth);
-  const spread=9200/count,noise=Math.sin(id*1.71)*spread*.24+Math.cos(id*.37)*spread*.09;
-  const x=(pos+.5)*spread-4600+noise,y=depth*108+Math.sin(id*.23)*17;
-  nodes.push({id,depth,parent:id===0?-1:Math.floor((id-1)/2),maxLevel:1+((id*17+depth*7)%5),level:0,x,y,cost:Math.floor(250*Math.pow(1.055,depth)*(1+(id%7)*.035)),effect:1+((id*13)%5)*.0025});
+  const type=typeFor(id),cluster=clusters[Math.floor(random()*clusters.length)];
+  const angle=random()*Math.PI*2,radius=Math.sqrt(random())*(id===0?0:1);
+  const spread=type==="pentagon"?310:type==="triangle"?270:235;
+  const x=id===0?0:cluster.x+Math.cos(angle)*spread*radius+(random()-.5)*100;
+  const y=id===0?0:cluster.y+Math.sin(angle)*spread*radius+(random()-.5)*100;
+  const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
+  const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
+  const cost=type==="square"?1:type==="pentagon"?100000:type==="triangle"?1000:100;
+  nodes.push({id,type,typeKey:"nodeType"+type[0].toUpperCase()+type.slice(1),depth:Math.floor(Math.sqrt(id)),parent:-1,links:[],maxLevel,level:0,x,y,cost,effect});
  }
- const saved=FAStorage.getJSON("faTree",[]);if(Array.isArray(saved))saved.forEach(v=>{const id=Number(v?.id);if(Number.isInteger(id)&&id>=0&&id<TOTAL){const level=Math.floor(Number(v.level)||0);nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level))}});
- let selected=-1,scale=.7,offsetX=0,offsetY=35,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
- const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level)cachedMultiplier*=Math.pow(n.effect,n.level)};
+ // Build a connected backbone, then add deterministic cross-links to create a tangled graph.
+ for(let id=1;id<TOTAL;id++){
+  const n=nodes[id],start=Math.max(0,id-48);
+  let nearest=start,best=Infinity;
+  for(let j=start;j<id;j++){
+   const p=nodes[j],dx=n.x-p.x,dy=n.y-p.y,d=dx*dx+dy*dy;
+   if(d<best){best=d;nearest=j}
+  }
+  n.parent=nearest;addEdge(id,nearest);
+  const extraCount=1+(random()<.34?1:0)+(random()<.1?1:0);
+  for(let k=0;k<extraCount;k++){
+   const candidate=Math.floor(random()*id);
+   if(candidate!==nearest)addEdge(id,candidate);
+  }
+ }
+ for(const [a,b] of edges){nodes[a].links.push(b);nodes[b].links.push(a)}
+ const saved=FAStorage.getJSON("faTree",[]);
+ if(Array.isArray(saved))saved.forEach(v=>{
+  const id=Number(v?.id);
+  if(Number.isInteger(id)&&id>=0&&id<TOTAL){
+   const level=Math.floor(Number(v.level)||0);
+   nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level));
+  }
+ });
+ let selected=-1,scale=.28,offsetX=0,offsetY=0,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
+ const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.level>=n.maxLevel?1:0),0);
  window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;
  function persist(){return FAStorage.setJSON("faTree",nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level})))}
- function nodeCost(n){return Math.ceil(n.cost*Math.pow(1.55,n.level))}
- function available(n){return n.parent===-1||nodes[n.parent].level>=nodes[n.parent].maxLevel}
- function canBuy(n){return available(n)&&n.level<n.maxLevel&&gp>=nodeCost(n)}
+ function nodeCost(n){return n.id===0?1:Math.ceil(n.cost*Math.pow(1.55,n.level))}
+ // The first content node is the only active purchase in this initial tree release.
+ function available(n){return n.id===0&&n.level<n.maxLevel}
+ function canBuy(n){return available(n)&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
+ function pathNode(x,y,r,type){
+  ctx.beginPath();
+  if(type==="circle"){ctx.arc(x,y,r,0,Math.PI*2);return}
+  const sides=type==="triangle"?3:type==="pentagon"?5:4,rotation=type==="triangle"?-Math.PI/2:type==="square"?Math.PI/4:-Math.PI/2;
+  for(let i=0;i<sides;i++){
+   const a=rotation+i*Math.PI*2/sides,px=x+Math.cos(a)*r,py=y+Math.sin(a)*r;
+   if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+ }
+ function nodeColor(n,s){
+  if(s==="purchased")return "#6bd8cf";
+  if(s==="available")return "#b8f36b";
+  return n.type==="pentagon"?"#d68bff":n.type==="triangle"?"#f0a66d":n.type==="square"?"#6bd8cf":"#52635e";
+ }
  function canvasSize(){if(!canvas)return;const r=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.floor(r.width*dpr));canvas.height=Math.max(1,Math.floor(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
  function draw(){
-  if(!ctx||!canvas)return;const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle="#090f13";ctx.fillRect(0,0,w,h);
+  if(!ctx||!canvas)return;
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle="#090f13";ctx.fillRect(0,0,w,h);
   const left=-offsetX/scale,top=-offsetY/scale,right=left+w/scale,bottom=top+h/scale;
   ctx.save();ctx.translate(offsetX,offsetY);ctx.scale(scale,scale);
-  ctx.strokeStyle="rgba(120,157,144,.07)";ctx.lineWidth=1/scale;
+  ctx.strokeStyle="rgba(120,157,144,.055)";ctx.lineWidth=1/scale;
   for(let x=Math.floor(left/200)*200;x<right;x+=200){ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke()}
   for(let y=Math.floor(top/200)*200;y<bottom;y+=200){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
-  for(const n of nodes){if(n.parent<0)continue;const p=nodes[n.parent];if(n.x<left-80||n.x>right+80||n.y<top-80||n.y>bottom+80)continue;ctx.strokeStyle=n.level>0?"rgba(107,216,207,.45)":available(n)?"rgba(184,243,107,.22)":"rgba(95,113,109,.12)";ctx.lineWidth=1.15;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke()}
-  for(const n of nodes){if(n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;const s=status(n),r=n.id===selected?7:4.2;ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);ctx.fillStyle=s==="purchased"?"#6bd8cf":s==="available"?"#b8f36b":"#35443f";ctx.fill();if(s==="available"||n.id===selected){ctx.strokeStyle=s==="available"?"rgba(184,243,107,.45)":"rgba(107,216,207,.75)";ctx.lineWidth=1.2;ctx.stroke()}if(n.id===selected){ctx.beginPath();ctx.arc(n.x,n.y,12,0,Math.PI*2);ctx.strokeStyle="rgba(107,216,207,.55)";ctx.stroke()}}
+  for(const [a,b] of edges){
+   const p=nodes[a],n=nodes[b];
+   if((p.x<left-30&&n.x<left-30)||(p.x>right+30&&n.x>right+30)||(p.y<top-30&&n.y<top-30)||(p.y>bottom+30&&n.y>bottom+30))continue;
+   const active=p.level>0||n.level>0;
+   ctx.strokeStyle=active?"rgba(107,216,207,.5)":"rgba(120,157,144,.16)";
+   ctx.lineWidth=(active?1.8:1)/scale;
+   ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke();
+  }
+  for(const n of nodes){
+   if(n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;
+   const s=status(n),r=(n.id===selected?7.5:n.id===0?6.5:4.1)/scale;
+   const color=nodeColor(n,s);
+   pathNode(n.x,n.y,r,n.type);
+   ctx.fillStyle=s==="locked"?"rgba(40,54,51,.9)":color;ctx.fill();
+   ctx.strokeStyle=s==="available"?"#d5ff9d":s==="purchased"?"#9af4eb":n.type==="pentagon"?"rgba(214,139,255,.9)":n.type==="triangle"?"rgba(240,166,109,.85)":n.type==="square"?"rgba(107,216,207,.85)":"rgba(137,157,148,.65)";
+   ctx.lineWidth=(s==="available"||n.id===selected?1.8:1.15)/scale;ctx.stroke();
+   if(s==="available"){ctx.beginPath();ctx.arc(n.x,n.y,r+5/scale,0,Math.PI*2);ctx.strokeStyle="rgba(184,243,107,.38)";ctx.lineWidth=1/scale;ctx.stroke()}
+   if(n.id===selected){ctx.beginPath();ctx.arc(n.x,n.y,r+9/scale,0,Math.PI*2);ctx.strokeStyle="rgba(107,216,207,.65)";ctx.lineWidth=1/scale;ctx.stroke()}
+  }
   ctx.restore();
  }
  function updateInspector(){
   const n=nodes[selected],id=document.querySelector(".inspector-id"),title=document.querySelector("#treeInspector h3"),desc=document.querySelector("#treeInspector p"),level=document.getElementById("nodeLevel"),cost=document.getElementById("nodeCost"),btn=document.getElementById("nodeBuy");
   if(!n){id.textContent="NODE —";title.textContent=tr("selectNode");desc.textContent=tr("selectNodeDesc");level.textContent="0 / 1";cost.textContent="—";btn.disabled=true;btn.textContent=tr("selectNode");return}
-  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · DEPTH "+n.depth;
-  title.textContent=["Catalyst","Exponent","Matrix","Resonance","Singularity"][n.id%5]+" Node";
-  const effect=((n.effect-1)*100).toFixed(2)+"%";
-  desc.textContent=tr("nodeEffect")+" +"+effect+" per level. "+(n.parent<0?"Root node.":"Requires node #"+(n.parent+1)+" to be maxed.");
-  level.textContent=n.level+" / "+n.maxLevel;cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
+  const typeName=tr(n.typeKey),shapeLimit=n.type==="circle"?tr("nodeRangeCircle"):n.type==="triangle"?"10":n.type==="pentagon"?"5":"1";
+  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+typeName.toUpperCase()+" · "+n.links.length+" LINKS";
+  title.textContent=n.id===0?tr("nodeRootTitle"):typeName+" "+tr("nodeUpgrade");
+  desc.textContent=n.id===0?tr("nodeRootDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
+  level.textContent=n.level+" / "+n.maxLevel;
+  cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
  }
  window.refreshTreeLanguage=updateInspector;
- window.buyTreeNode=()=>{const n=nodes[selected];if(!n||!canBuy(n))return;gp-=nodeCost(n);savePrestige();n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats()};
+ window.buyTreeNode=()=>{
+  const n=nodes[selected];if(!n||!canBuy(n))return;
+  gp-=nodeCost(n);savePrestige();n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
+ };
  function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
- function centerRoot(){if(!canvas)return;scale=.72;offsetX=canvas.clientWidth/2;offsetY=45;draw()}
+ function centerRoot(){if(!canvas)return;scale=.28;offsetX=canvas.clientWidth/2;offsetY=canvas.clientHeight/2;draw()}
  window.initUpgradeTree=()=>{
-  if(initialized){canvasSize();draw();return}initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContext("2d");
+  if(initialized){canvasSize();draw();return}
+  initialized=true;canvas=document.getElementById("treeCanvas");ctx=canvas.getContext("2d");
   canvas.addEventListener("pointerdown",e=>{canvas.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,ox:offsetX,oy:offsetY,moved:false}});
   canvas.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;offsetX=drag.ox+dx;offsetY=drag.oy+dy;draw()});
-  canvas.addEventListener("pointerup",e=>{if(!drag)return;if(!drag.moved){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;let best=-1,dist=17/scale;for(const n of nodes){const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}selected=best;updateInspector();draw()}drag=null});
+  canvas.addEventListener("pointerup",e=>{
+   if(!drag)return;
+   if(!drag.moved){
+    const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;
+    let best=-1,dist=17/scale;
+    for(const n of nodes){const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}
+    selected=best;updateInspector();draw();
+   }
+   drag=null;
+  });
   canvas.addEventListener("pointercancel",()=>drag=null);
-  canvas.addEventListener("wheel",e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,wx=(mx-offsetX)/scale,wy=(my-offsetY)/scale;scale=Math.max(.2,Math.min(2.5,scale*(e.deltaY<0?1.12:.89)));offsetX=mx-wx*scale;offsetY=my-wy*scale;draw()},{passive:false});
+  canvas.addEventListener("wheel",e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,wx=(mx-offsetX)/scale,wy=(my-offsetY)/scale;scale=Math.max(.16,Math.min(2.5,scale*(e.deltaY<0?1.12:.89)));offsetX=mx-wx*scale;offsetY=my-wy*scale;draw()},{passive:false});
   window.addEventListener("resize",canvasSize);document.getElementById("nodeBuy").addEventListener("click",window.buyTreeNode);
   canvasSize();centerRoot();updateInspector();updateProgress();
  };
- window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(.2,Math.min(2.5,scale*(dir>0?1.18:.85)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
+ window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(.16,Math.min(2.5,scale*(dir>0?1.18:.85)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
  window.treeResetView=()=>{centerRoot();updateInspector()};
  window.refreshTree=()=>{if(!initialized||!document.getElementById("page-tree").classList.contains("active"))return;const now=performance.now();if(now-lastTreeRefresh<100)return;lastTreeRefresh=now;draw();updateInspector();updateProgress()};
  updateProgress();
