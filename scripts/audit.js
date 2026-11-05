@@ -32,6 +32,12 @@ if((css.match(/{/g)||[]).length!==(css.match(/}/g)||[]).length||(mathCss.match(/
 if(!css.includes(".upgrade-title{color:#e2ebe8;font-size:13px;font-weight:700}")||!css.includes(".upgrade-desc{color:#82938e;font:10px var(--mono);")||!css.includes("#formulaModulePanel .upgrade-title{font-size:16pt}")||!css.includes("#formulaModulePanel .upgrade-desc:not(.math-formula){font-size:16pt}")||!mathCss.includes("font-size: 16pt;")||!mathCss.includes("font-size: 25pt;"))fail("Formula typography sizes do not match the 16 pt / 25 pt specification");else pass("Formula typography sizes and original interface defaults");
 for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
+const treeSource=sources["assets/js/tree.js"];
+for(const token of ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5','n.id===0?1','function available(n){return n.id===0&&n.level<n.maxLevel}','const addEdge=','n.links.push(b);nodes[b].links.push(a)','"circle"?"triangle"'])
+ if(!treeSource.includes(token))fail("Upgrade tree structure missing expected feature: "+token);
+else pass("Upgrade tree typed-node and multi-link structure");
+if(!treeSource.includes('type==="pentagon"?1.5+random()'))fail("Hyper nodes must retain intentionally powerful effects");
+
 if(pkg&&(!pkg.scripts?.check||!pkg.scripts?.start))fail("Missing npm scripts");
 const formatMatch=sources["assets/js/script.js"].match(/function format\(n\)\{[\s\S]*?\n\}/);
 if(!formatMatch)fail("Could not locate number formatter");
