@@ -45,7 +45,8 @@ All reads and writes must go through `FAStorage`. Keep legacy run keys in the mi
 - Each step reads a frozen previous state and calculates all five next values before replacing the state. C is recursive; A and C form a feedback loop.
 - `FAMathSystem` exposes generic effective-level, parameter-curve, parameter-limit and letter-price helpers so future letters can use the same Research 1–5 rules.
 - Letter parameter progress is `L_eff / (300 + L_eff)`. Research 1 increases `L_eff` globally; Research 4 expands each parameter in its mathematically appropriate direction; Research 5 strengthens dependency inputs.
-- Research 2 applies a global discount capped at 99%. Research 3 slows the 3% per-purchase cost escalation. The original first-purchase prices are retained.
+- Letter purchase prices retain their original first-purchase base costs. The progression is `basePrice × (baseFactor ^ exponent) ^ level`, initially `baseFactor=2`, `exponent=3`, so each next level costs 8× the previous one.
+- Research 2 reduces the exponent by 0.1% of its base value per level, capped at 99% (990 levels). Research 3 reduces the base factor by 0.01% of its original value per level, with a floor of 1.00. The original first-purchase prices are retained.
 - The recursive state and fractional one-second accumulator are saved with the run. Ascension and Genesis Prestige reset both alongside the run timer.
 
 ## Mathematical rendering
