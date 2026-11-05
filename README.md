@@ -18,17 +18,35 @@ Formula Ascent is a browser-based mathematical idle experiment with two prestige
 
 ## Formula modules A–E
 
-Each purchased module is a multiplier; an unpurchased module contributes exactly `1`. The formulas are evaluated in dependency order:
+The five formula modules are active from the beginning; their multipliers are always included in production. All formula updates use **real elapsed time** and one synchronous recursive update per second. Every letter is calculated from the previous second's complete A–E state, so no letter is evaluated in a privileged order.
 
-- **A — Radical scaling:** `a = (1 + t / 86,400)^(1 / r)`, where `r = max(2.63 − 0.01 × min(A level, 63), 2)`.
-- **B — Lambert function:** `b = 1 + W(a) / qB`. `W` is the principal real Lambert W function and `qB = 20 / (B level scale × Research B bonus)`.
-- **C — Logarithmic composition:** `c = 1 + ln(1 + a·b) / qC`, with `qC = 40 / (C level scale × Research C bonus)`.
-- **D — Error function:** `d = 1 + erf(√ln(1 + a·b·c·sD)) / 20`. Its level and research bonuses increase `sD` (the input scale), not the cap; D approaches but never exceeds `1.05`.
-- **E — Integral accumulation:** `e = 1 + atan(a·b·c·d·sE) / 100`. This is the exact result of the proposed integral, since `∫₀ˣ du/(1+u²) = atan(x)`. E approaches but never exceeds `1 + π/200 ≈ 1.01571`.
+The production formula is:
 
-B and C retain slow unbounded growth. D and E keep their original fixed caps; their levels only accelerate the approach to those caps. Level scaling and research bonuses are gradual, and all active module multipliers remain at least 1.
+\[
+f(t)=t^2\cdot a\cdot b\cdot c\cdot d\cdot e
+\]
 
-**Score timing note:** `getGain()` is a production rate per second, not the final Score value at time `t`. The game accumulates `getGain() × elapsed_seconds` into Score. With no modules or other bonuses, the current baseline rate is `0.08 × (t + 1)²`; integrating that rate reaches 1 Qa accumulated Score in about **334,716 seconds (3.87 days)** of uninterrupted play. This is different from solving `t² = 1 Qa` (about 31.6 million seconds).
+- **A — Power Foundation:** \(a=(1+t/60)^{(1+\ln(c))/1.81}\). C feeds back into A's exponent.
+- **B — Root Amplifier:** \(b=1+(a^{0.652}-1)/1.055\).
+- **C — Logarithmic Recursion:** \(c_{n+1}=1+\ln(1+abc_n)/1.66\). C uses its previous value and participates in the A feedback loop.
+- **D — Nonlinear Coupling:** \(d=1+\sqrt{abc}/11.7\).
+- **E — Logarithmic Resonance:** \(e=1+\ln(1+bd)/2.057\).
+
+With no letter upgrades or Research levels, the synchronous baseline reaches approximately **1,096.87×** combined A–E multiplier after 300 real seconds. This is a mathematical baseline, not a promise about a save that already contains upgrades.
+
+### Letter upgrades
+
+- The first purchase prices remain A=1,000, B=100,000, C=10,000,000, D=1,000,000,000 and E=1,000,000,000,000 Score.
+- Without Research, each subsequent purchase costs 3% more than the previous level. Research 2 discounts the current price by 1% per level, capped at 99%; Research 3 reduces the extra per-level price growth.
+- Each letter has its own parameter: A/C/D/E improve by lowering a divisor; B improves by raising its exponent.
+- Parameter progress uses a smooth curve \(L_{eff}/(300+L_{eff})\). The curve is still meaningful at level 100 and has diminishing returns beyond roughly level 300.
+- Research 1 globally increases effective letter levels by 4% per research level. Research 4 globally expands parameter limits: divisors can pass below 1.00, while exponents can rise above 1.00.
+- Research 5 globally strengthens cross-letter dependencies. Research 1, 4 and 5 apply to all current and future letter modules through the shared math-system helpers.
+
+### Research Division
+
+The first five projects form the global letter-progression layer: Mathematical Efficiency (unlimited), Discount Engineering (up to 99%), Price Stabilization (unlimited), Deep Mathematical Optimization (unlimited), and Dependency Resonance (unlimited). Research 6–10 retain the time, automation, production and prestige specializations. Research 8 (index 7) unlocks the letter automation panel. The one-time Genesis Gate remains the 1,000 AP final research unlock.
+
 ## Mathematical rendering
 
 The game vendors KaTeX 0.16.22 locally under `assets/vendor/katex/` (including its fonts). No runtime CDN or external math-rendering API is used. `assets/js/formula-renderer.js` is a presentation-only adapter; it renders the current formula strings into the existing UI and caches unchanged expressions so the 10 ms simulation loop does not repeatedly typeset identical math. The existing typography is preserved throughout the interface. Inside Formula Upgrades, card titles, descriptions and A–E formulas use **16 pt**; the main `f(t)` formula uses **25 pt**. Other windows retain their original font sizes. KaTeX does not participate in Score, AP, GP, upgrade, or save calculations.
@@ -78,7 +96,7 @@ Requires Node.js 18 or newer.
 ## Save data
 
 Browser local storage is divided into four independent records:
-- `formula_ascent_save_v2` — run timer, Score and A–E module levels.
+- `formula_ascent_save_v2` — run timer, Score, A–E module levels and the synchronous recursive formula state/timing accumulator.
 - `prestigeSave` — AP, GP and Ascension upgrades.
 - `faMeta` — language, settings, Research Division, automation and statistics.
 - `faTree` — purchased Upgrade Tree nodes.
