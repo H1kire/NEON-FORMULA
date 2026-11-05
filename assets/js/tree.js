@@ -65,7 +65,7 @@
    nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level));
   }
  });
- const MIN_SCALE=.0028,MAX_SCALE=2.5;
+ const MIN_SCALE=.0001,MAX_SCALE=2.5;
  let selected=-1,scale=.28,offsetX=0,offsetY=0,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
@@ -179,11 +179,11 @@
    drag=null;
   });
   canvas.addEventListener("pointercancel",()=>drag=null);
-  canvas.addEventListener("wheel",e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,wx=(mx-offsetX)/scale,wy=(my-offsetY)/scale;scale=Math.max(MIN_SCALE,Math.min(MAX_SCALE,scale*(e.deltaY<0?1.12:.89)));offsetX=mx-wx*scale;offsetY=my-wy*scale;draw()},{passive:false});
+  canvas.addEventListener("wheel",e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,wx=(mx-offsetX)/scale,wy=(my-offsetY)/scale;scale=Math.max(MIN_SCALE,Math.min(MAX_SCALE,scale*(e.deltaY<0?1.12:.72)));offsetX=mx-wx*scale;offsetY=my-wy*scale;draw()},{passive:false});
   window.addEventListener("resize",canvasSize);document.getElementById("nodeBuy").addEventListener("click",window.buyTreeNode);
   canvasSize();centerRoot();updateInspector();updateProgress();
  };
- window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(MIN_SCALE,Math.min(MAX_SCALE,scale*(dir>0?1.18:.85)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
+ window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(MIN_SCALE,Math.min(MAX_SCALE,scale*(dir>0?1.18:.65)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
  window.treeResetView=()=>{centerRoot();updateInspector()};
  window.refreshTree=()=>{if(!initialized||!document.getElementById("page-tree").classList.contains("active"))return;const now=performance.now();if(now-lastTreeRefresh<100)return;lastTreeRefresh=now;draw();updateInspector();updateProgress()};
  updateProgress();
