@@ -3,19 +3,22 @@
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
- // Wave-distorted Fermat spiral.
- // r = k*sqrt(n), theta = n*goldenAngle + waveAmplitude*sin(waveFrequency*n).
- // k=95 is the requested base density. The display-clearance factor compensates
- // for the deliberately enlarged nodes at the default camera zoom (0.28).
- // This keeps the first ring from collapsing underneath the root node.
+ // Four-arm logarithmic spiral galaxy with a dense central core.
+ // IDs are assigned round-robin across the arms; within each arm they progress
+ // steadily from the core toward the outer edge. The 95 base density and 4.5x
+ // visual-clearance factor are retained, with radial spacing tuned for large nodes.
  const positions=[];
- const goldenAngle=Math.PI*(3-Math.sqrt(5));
- const spiralSpacing=95,displayClearance=4.5;
- const effectiveSpacing=spiralSpacing*displayClearance;
- const waveAmplitude=.12,waveFrequency=.08;
- for(let id=0;id<TOTAL;id++){
-  const radius=effectiveSpacing*Math.sqrt(id);
-  const angle=id*goldenAngle+waveAmplitude*Math.sin(waveFrequency*id);
+ const armCount=4,spiralSpacing=95,displayClearance=4.5;
+ const coreRadius=spiralSpacing*displayClearance;
+ const radialStep=coreRadius/3.5;
+ const winding=2.35,armJitter=.045;
+ positions.push({x:0,y:0});
+ for(let id=1;id<TOTAL;id++){
+  const arm=(id-1)%armCount;
+  const armStep=Math.floor((id-1)/armCount);
+  const radius=coreRadius+armStep*radialStep;
+  const angle=arm*Math.PI*2/armCount+winding*Math.log1p(radius/coreRadius)
+    +armJitter*Math.sin(armStep*.19+arm*1.7);
   positions.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle)});
  }
  const addEdge=(a,b)=>{
@@ -31,7 +34,7 @@
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
-  // Node IDs increase outward along the wave-distorted Fermat spiral.
+  // Node IDs advance round-robin through the four galaxy arms.
   const x=positions[id].x,y=positions[id].y;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
@@ -62,6 +65,7 @@
    nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level));
   }
  });
+ const MIN_SCALE=.0028,MAX_SCALE=2.5;
  let selected=-1,scale=.28,offsetX=0,offsetY=0,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
@@ -175,11 +179,11 @@
    drag=null;
   });
   canvas.addEventListener("pointercancel",()=>drag=null);
-  canvas.addEventListener("wheel",e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,wx=(mx-offsetX)/scale,wy=(my-offsetY)/scale;scale=Math.max(.16,Math.min(2.5,scale*(e.deltaY<0?1.12:.89)));offsetX=mx-wx*scale;offsetY=my-wy*scale;draw()},{passive:false});
+  canvas.addEventListener("wheel",e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,wx=(mx-offsetX)/scale,wy=(my-offsetY)/scale;scale=Math.max(MIN_SCALE,Math.min(MAX_SCALE,scale*(e.deltaY<0?1.12:.89)));offsetX=mx-wx*scale;offsetY=my-wy*scale;draw()},{passive:false});
   window.addEventListener("resize",canvasSize);document.getElementById("nodeBuy").addEventListener("click",window.buyTreeNode);
   canvasSize();centerRoot();updateInspector();updateProgress();
  };
- window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(.16,Math.min(2.5,scale*(dir>0?1.18:.85)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
+ window.treeZoom=dir=>{if(!initialized)return;const cx=canvas.clientWidth/2,cy=canvas.clientHeight/2,wx=(cx-offsetX)/scale,wy=(cy-offsetY)/scale;scale=Math.max(MIN_SCALE,Math.min(MAX_SCALE,scale*(dir>0?1.18:.85)));offsetX=cx-wx*scale;offsetY=cy-wy*scale;draw()};
  window.treeResetView=()=>{centerRoot();updateInspector()};
  window.refreshTree=()=>{if(!initialized||!document.getElementById("page-tree").classList.contains("active"))return;const now=performance.now();if(now-lastTreeRefresh<100)return;lastTreeRefresh=now;draw();updateInspector();updateProgress()};
  updateProgress();
