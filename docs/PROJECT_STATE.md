@@ -289,7 +289,7 @@ Implementation follow-up:
 
 ### NODE #0004 — Letter F content unlock — 2026-11-06
 
-- NODE #0004 (id 3) is explicitly assigned the square type, so it is a one-time content node with max level 1.
+- NODE #0004 (id 3) is explicitly assigned the square type, so it is a one-time content node with max level 1. Its original random roll is still consumed before the type override, preserving the deterministic RNG sequence and leaving all other node types, effects, and graph links unchanged.
 - Its fixed purchase price is 5 GP. NODE #0001 retains its 1 GP price.
 - NODE #0004 is now purchasable; the existing purchase flow deducts 5 GP, saves the tree node, and refreshes the UI.
 - Purchasing NODE #0004 unlocks the Letter F module. The unlock is derived from the persisted `faTree` node level, so no new save key or migration is introduced.
