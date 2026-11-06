@@ -30,3 +30,15 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 #formulaModulePanel .upgrade-desc:not(.math-formula){font-size:16pt}
 
 .tree-legend{max-width:calc(100% - 20px);flex-wrap:wrap}.legend-shape{display:inline-block;flex:none;width:9px;height:9px;margin-left:5px;border:1px solid currentColor;background:rgba(120,157,144,.22)}.legend-shape.square{color:#6bd8cf;border-radius:1px}.legend-shape.circle{color:#9ab5a7;border-radius:50%}.legend-shape.triangle{color:#f0a66d;clip-path:polygon(50% 0,100% 100%,0 100%);background:#f0a66d;border:0}.legend-shape.pentagon{color:#d68bff;clip-path:polygon(50% 0,100% 38%,81% 100%,19% 100%,0 38%);background:#d68bff;border:0}
+
+/* Live multiplier values beside the active formula */
+.formula-display{display:grid;grid-template-columns:minmax(0,1fr) 150px;align-items:stretch;gap:18px}
+.formula-main{min-width:0;align-self:center}
+.formula-values{display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;padding-left:15px;border-left:1px solid var(--line);font:10px var(--mono);color:#91a39b}
+.formula-values-title{margin-bottom:3px;color:#74857f;font-size:8px;letter-spacing:1.2px}
+.formula-value-row{display:flex;justify-content:space-between;gap:8px;white-space:nowrap}
+.formula-value-row b{color:var(--accent);font-weight:500;text-align:right;overflow-wrap:anywhere}
+.formula-weight-values{display:flex;flex-direction:column;gap:7px;margin-top:5px;padding-top:9px;border-top:1px solid var(--line)}
+.formula-weight-values[hidden]{display:none}
+@media(max-width:700px){.formula-display{grid-template-columns:minmax(0,1fr);gap:12px}.formula-values{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px 9px;padding:10px 0 0;border-left:0;border-top:1px solid var(--line)}.formula-values-title{grid-column:1/-1}.formula-value-row{display:block;white-space:normal;font-size:9px}.formula-value-row b{display:block;text-align:left;margin-top:3px}.formula-weight-values{grid-column:1/-1;display:flex;flex-direction:row;gap:18px;margin-top:3px;padding-top:8px}.formula-weight-values[hidden]{display:none}}
+@media(max-width:420px){.formula-values{grid-template-columns:repeat(3,minmax(0,1fr))}}
