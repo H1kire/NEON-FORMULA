@@ -235,7 +235,6 @@ function updateUI(){
   const weightList=$("formulaWeightValues");
   if(weightList){
    weightList.hidden=sumLevel<=0;
-   const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
    const w0Display=$("formulaValueW0"),wiDisplay=$("formulaValueWi");
    if(w0Display)w0Display.textContent="1";
    if(wiDisplay)wiDisplay.textContent=formatPrecise(getGlobalSumAdditionalWeight(),2);
