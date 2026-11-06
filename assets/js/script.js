@@ -160,11 +160,12 @@ function format(n){
  if(Number(scaled.toFixed(2))>=1000){group++;index++;if(index>=units.length)return n.toExponential(2);scaled=n/Math.pow(1000,group)}
  return scaled.toFixed(2)+units[index];
 }
-function getGlobalSumMultiplier(){
+function getGlobalSumAdditionalWeight(){
  const n=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
  const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
- return 1+n*(1+0.25*legacy);
+ return n*(1+0.25*legacy);
 }
+function getGlobalSumMultiplier(){return 1+getGlobalSumAdditionalWeight()}
 function getIntegralMultiplier(){
  const upper=Math.max(0,getE());
  const powered=safePow(1+upper,1.5);
@@ -237,7 +238,7 @@ function updateUI(){
    const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
    const w0Display=$("formulaValueW0"),wiDisplay=$("formulaValueWi");
    if(w0Display)w0Display.textContent="1";
-   if(wiDisplay)wiDisplay.textContent=formatPrecise(1+0.25*legacy,2);
+   if(wiDisplay)wiDisplay.textContent=formatPrecise(getGlobalSumAdditionalWeight(),2);
   }
   updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
