@@ -109,6 +109,26 @@
    nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level));
   }
  });
+ // Reveal nodes within 80 units of the center or any node purchased at least once.
+ const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS;
+ const revealed=new Uint8Array(TOTAL);
+ function rebuildRevealed(){
+  revealed.fill(0);
+  const revealAround=(center)=>{
+   const cx=Math.floor(center.x/cellSize),cy=Math.floor(center.y/cellSize);
+   for(let gx=cx-2;gx<=cx+2;gx++)for(let gy=cy-2;gy<=cy+2;gy++){
+    const bucket=spatialGrid.get(gx+":"+gy);
+    if(!bucket)continue;
+    for(const id of bucket){
+     const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;
+     if(dx*dx+dy*dy<=REVEAL_RADIUS_SQ)revealed[id]=1;
+    }
+   }
+  };
+  revealAround(positions[0]);
+  for(const n of nodes)if(n.level>0)revealAround(n);
+ }
+ rebuildRevealed();
  const MIN_SCALE=.0001,MAX_SCALE=2.5;
  let selected=-1,scale=.28,offsetX=0,offsetY=0,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
@@ -166,7 +186,7 @@
   const bluePath=selectedPath(),fade=Math.max(.22,Math.min(1,scale/.28));
   for(const [a,b] of edges){
    const p=nodes[a],n=nodes[b];
-   if(!edgeOpen(a,b))continue;
+   if(!revealed[a]||!revealed[b]||!edgeOpen(a,b))continue;
    if((p.x<left-30&&n.x<left-30)||(p.x>right+30&&n.x>right+30)||(p.y<top-30&&n.y<top-30)||(p.y>bottom+30&&n.y>bottom+30))continue;
    const key=a+":"+b,isBlue=bluePath.has(key)||(a===selected&&status(n)==="available")||(b===selected&&status(p)==="available");
    const alpha=fade*(isBlue?.9:.72);
@@ -177,7 +197,7 @@
    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke();ctx.restore();
   }
   for(const n of nodes){
-   if(n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;
+   if(!revealed[n.id]||n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;
    const s=status(n),r=(n.id===selected?22.5:n.id===0?19.5:12.3)/scale;
    const color=nodeColor(n,s);
    pathNode(n.x,n.y,r,n.type);
@@ -203,7 +223,7 @@
  window.refreshTreeLanguage=updateInspector;
  window.buyTreeNode=()=>{
   const n=nodes[selected];if(!n||!canBuy(n))return;
-  gp-=nodeCost(n);savePrestige();n.level++;FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
+  gp-=nodeCost(n);savePrestige();n.level++;rebuildRevealed();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
  };
  function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
  function centerRoot(){if(!canvas)return;scale=.28;offsetX=canvas.clientWidth/2;offsetY=canvas.clientHeight/2;draw()}
@@ -217,7 +237,7 @@
    if(!drag.moved){
     const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;
     let best=-1,dist=31/scale;
-    for(const n of nodes){const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}
+    for(const n of nodes){if(!revealed[n.id])continue;const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}
     selected=best;updateInspector();draw();
    }
    drag=null;
