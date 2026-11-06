@@ -383,3 +383,28 @@ Implementation source: \`assets/js/prestige.js\` — \`countThresholds()\`, \`ge
 - Implementation/audit commits: `260a582` (auth module), `f59bbf7` (account UI + SDK), `a1381c2` (localization), `ee65979` (styles), `214c3f2` and `11df70e`/`53062cb` (audit updates), `60e26bb` (localized account state). Latest code/audit commit: `53062cbeadc181b81eaf65ba45d2afd787d04d66`.
 - GitHub Actions workflow run was not exposed for this push; no passing audit run is claimed. Browser testing remains pending.
 - User should manually test: Google popup sign-in on `https://h1kire.github.io`, persistence after refresh, sign-out, popup-blocked/error messaging, and EN/RU account UI. Existing local progress should remain present and unchanged.
+
+## Complete cloud save and restore — 2026-11-06
+
+- GitHub Pages remains the hosting platform; Firebase Hosting is not used.
+- Added `assets/js/firebase-cloud-save.js`, which stores one complete cloud snapshot at `/users/{uid}/cloudSave` in Firebase Realtime Database. Each Google UID has its own isolated slot.
+- A cloud snapshot contains the exact localStorage payloads for all four active game persistence sections: `formula_ascent_save_v2` (run and formula state), `prestigeSave` (AP/GP and prestige upgrades), `faMeta` (research, automation, settings, statistics and progression flags), and `faTree` (all purchased tree nodes).
+- Before uploading, the module flushes all in-memory state through `saveGame(true)`, `saveMeta()`, `savePrestige()`, and the new `saveTreeProgress()` hook. It validates all four sections before writing.
+- Restore requires confirmation, verifies the snapshot version and UID, validates all four sections before touching local storage, then replaces the four active save keys and removes obsolete legacy run-save keys. If a local write fails, it attempts to roll back the previous local values. After a successful restore the page reloads.
+- The restored run's `lastTime` is reset to the restore moment so the offline-progress system does not award extra production accrued after the cloud snapshot. All saved game values and progression are otherwise restored from the snapshot.
+- The account panel now has separate Save to Cloud and Restore Cloud Save buttons, plus a localized cloud status message and last-saved timestamp. Restore remains disabled until a cloud snapshot is found.
+- Firebase Realtime Database compat SDK 10.14.1 is loaded alongside the existing Firebase App/Auth SDK.
+- Important rules correction: the previous rules had root-level `.read: false` and `.write: false`, which cascade and prevent child-level owner grants from working. `database.rules.json` now omits root grants and allows reads/writes only under `/users/{uid}` when `auth.uid === uid`. The user must republish this updated JSON in Firebase Realtime Database Rules before cloud save/restore can work.
+- No existing local save keys or normal save/load flow were renamed. Cloud save/restore is a separate layer.
+- Browser testing remains pending. Verify save, sign-out/sign-in, restore on another browser/device with the same Google account, and rejection of access from a different account.
+
+Files changed:
+- `assets/js/firebase-cloud-save.js` (new)
+- `assets/js/firebase-auth.js`
+- `assets/js/app-ui.js`
+- `index.html`
+- `assets/css/style.css`
+- `assets/js/tree.js`
+- `database.rules.json`
+
+Implementation commit before this documentation update: `767c80e4c119ca7eda528e0a4f9e9ef11d912f63`.
