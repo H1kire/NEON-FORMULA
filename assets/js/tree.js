@@ -72,8 +72,9 @@
   edgeKeys.add(key);edges.push([lo,hi]);
  };
  const typeFor=id=>{
-  if(id===0||id===3)return "square";
+  if(id===0)return "square";
   const roll=random();
+  if(id===3)return "square";
   return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
  };
  for(let id=0;id<TOTAL;id++){
