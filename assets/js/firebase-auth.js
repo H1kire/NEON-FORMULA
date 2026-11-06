@@ -23,6 +23,8 @@
   let auth=null;
   let currentUser=null;
   let busy=false;
+  const DEVELOPER_UID="ZcdUu9qeDTTTHiFeUIGSoLbbf0H3";
+  window.FAAuth={getCurrentUser:()=>currentUser,isDeveloper:()=>!!currentUser&&currentUser.uid===DEVELOPER_UID};
 
   const messages={
     en:{
@@ -75,6 +77,18 @@
   function render(){
     if(!loginButton||!logoutButton)return;
     const signedIn=!!currentUser;
+    const developerPanel=$("developerPanel");
+    const developerAccess=!!currentUser&&currentUser.uid===DEVELOPER_UID;
+    if(developerPanel){
+      developerPanel.hidden=!developerAccess;
+      if(developerAccess&&typeof window.getDeveloperValues==="function"){
+        const values=window.getDeveloperValues();
+        const timeInput=$("developerTimeInput"),apInput=$("developerAPInput"),gpInput=$("developerGPInput");
+        if(timeInput)timeInput.value=String(values.t);
+        if(apInput)apInput.value=String(values.ap);
+        if(gpInput)gpInput.value=String(values.gp);
+      }
+    }
     loginButton.hidden=signedIn;
     logoutButton.hidden=!signedIn;
     loginButton.disabled=busy;
