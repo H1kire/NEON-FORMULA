@@ -141,22 +141,12 @@
  function available(n){return n.id===0&&n.level<n.maxLevel}
  function canBuy(n){return available(n)&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
- function edgeOpen(a,b){return status(nodes[a])!=="locked"&&status(nodes[b])!=="locked"}
- function selectedPath(){
-  if(selected<0)return new Set();
-  const previous=new Int32Array(TOTAL);previous.fill(-1);
-  const queue=[0];previous[0]=0;
-  for(let q=0;q<queue.length;q++){
-   const id=queue[q];if(id===selected)break;
-   for(const next of nodes[id].links){
-    if(previous[next]!==-1||!edgeOpen(id,next))continue;
-    previous[next]=id;queue.push(next);
-   }
-  }
-  const path=new Set();
-  if(previous[selected]===-1)return path;
-  let current=selected;while(current!==0){const parent=previous[current];path.add(Math.min(current,parent)+":"+Math.max(current,parent));current=parent}
-  return path;
+ function edgeVisible(a,b){return revealed[a]===1&&revealed[b]===1}
+ function selectedEdges(){
+  const connected=new Set();
+  if(selected<0)return connected;
+  for(const next of nodes[selected].links)connected.add(Math.min(selected,next)+":"+Math.max(selected,next));
+  return connected;
  }
  function pathNode(x,y,r,type){
   ctx.beginPath();
@@ -183,17 +173,17 @@
   ctx.strokeStyle="rgba(120,157,144,.055)";ctx.lineWidth=1/scale;
   for(let x=Math.floor(left/200)*200;x<right;x+=200){ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke()}
   for(let y=Math.floor(top/200)*200;y<bottom;y+=200){ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke()}
-  const bluePath=selectedPath(),fade=Math.max(.22,Math.min(1,scale/.28));
+  const blueEdges=selectedEdges(),fade=Math.max(.22,Math.min(1,scale/.28));
   for(const [a,b] of edges){
    const p=nodes[a],n=nodes[b];
-   if(!revealed[a]||!revealed[b]||!edgeOpen(a,b))continue;
+   if(!edgeVisible(a,b))continue;
    if((p.x<left-30&&n.x<left-30)||(p.x>right+30&&n.x>right+30)||(p.y<top-30&&n.y<top-30)||(p.y>bottom+30&&n.y>bottom+30))continue;
-   const key=a+":"+b,isBlue=bluePath.has(key)||(a===selected&&status(n)==="available")||(b===selected&&status(p)==="available");
-   const alpha=fade*(isBlue?.9:.72);
+   const key=a+":"+b,isBlue=blueEdges.has(key);
+   const alpha=fade*(isBlue?.82:.62);
    ctx.save();ctx.lineCap="round";ctx.lineWidth=(isBlue?2.25:1.5)/scale;
    ctx.strokeStyle="rgba("+(isBlue?"75,151,255,":"105,226,157,")+alpha+")";
    ctx.shadowColor=isBlue?"rgba(65,139,255,.95)":"rgba(87,231,145,.8)";
-   ctx.shadowBlur=(isBlue?13:9)/scale;
+   ctx.shadowBlur=(isBlue?10:7)/scale;
    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke();ctx.restore();
   }
   for(const n of nodes){
