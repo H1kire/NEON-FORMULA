@@ -15,7 +15,7 @@ if(duplicates.length)fail("Duplicate IDs: "+[...new Set(duplicates)].join(", "))
 const idSet=new Set(ids);
 for(const file of jsFiles)for(const m of sources[file].matchAll(/getElementById\(["']([^"']+)["']\)/g))if(!idSet.has(m[1]))fail(file+" missing HTML ID #"+m[1]);
 const scriptRefs=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(m=>m[1]);
-for(const src of scriptRefs)if(!/^https?:\\/\\//.test(src)&&!exists(src))fail("Missing script "+src);
+for(const src of scriptRefs)if(!src.startsWith("http")&&!exists(src))fail("Missing script "+src);
 const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/vendor/katex/katex.min.js","assets/js/formula-renderer.js","assets/js/script.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js","assets/js/firebase-auth.js"];
 if(order.join("|")!==scriptRefs.join("|"))fail("Script order incorrect");else pass("Script dependency order");
 for(const m of html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css)["']/g)){if(!exists(m[1]))fail("Missing CSS "+m[1]);else pass("CSS path "+m[1])}
