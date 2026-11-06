@@ -165,10 +165,19 @@ function getGlobalSumMultiplier(){
  const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
  return 1+n*(1+0.25*legacy);
 }
+function getIntegralMultiplier(){
+ const upper=Math.max(0,getE());
+ const powered=safePow(1+upper,1.5);
+ return safeProduct(2/3,Math.max(0,powered-1));
+}
 function getGain(){
  const letterProduct=getLetterProduct();
  const boost=metaBonus("production")*metaBonus("time");
- let result=safeProduct(t*t,getGlobalSumMultiplier(),letterProduct,boost);
+ const integralUnlocked=typeof window!=="undefined"&&typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
+ const factors=[t*t];
+ if(integralUnlocked)factors.push(getIntegralMultiplier());
+ factors.push(getGlobalSumMultiplier(),letterProduct,boost);
+ let result=safeProduct(...factors);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
 }
@@ -182,8 +191,19 @@ function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
 function updateFormulaText(){
- const latex="\\begin{aligned}f(t)&=t^{2}\\cdot\\left(\\sum_{i=0}^{"+(prestigeUpgrades.globalSum||0)+"}w_i\\right)\\cdot\\left(\\prod_{\\ell\\in\\mathcal{L}}\\ell\\right)\\\\w_0&=1,\\quad w_{i>0}=1+0.25L\\end{aligned}";
- const plain="f(t)=t² × Σ(i=0…"+(prestigeUpgrades.globalSum||0)+") wᵢ × Π(all letter modules),  w₀=1, wᵢ>0=1+0.25L";
+ const sumLevel=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
+ const integralUnlocked=typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
+ const sumTerm=sumLevel>0?"\\left(\\sum_{i=0}^{"+sumLevel+"}w_i\\right)\\cdot":"";
+ const productTerm="\\prod_{\\ell\\in\\mathcal{L}}\\ell";
+ let latex;
+ if(integralUnlocked){
+  latex="\\begin{aligned}f(t)&=t^{2}\\cdot\\int_{0}^{e}\\sqrt{1+x}\\cdot"+sumTerm+productTerm+"\\,dx";
+ }else{
+  latex="\\begin{aligned}f(t)&=t^{2}\\cdot"+sumTerm+productTerm;
+ }
+ if(sumLevel>0)latex+="\\\\w_0&=1,\\quad w_{i>0}=1+0.25L";
+ latex+="\\end{aligned}";
+ const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ × ":"")+"Π(all letter modules)"+(sumLevel>0?",  w₀=1, wᵢ>0=1+0.25L":"");
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
