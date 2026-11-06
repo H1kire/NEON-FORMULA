@@ -306,3 +306,66 @@ Files changed:
 - `assets/js/script.js`
 - `assets/js/app-ui.js`
 - `scripts/audit.js`
+
+
+## AP and GP acquisition formulas — 2026-11-06
+
+This section records the implemented prestige currency formulas from `assets/js/prestige.js`. These are the live code rules, not a proposed balance change.
+
+### AP — Ascension Points
+
+Regular Prestige converts the current run's accumulated `value` into AP:
+
+```js
+earned = countThresholds(value, 1e15, 1.05);
+AP_gain = Math.floor(earned * getMetaBonus("prestige"));
+```
+
+The threshold counter is:
+
+```js
+countThresholds(amount, scale, base, divisor = 1)
+```
+
+For the AP call, `scale = 10^15`, `base = 1.05`, and `divisor = 1`. Therefore, before the meta prestige bonus, the threshold for at least (k) AP is:
+
+[
+V_k = 10^{15}\cdot 1.05^{k+1}
+]
+
+- First AP: (10^{15}\cdot1.05^2 = 1.1025\cdot10^{15}) run value.
+- Each additional AP requires the next threshold, growing by 5%.
+- The prestige meta bonus multiplies the counted AP; the result is floored to a whole number.
+- Regular Prestige resets the current run (`t`, `value`, and A–E upgrade levels/formula state) and adds the earned AP to the persistent AP balance `p`.
+
+### GP — Genesis Points
+
+Genesis Prestige converts the current AP balance `p` into GP, provided the Genesis Tree Pass has been purchased (`FA_META.treePassPurchased`):
+
+```js
+GP_gain = countThresholds(p, 1000, 1.1, 2.5);
+```
+
+For this call, `scale = 1000`, `base = 1.1`, and `divisor = 2.5). The threshold for at least (k) GP is:
+
+[
+AP_k = 1000\cdot1.1^{(k+1)/2.5}
+]
+
+Approximate thresholds:
+- 1 GP: 1,079.23 AP
+- 2 GP: 1,123.12 AP
+- 3 GP: 1,168.80 AP
+- 4 GP: 1,216.35 AP
+- **5 GP: 1,257.02 AP** (so at least 1,257.03 AP in the live continuous balance; the threshold is compared directly as a floating-point number).
+
+Genesis Prestige adds the calculated whole GP to the persistent GP balance, then resets AP to 0 and resets the ordinary run and the AP-layer progression/upgrades as implemented in `doGenesisPrestige()`. GP is retained and is the currency used by the Upgrade Tree. The Genesis Tree Pass requirement is checked separately from the AP threshold.
+
+### Important distinction: Genesis Gate cost vs GP threshold
+
+- Genesis Gate costs **1,000 AP** to unlock the Genesis Tree Pass / Genesis Prestige access.
+- That 1,000 AP purchase is not itself a conversion into GP and does not count as the GP threshold.
+- After unlocking access, accumulate AP through regular Prestige cycles. Genesis Prestige awards GP according to the formula above.
+- For the current **NODE #0004** price of 5 GP, the Genesis Prestige AP balance must reach the 5-GP threshold (approximately 1,257.02 AP), not merely 1,000 AP.
+
+Implementation source: `assets/js/prestige.js` — `countThresholds()`, `getPrestigeGain()`, `getGenesisGain()`, `doPrestige()`, and `doGenesisPrestige()`.
