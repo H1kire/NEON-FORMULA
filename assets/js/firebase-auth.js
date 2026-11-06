@@ -80,7 +80,7 @@
     loginButton.disabled=busy;
     logoutButton.disabled=busy;
     if(status)status.textContent=signedIn?message("signedIn"):message("signedOut");
-    if(name)name.textContent=signedIn?(currentUser.displayName||currentUser.email||"Player account"):"Player account";
+    if(name)name.textContent=signedIn?(currentUser.displayName||currentUser.email||"Player account"):(lang()==="ru"?"Аккаунт игрока":"Player account");
     if(description)description.textContent=signedIn?message("signedInDescription"):message("signedOutDescription");
     if(avatar){
       avatar.textContent=signedIn?(currentUser.displayName||currentUser.email||"P").trim().charAt(0).toUpperCase():"?";
