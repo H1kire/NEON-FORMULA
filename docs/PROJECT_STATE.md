@@ -233,6 +233,21 @@ Implementation files for this UI change:
 
 The assistant must not claim visual browser testing; the user will manually test the layout and live values.
 
+### Aggregate Global Sum contribution display — 2026-11-06
+
+The live value shown beside `wᵢ>₀` represents the **combined contribution of every additional weight** in the Global Sum, not the value of one individual weight.
+
+- `w₀` remains displayed separately as `1`.
+- The aggregate additional contribution is `n × (1 + 0.25L)`, where `n` is the stored Global Sum term count (2–6 after purchases) and `L` is Ascension Legacy level.
+- The UI label is `Σ wᵢ>₀` to make clear that the displayed number is a sum of all additional weights.
+- `getGlobalSumAdditionalWeight()` is the shared calculation; `getGlobalSumMultiplier()` returns `1 + getGlobalSumAdditionalWeight()`, keeping the displayed contribution identical to the production formula.
+- Example: first Global Sum purchase (`n=2`) at `L=0` displays `Σ wᵢ>₀ = 2`, and the complete sum is `w₀ + Σwᵢ>₀ = 1 + 2 = 3`. At `L=1`, it displays `2.5`, and the complete sum is `3.5`.
+- This is a display clarification and shared calculation refactor; it does not change production balance, purchases, or save data.
+- Updated `scripts/audit.js` to verify aggregate contribution values at `n=2`, `L=0` and `L=1`.
+- Browser visual testing remains the user's responsibility.
+
+Implementation files: `assets/js/script.js`, `index.html`, `scripts/audit.js`.
+
 ## Working instructions for the next chat
 
 1. Read this file first.
