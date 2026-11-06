@@ -131,12 +131,12 @@ try{
   const integralFactor=2/3*(Math.pow(2,1.5)-1);
   if(Math.abs(gainContext.__gain-100*integralFactor)>1e-9)fail("Purchased NODE #0001 must apply the evaluated integral to production");
   gainContext.window.isIntegralNodePurchased=()=>false;
-  gainContext.prestigeUpgrades.globalSum=1;
+  gainContext.prestigeUpgrades.globalSum=2;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
-  if(gainContext.__gain!==200)fail("One Global Sum purchase must double the letter product without changing t squared");
+  if(gainContext.__gain!==300)fail("The first Global Sum purchase must add two unit-weight terms (n=2), tripling production");
   gainContext.prestigeUpgrades.simpleBoost=1;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
-  if(gainContext.__gain!==225)fail("One Ascension Legacy level must add 25% to the Global Sum contribution");
+  if(gainContext.__gain!==350)fail("One Ascension Legacy level must add 25% weight to each of the two Global Sum terms");
   gainContext.prestigeUpgrades.globalSum=0;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
@@ -148,9 +148,10 @@ try{
  if(!costSource)throw new Error("Global Sum cost function missing");
  const costContext={prestigeUpgrades:{globalSum:0}};
  vm.runInNewContext(costSource+";globalThis.__cost=getGlobalSumCost;",costContext);
- const costs=[1,1000,1000000,1000000000,1000000000000];
- for(let level=0;level<5;level++){costContext.prestigeUpgrades.globalSum=level;if(costContext.__cost()!==costs[level])throw new Error("Wrong AP cost at level "+level+": "+costContext.__cost())}
- pass("Global Sum AP costs follow 1 × 1,000^level");
+ const levels=[0,2,3,4,5],costs=[1,1000,1000000,1000000000,1000000000000];
+ for(let i=0;i<levels.length;i++){costContext.prestigeUpgrades.globalSum=levels[i];if(costContext.__cost()!==costs[i])throw new Error("Wrong AP cost at Global Sum n="+levels[i]+": "+costContext.__cost())}
+ costContext.prestigeUpgrades.globalSum=6;if(costContext.__cost()!==Number.MAX_SAFE_INTEGER)throw new Error("Completed Global Sum must report a capped cost");
+ pass("Global Sum AP costs preserve 1 / 1K / 1M / 1B / 1T progression while n starts at 2");
  const legacyCostSource=prestigeSource.match(/function getSimpleBoostCost\(\)[\s\S]*?\}/)?.[0];
  if(!legacyCostSource)throw new Error("Ascension Legacy cost function missing");
  const legacyContext={prestigeUpgrades:{simpleBoost:0}};
