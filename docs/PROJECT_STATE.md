@@ -471,3 +471,15 @@ Audited the current development branch at `b24de05001c4d7142d33649845a087ec0b4e1
 3. After App Check is deployed, monitor request metrics before enabling enforcement for Realtime Database.
 
 No game source code or save format was changed during this audit. The only code-independent pending work is the App Check console setup and API-key restriction verification.
+
+
+## Firebase App Check — reCAPTCHA Enterprise integration — 2026-11-06
+
+- The user confirmed that the Google Cloud Fraud Defense (reCAPTCHA Enterprise) key and Firebase App Check registration both belong to the `formula-ascent` project used by the game.
+- Registered the web app with the reCAPTCHA Enterprise provider in Firebase App Check. The public Site Key is configured in `assets/js/firebase-auth.js`; no reCAPTCHA secret key is stored in the repository.
+- Added Firebase App Check compat SDK 10.14.1 to `index.html` after the Firebase App/Auth/Database compat SDKs and before `firebase-auth.js`.
+- `firebase-auth.js` initializes the Firebase app, activates `firebase.appCheck(app)` with `ReCaptchaEnterpriseProvider`, and enables token auto-refresh before initializing Firebase Authentication. The cloud-save module is loaded afterward, so App Check initialization precedes both Auth and Realtime Database use.
+- App Check initialization failure is logged and exposed through `window.FAAppCheck` diagnostics; Firebase Authentication initialization continues so a provider loading issue does not unnecessarily disable sign-in while enforcement remains off.
+- App Check enforcement has NOT been enabled. Deploy the updated Pages build, verify `window.FAAppCheck.initialized === true`, test Google sign-in and cloud save/restore, and monitor App Check metrics before considering Realtime Database enforcement.
+- The static audit now checks the App Check SDK script order, Enterprise provider, configured public Site Key, auto-refresh call and diagnostics.
+- The user must manually test the deployed website. CI/static checks do not prove that Google Cloud accepts the key or that browser attestation succeeds.
