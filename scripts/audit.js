@@ -112,7 +112,8 @@ if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal
 if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}"))fail("Displayed formula must place the complete multiplier product inside the integral");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE]"))fail("All current letter multipliers must be registered inside the global sum");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
-if(!timingSource.includes("return 1+n*(1+0.25*legacy)"))fail("Ascension Legacy must increase the effective Global Sum level by 25% per level");
+if(!timingSource.includes("function getGlobalSumAdditionalWeight()")||!timingSource.includes("return n*(1+0.25*legacy)"))fail("Global Sum must expose the combined contribution of all additional weights");
+if(!timingSource.includes("formatPrecise(getGlobalSumAdditionalWeight(),2)"))fail("Live Global Sum value must display the aggregate additional-weight contribution");
 if(timingSource.includes("BASE_PRODUCTION")||timingSource.includes("Math.pow(t+1,2),base,boost"))fail("Legacy production coefficient or time offset remains active");
 if(!timingSource.includes("setInterval(loop,TICK)"))fail("The 10 ms game loop scheduler is missing");
 if(!timingSource.includes("const averageRate=rateBefore+(rateAfter-rateBefore)*0.5"))fail("Production accumulation must use trapezoidal integration");
@@ -121,7 +122,7 @@ if(!timingSource.includes("const now=performance.now(),delta=Math.max(0,(now-las
 if(!timingSource.includes("valueDisplay.textContent=formatPrecise(value,2);growthDisplay.textContent=formatPrecise(getGrowthPerSecond(),2);"))fail("HUD must display fractional total value and growth rate");
 if(!timingSource.includes("function formatPrecise(n,digits=2)"))fail("Precise HUD number formatter is missing");
 else pass("10 ms tick, accurate elapsed-time integration and HUD precision checks");
-const gainSource=timingSource.slice(timingSource.indexOf("function getGlobalSumMultiplier()"),timingSource.indexOf("function getGrowthPerSecond()"));
+const gainSource=timingSource.slice(timingSource.indexOf("function getGlobalSumAdditionalWeight()"),timingSource.indexOf("function getGrowthPerSecond()"));
 try{
   const gainContext={t:10,prestigeUpgrades:{simpleBoost:0,globalSum:0},metaBonus:()=>1,getLetterProduct:()=>1,getE:()=>1,safePow:(b,p)=>Math.pow(b,p),window:{isIntegralNodePurchased:()=>false},safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),FA_META:{treeUnlocked:false}};
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
@@ -132,15 +133,15 @@ try{
   if(Math.abs(gainContext.__gain-100*integralFactor)>1e-9)fail("Purchased NODE #0001 must apply the evaluated integral to production");
   gainContext.window.isIntegralNodePurchased=()=>false;
   gainContext.prestigeUpgrades.globalSum=2;
-  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
-  if(gainContext.__gain!==300)fail("The first Global Sum purchase must add two unit-weight terms (n=2), tripling production");
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();globalThis.__weight=getGlobalSumAdditionalWeight();",gainContext);
+  if(gainContext.__gain!==300||gainContext.__weight!==2)fail("The first Global Sum purchase must add two unit-weight terms (n=2), tripling production");
   gainContext.prestigeUpgrades.simpleBoost=1;
-  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
-  if(gainContext.__gain!==350)fail("One Ascension Legacy level must add 25% weight to each of the two Global Sum terms");
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();globalThis.__weight=getGlobalSumAdditionalWeight();",gainContext);
+  if(gainContext.__gain!==350||gainContext.__weight!==2.5)fail("One Ascension Legacy level must add 25% weight to each of the two Global Sum terms");
   gainContext.prestigeUpgrades.globalSum=0;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
-  pass("Production tests: base, NODE #0001 integral, Global Sum and Ascension Legacy scaling");
+  pass("Production tests: base, NODE #0001 integral, Global Sum, aggregate weight display and Ascension Legacy scaling");
 }catch(error){fail("Production rate runtime test: "+error.message)}
 const prestigeSource= sources["assets/js/prestige.js"];
 try{
