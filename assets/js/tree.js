@@ -148,6 +148,7 @@
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.level>=n.maxLevel?1:0),0);
  window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;
  function persist(){return FAStorage.setJSON("faTree",nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level})))}
+ window.saveTreeProgress=persist;
  function nodeCost(n){return n.id===0?1:n.id===3?5:Math.ceil(n.cost*Math.pow(1.55,n.level))}
  // The first content node is the only active purchase in this initial tree release.
  function available(n){return (n.id===0||n.id===3)&&n.level<n.maxLevel}
