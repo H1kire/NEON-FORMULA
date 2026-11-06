@@ -108,7 +108,7 @@ if(!timingSource.includes("const TICK=10"))fail("The game loop interval must rem
 if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the Global Sum and include all letter multipliers");
 if(!timingSource.includes("function getIntegralMultiplier()")||!timingSource.includes("factors.push(getIntegralMultiplier())"))fail("NODE #0001 integral must multiply production after it is permanently unlocked");
 if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula must show Global Sum only after it is purchased");
-if(!timingSource.includes("const productTerm=\"\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell\""))fail("Displayed formula must use compact product notation for A–E");
+if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell"'))fail("Displayed formula must use compact product notation for A–E");
 if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}"))fail("Displayed formula must place the complete multiplier product inside the integral");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE]"))fail("All current letter multipliers must be registered inside the global sum");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
