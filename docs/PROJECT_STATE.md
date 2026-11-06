@@ -357,7 +357,7 @@ Approximate thresholds:
 - 2 GP: 1,123.12 AP
 - 3 GP: 1,168.80 AP
 - 4 GP: 1,216.35 AP
-- **5 GP: 1,257.02 AP** (so at least 1,257.03 AP in the live continuous balance; the threshold is compared directly as a floating-point number).
+- **5 GP: 1,257.02 AP** (the mathematical threshold is compared directly as a floating-point number; because AP is normally held as a whole number, the practical minimum balance is **1,258 AP**).
 
 Genesis Prestige adds the calculated whole GP to the persistent GP balance, then resets AP to 0 and resets the ordinary run and the AP-layer progression/upgrades as implemented in `doGenesisPrestige()`. GP is retained and is the currency used by the Upgrade Tree. The Genesis Tree Pass requirement is checked separately from the AP threshold.
 
