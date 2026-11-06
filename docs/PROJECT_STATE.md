@@ -268,3 +268,14 @@ Implementation files: `assets/js/script.js`, `index.html`, `scripts/audit.js`.
 - The existing A–E levels are already persisted in the current save format, so no save-key or migration changes are needed.
 - Runtime audit coverage verifies zero active letters, one active letter, a partial set, and all five active letters.
 - Browser testing remains the user's responsibility.
+
+
+### Upgrade tree neon connection threads — 2026-11-06
+
+- The existing multi-link graph topology and node coordinates remain unchanged.
+- The purchased NODE #0001 reveals its 80-unit area. Existing graph links between all currently revealed nodes are now drawn, including links whose endpoints are still locked for purchase. Hidden nodes and links outside the revealed area remain hidden.
+- All visible links use a soft neon green by default.
+- Selecting any visible node changes every direct link connected to that node to blue; selecting a different node moves the blue highlight to its own direct connections. With no selection, all visible links are green.
+- Green and blue links retain a restrained glow. No purchase progression, node IDs, graph topology, or save behavior is changed.
+- Audit coverage checks revealed-endpoint visibility and direct-edge highlighting for NODE #0001 and another selected node.
+- Browser visual testing remains the user's responsibility.
