@@ -134,7 +134,7 @@
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.level>=n.maxLevel?1:0),0);
- window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;
+ window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;
  function persist(){return FAStorage.setJSON("faTree",nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level})))}
  function nodeCost(n){return n.id===0?1:Math.ceil(n.cost*Math.pow(1.55,n.level))}
  // The first content node is the only active purchase in this initial tree release.
@@ -215,7 +215,7 @@
   const typeName=tr(n.typeKey),shapeLimit=n.type==="circle"?tr("nodeRangeCircle"):n.type==="triangle"?"10":n.type==="pentagon"?"5":"1";
   id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+typeName.toUpperCase()+" · "+n.links.length+" LINKS";
   title.textContent=n.id===0?tr("nodeRootTitle"):typeName+" "+tr("nodeUpgrade");
-  desc.textContent=n.id===0?tr("nodeRootDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
+  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
   level.textContent=n.level+" / "+n.maxLevel;
   cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
