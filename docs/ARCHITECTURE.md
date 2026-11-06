@@ -1,61 +1,54 @@
-# Project architecture
+# Game progression guide
 
-## Runtime loading order
+FORMULA ASCENT is built around several connected stages of progression. This guide describes what players can currently do in the game.
 
-1. `assets/js/storage.js` installs `window.FAStorage` before any subsystem reads or writes persistent data.
-2. `assets/js/prestige.js` restores AP/GP state and exposes prestige actions.
-3. `assets/js/tree.js` constructs the deterministic 3,886-node irregular multi-link graph arranged in square-spiral ID order, assigns the four node shapes/level limits and restores purchased nodes.
-4. `assets/js/app-ui.js` restores settings/research, localization and menu panels.
-5. `assets/js/script.js` restores the active run and starts the 10 ms simulation loop.
+## 1. Build your Score
 
-The order is intentional because later systems use globals exposed by earlier scripts. Do not convert these files to ES modules without changing the dependency model.
+The five formula modules A–E generate the production multiplier. Their values are connected: changing one module can influence the others.
 
-## Responsibilities
+Spend Score on module upgrades to increase production. The formula updates as the run progresses.
 
-- HTML owns stable page structure, IDs and navigation.
-- CSS owns presentation and responsive breakpoints.
-- Storage owns guarded browser persistence access and error handling.
-- Prestige owns AP/GP calculations and reset boundaries.
-- Tree owns node generation, progression and canvas rendering. Its current graph uses square content nodes (1 level), circle standard nodes (2–100 levels), triangle major nodes (10 levels) and pentagon hyper nodes (5 levels). Node IDs follow a four-arm logarithmic spiral galaxy. The root sits at the center; remaining IDs cycle round-robin across four arms and progress outward within each arm. The core radius uses the original 95 base density × 4.5 visual-clearance factor; radial spacing is coreRadius/3.5 and the arms wind by 2.35 × ln(1 + radius/coreRadius), with a small deterministic angular irregularity. The camera zoom-out floor is 0.0001× so the full network can be framed. Edges are rendered only when both endpoints are open; open connections glow green, the selected route and its available neighboring edges glow blue, and glow intensity fades with zoom-out. Node radii are tripled and connection widths are 1.5×. The root is a square costing 1 GP; it is the only purchasable node in this release, while the rest of the graph is visible but reserved for future upgrades.
-- UI owns settings, localization, research cards and menu navigation.
-- Simulation owns Score production, formula modules, automation and run saves.
+## 2. Research and automation
 
-## Persistent data
+Ascension Points unlock the Research Division. Research improves formula upgrades, dependencies, production and prestige progression. Later research also unlocks automation.
 
-| Key | Owner | Data |
-|---|---|---|
-| `formula_ascent_save_v2` | Simulation | Timer, Score, A–E levels, recursive formula state, one-second accumulator and last-save timestamp |
-| `prestigeSave` | Prestige | AP, GP and Ascension upgrade levels |
-| `faMeta` | UI | Locale, settings, Research Division, automation and statistics |
-| `faTree` | Tree | Purchased node IDs and levels |
+Automation can be managed for each formula module separately and can be paused globally.
 
-All reads and writes must go through `FAStorage`. Keep legacy run keys in the migration list while old saves remain supported. Ascension resets only the run; Genesis resets run/AP/research/automation; full reset clears all save domains.
+## 3. Ascension
 
-## Development checks
+Ascension exchanges the current run for Ascension Points. The run and its Score reset, while AP and long-term Ascension upgrades remain.
 
-- Run `npm run check` before committing.
-- Run `npm run start` for local browser testing.
-- The audit checks JavaScript syntax, HTML IDs/nesting, script/style paths, event handlers, localization keys and storage access. It is static and does not replace browser testing.
-- Keep GitHub Pages pointed at the repository root. `index.html` remains in the root and references files under `assets/`.
+Use AP to purchase research and other permanent improvements.
 
-## Recursive formula engine
+## 4. Genesis progression
 
-- The base multipliers A–E are active from the beginning and feed production as `t² × A × B × C × D × E`.
-- Production is `t² × (Σ wᵢ) × (Π letter multipliers)`. The time term stays outside both grouped factors. The base term has weight 1, and each Global Sum purchase adds a weighted term. Ascension Legacy increases each added term by 25% per level, so the sum multiplier is `1 + GlobalSum × (1 + 0.25 × AscensionLegacy)`. New letter modules must register their getter through `window.registerFormulaLetter` to join the shared product automatically. Ascension Legacy costs `125 × 125^L` AP, where `L` is the number of levels already purchased.
-- The production/render loop remains scheduled every 10 ms. It measures actual elapsed time and integrates Score with the trapezoidal average of the production rate at the start and end of each tick; delayed frames do not silently discard elapsed time.
-- The HUD displays two decimal places for time, current Score and growth rate while values are below the compact-number threshold.
-- `formulaState` stores the five multipliers. `advanceFormulaClock` advances the engine at one synchronous step per real second, independently of the 10 ms production/render loop.
-- Each step reads a frozen previous state and calculates all five next values before replacing the state. C is recursive; A and C form a feedback loop.
-- `FAMathSystem` exposes generic effective-level, parameter-curve, parameter-limit and letter-price helpers so future letters can use the same Research 1–5 rules.
-- Letter parameter progress is `L_eff / (300 + L_eff)`. Research 1 increases `L_eff` globally; Research 4 expands each parameter in its mathematically appropriate direction; Research 5 strengthens dependency inputs.
-- Letter purchase prices retain their original first-purchase base costs. The progression is `basePrice × (baseFactor ^ exponent) ^ level`, initially `baseFactor=2`, `exponent=3`, so each next level costs 8× the previous one.
-- Research 2 reduces the exponent by 0.1% of its base value per level, capped at 99% (990 levels). Research 3 reduces the base factor by 0.01% of its original value per level, with a floor of 1.00. The original first-purchase prices are retained.
-- The recursive state and fractional one-second accumulator are saved with the run. Ascension and Genesis Prestige reset both alongside the run timer.
+The Genesis Gate costs 1,000 AP. Purchasing it permanently unlocks the Upgrade Tree and Genesis Prestige.
 
-## Mathematical rendering
+Genesis Points are earned from the AP currently held. Genesis Prestige resets the run and AP-based progression, while preserving Genesis Points, the Gate and purchased tree nodes.
 
-- KaTeX 0.16.22 is vendored under `assets/vendor/katex/`; its CSS and fonts stay together so all assets resolve locally.
-- `assets/js/formula-renderer.js` is loaded after KaTeX and before the simulation. It owns rendering only; game logic supplies LaTeX strings.
-- The renderer caches each element's last expression, avoiding repeated typesetting during the 10 ms game loop.
-- Keep the existing UI colors, panels, spacing and responsive design. KaTeX should inherit text color and only provide mathematical glyphs/layout.
-- Other windows retain their original typography. Inside `#formulaModulePanel`, upgrade titles, descriptions and A–E KaTeX formulas use `16pt`; the main `#formulaText` formula uses `25pt`. There is no runtime font-size test panel.
+## 5. The Upgrade Tree
+
+The tree contains 3,886 connected nodes. Node shapes identify different upgrade categories:
+
+- Squares — content unlocks.
+- Circles — standard upgrades.
+- Triangles — major upgrades.
+- Pentagons — hyper upgrades.
+
+In the current release, NODE #0001 is the available purchase. It costs 1 GP and unlocks an integral multiplier in the production formula. Other nodes are reserved for future content.
+
+## 6. Permanent formula improvements
+
+**Global Sum** increases production by adding weighted terms. **Ascension Legacy** strengthens the additional terms. NODE #0001 adds an integral based on the current E multiplier.
+
+These upgrades expand the production formula beyond the basic product of A–E.
+
+## 7. Accounts and progress
+
+Players may sign in with Google and use cloud save to store progress in their account. The same account can be used to restore that save in another supported browser or device.
+
+Cloud restore replaces the corresponding local progress. Choose the intended account and save before restoring.
+
+## 8. Settings
+
+Players can change the language, number notation, autosave, offline progress, compact number display and reduced-motion setting.
