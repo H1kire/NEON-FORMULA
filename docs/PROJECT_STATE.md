@@ -420,3 +420,12 @@ Implementation commit before this documentation update: `767c80e4c119ca7eda528e0
 - Audit additionally parses Firebase rules and verifies owner-only read/write permissions, cloud SDK/module loading, cloud-save entry points and guarded storage usage.
 - JavaScript syntax was checked in the development tool runtime. GitHub Actions/npm audit result is pending after this commit; browser testing remains the user's responsibility.
 - Files changed: `assets/js/storage.js`, `assets/js/firebase-cloud-save.js`, `scripts/audit.js`.
+
+
+### Audit completion — 2026-11-06
+
+- GitHub Actions `npm run check` passed on commit `f951c26e2fed37be5fc3e01ec10f646a5d08f49d` (audit job `42291106397`).
+- The first audit attempt correctly exposed a stale assertion in the newly expanded audit; the assertion was corrected and the following CI run passed.
+- Final cloud save implementation uses guarded `FAStorage.getRaw/setRaw`, validates the four snapshot sections before restore, checks account identity across asynchronous operations, and rolls back local writes when a restore write fails.
+- The audit now includes the cloud module in required files and syntax checks, checks Firebase Database SDK load order, validates owner-only database rules, and checks cloud save/restore integration.
+- Manual browser verification is still required for a real Firebase account and cross-device restore. The CI audit does not connect to Firebase or emulate the browser UI.
