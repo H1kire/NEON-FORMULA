@@ -253,6 +253,29 @@ function updateUI(){
   }
   updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
+window.getDeveloperValues=()=>({t,ap:p,gp});
+window.applyDeveloperValues=(next)=>{
+ if(!window.FAAuth||!window.FAAuth.isDeveloper()||!next||typeof next!=="object")return false;
+ const values=[next.t,next.ap,next.gp].map(Number);
+ if(values.some(v=>!Number.isFinite(v)||v<0))return false;
+ t=Math.min(Number.MAX_VALUE,values[0]);
+ p=Math.floor(Math.min(Number.MAX_VALUE,values[1]));
+ gp=Math.floor(Math.min(Number.MAX_VALUE,values[2]));
+ lastFrame=performance.now();
+ const savedRun=saveGame(true),savedPrestige=savePrestige();
+ updateUI();updatePrestigeUI();
+ return savedRun&&savedPrestige;
+};
+function applyDeveloperPanel(){
+ const timeInput=$("developerTimeInput"),apInput=$("developerAPInput"),gpInput=$("developerGPInput"),status=$("developerStatus");
+ if(!window.FAAuth||!window.FAAuth.isDeveloper())return;
+ const values=[timeInput?.value,apInput?.value,gpInput?.value];
+ if(values.some(v=>v===undefined||String(v).trim()==="")){if(status){status.textContent=tr("developerInvalid");status.dataset.state="error";status.hidden=false}return}
+ const ok=window.applyDeveloperValues({t:values[0],ap:values[1],gp:values[2]});
+ if(status){status.textContent=ok?tr("developerSaved"):tr("developerInvalid");status.dataset.state=ok?"success":"error";status.hidden=false}
+ if(ok&&window.refreshFirebaseAuthUI)window.refreshFirebaseAuthUI();
+}
+$("developerApplyBtn")?.addEventListener("click",applyDeveloperPanel);
 function autoBuy(){
  const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;
  const efficiency=metaBonus("auto"),costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost()].map(cost=>cost/efficiency),actions=[()=>aLevel++,()=>bLevel++,()=>cLevel++,()=>dLevel++,()=>eLevel++];
