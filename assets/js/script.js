@@ -202,7 +202,7 @@ function updateFormulaText(){
   latex="\\begin{aligned}f(t)&=t^{2}\\cdot"+sumTerm+productTerm;
  }
  latex+="\\end{aligned}";
- const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ × ":"")+"Π(all letter modules)"+(sumLevel>0?",  w₀=1, wᵢ>0=1+0.25L":"");
+ const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ × ":"")+"Π(all letter modules)";
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
