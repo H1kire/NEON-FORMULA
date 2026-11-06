@@ -199,15 +199,20 @@ function getGlobalSumMultiplier(){
 - Simple Boost was renamed Ascension Legacy / «Наследие Вознесения».
 - Ascension Legacy cost: \(125^{(L+1)}\) AP.
 
-## Current known question / pending user test
+## Latest completed user test
 
-The user has purchased Genesis Gate and currently has 1047 AP. They expected the Genesis Prestige / GP activation button to appear, but it was not visible. A previous explanation identified a likely threshold mismatch: although 1000 AP was described as the first GP threshold, the current GP calculation may effectively require about 1079 AP. This has NOT yet been verified against the current source code. The user chose to accumulate more than 1079 AP before asking for code investigation.
+The user manually confirmed on 2026-11-06 that Genesis Prestige activates after accumulating AP, and the integral formula displays correctly. The earlier pending concern about the Genesis Prestige button is resolved; the suspected ~1079 AP threshold was not confirmed and should not be treated as a bug.
 
-- Do not change code yet.
-- Wait for the user's test result.
-- If the button remains absent above 1079 AP, inspect the exact GP gain calculation, Genesis Prestige visibility condition, Genesis Gate saved flag, and relevant UI refresh path.
-- Clarify whether 1000 AP is the intended unlock threshold for Genesis Gate or the actual first-GP exchange threshold; do not conflate these costs.
-- Do not claim 1079 AP is confirmed until source code is inspected.
+## Live formula values panel — implementation in progress
+
+Requested UI change: keep the main formula in its existing position in the ACTIVE FORMULA / ТЕКУЩАЯ ФОРМУЛА panel, and add a right-side live list with `a = ...` through `e = ...`. Values refresh through the existing `updateUI()` loop alongside total value and growth rate. When Global Sum is purchased, display `w₀` and `wᵢ>₀` beneath the A–E list, using `w₀=1` and `wᵢ>₀=1+0.25L`; remove those definitions from the main formula rendering.
+
+Implementation files for this UI change:
+- `index.html`
+- `assets/css/style.css`
+- `assets/js/script.js`
+
+The assistant must not claim visual browser testing; the user will manually test the layout and live values.
 
 ## Working instructions for the next chat
 
