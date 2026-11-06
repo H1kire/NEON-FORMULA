@@ -37,12 +37,25 @@ const treeStructureChecks=[
  ['const TOTAL=3886','fixed 3,886-node network'],
  ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5','node type level limits'],
  ['n.id===0?1','root node base cost'],
- ['function available(n){return n.id===0&&n.level<n.maxLevel}','current root-only purchase gate'],
+ ['if(id===0||id===3)return "square"','NODE #0004 is a square content node'],
+ ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
+ ['function nodeCost(n){return n.id===0?1:n.id===3?5','NODE #0004 fixed one-time purchase cost'],
+ ['function available(n){return (n.id===0||n.id===3)&&n.level<n.maxLevel}','only NODE #0001 and NODE #0004 are currently purchasable'],
+ ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
  ['nodes[a].links.push(b);nodes[b].links.push(a)','bidirectional multi-link adjacency'],
  ['type==="pentagon"?1.5+random()','hyper node effect scaling']
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
+const letterFChecks=[
+ ['id="letterFUpgrade" hidden','Letter F module is hidden before unlock'],
+ ['id="formulaValueFRow" hidden','Letter F live-value row is hidden before unlock'],
+ ['if(letterFCard)letterFCard.hidden=!letterFUnlocked','Letter F module visibility follows its tree unlock'],
+ ['if(letterFRow)letterFRow.hidden=!letterFUnlocked','Letter F live-value row follows its tree unlock'],
+ ['nodeLetterFTitle','NODE #0004 has a dedicated content-node name'],
+ ['nodeContentTitle','all square content nodes have a special inspector name']
+];
+for(const [token,label] of letterFChecks){if(!treeSource.includes(token)&&!html.includes(token)&&!sources["assets/js/script.js"].includes(token)&&!sources["assets/js/app-ui.js"].includes(token))fail("Letter F unlock check missing "+label);else pass("Letter F "+label)}
 const treeLayoutChecks=[
  ['const positions=[],graphPositions=[]','separate visual and topology coordinates'],
  ['const cellSize=40,minSpacing=40','40-unit minimum node spacing'],
