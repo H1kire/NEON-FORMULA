@@ -3,29 +3,59 @@
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
- // Eight radial wave branches from the XY origin. Sine and cosine waves
- // alternate around the compass: horizontal, vertical and both diagonal axes,
- // with opposite directions represented separately.
+ // Fully chaotic organic placement: every new point branches from a randomly
+ // selected existing point, with a random angle and distance. No rows, rays,
+ // waves, rings, or visual ordering by node ID.
  const positions=[],graphPositions=[];
- positions.push({x:0,y:0});
- const directionCount=8,waveAmplitude=145,waveLength=2200;
- const waveFrequency=Math.PI*2/waveLength;
- const alongStep=24,firstDistance=100;
+ let layoutSeed=0xC0FFEE;
+ const layoutRandom=()=>{layoutSeed=(layoutSeed*1664525+1013904223)>>>0;return layoutSeed/4294967296};
+ const cellSize=32,minSpacing=32,spatialGrid=new Map();
+ const cellKey=(x,y)=>Math.floor(x/cellSize)+":"+Math.floor(y/cellSize);
+ const addToGrid=(id,p)=>{
+  const key=cellKey(p.x,p.y);
+  if(!spatialGrid.has(key))spatialGrid.set(key,[]);
+  spatialGrid.get(key).push(id);
+ };
+ const hasRoom=(x,y)=>{
+  const cx=Math.floor(x/cellSize),cy=Math.floor(y/cellSize),limit=minSpacing*minSpacing;
+  for(let gx=cx-1;gx<=cx+1;gx++)for(let gy=cy-1;gy<=cy+1;gy++){
+   const bucket=spatialGrid.get(gx+":"+gy);
+   if(!bucket)continue;
+   for(const id of bucket){
+    const p=positions[id],dx=p.x-x,dy=p.y-y;
+    if(dx*dx+dy*dy<limit)return false;
+   }
+  }
+  return true;
+ };
+ positions.push({x:0,y:0});addToGrid(0,positions[0]);
  for(let id=1;id<TOTAL;id++){
-  const slot=id-1,direction=slot%directionCount;
-  const step=Math.floor(slot/directionCount);
-  const angle=direction*Math.PI/4;
-  const distance=firstDistance+step*alongStep;
-  const phase=distance*waveFrequency;
-  const isCosine=direction%2===1;
-  const displacement=waveAmplitude*(isCosine?1-Math.cos(phase):Math.sin(phase));
-  const x=distance*Math.cos(angle)-displacement*Math.sin(angle);
-  const y=distance*Math.sin(angle)+displacement*Math.cos(angle);
-  positions.push({x,y});
+  let point=null;
+  // Prefer short, irregular branches; every anchor is selected randomly
+  // from the entire cloud, not from the previous ID or a fixed direction.
+  for(let attempt=0;attempt<160&&!point;attempt++){
+   const anchor=positions[Math.floor(layoutRandom()*positions.length)];
+   const angle=layoutRandom()*Math.PI*2;
+   const distance=34+layoutRandom()*126;
+   const x=anchor.x+Math.cos(angle)*distance;
+   const y=anchor.y+Math.sin(angle)*distance;
+   if(hasRoom(x,y))point={x,y};
+  }
+  // If a dense pocket is full, allow a longer random branch rather than
+  // placing nodes on top of one another.
+  for(let attempt=0;attempt<100&&!point;attempt++){
+   const anchor=positions[Math.floor(layoutRandom()*positions.length)];
+   const angle=layoutRandom()*Math.PI*2;
+   const distance=160+layoutRandom()*240;
+   const x=anchor.x+Math.cos(angle)*distance;
+   const y=anchor.y+Math.sin(angle)*distance;
+   if(hasRoom(x,y))point={x,y};
+  }
+  if(!point)point={x:positions[0].x+id*minSpacing,y:0};
+  positions.push(point);addToGrid(id,point);
  }
- // Preserve the previous graph topology by using the previous coordinates
- // only for nearest-neighbor selection; displayed coordinates are the waves above.
- graphPositions.push({x:0,y:0});
+ // Keep the existing graph topology independent from the new visual layout.
+ // These legacy coordinates are used only to choose the same nearest neighbors.
  const oldCoreRadius=95*4.5,oldRadialStep=oldCoreRadius/3.5;
  for(let id=1;id<TOTAL;id++){
   const arm=(id-1)%4,armStep=Math.floor((id-1)/4);
@@ -47,7 +77,7 @@
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
-  // Node IDs advance round-robin through the eight radial sine/cosine wave branches.
+  // Coordinates are independently randomized; ID order does not define visual placement.
   const x=positions[id].x,y=positions[id].y;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
