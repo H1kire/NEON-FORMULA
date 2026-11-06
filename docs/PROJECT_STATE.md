@@ -429,3 +429,14 @@ Implementation commit before this documentation update: `767c80e4c119ca7eda528e0
 - Final cloud save implementation uses guarded `FAStorage.getRaw/setRaw`, validates the four snapshot sections before restore, checks account identity across asynchronous operations, and rolls back local writes when a restore write fails.
 - The audit now includes the cloud module in required files and syntax checks, checks Firebase Database SDK load order, validates owner-only database rules, and checks cloud save/restore integration.
 - Manual browser verification is still required for a real Firebase account and cross-device restore. The CI audit does not connect to Firebase or emulate the browser UI.
+
+
+## Developer panel — 2026-11-06
+
+- Added a Developer Panel inside the Account section. It is shown only when Firebase Authentication reports the exact configured developer UID `ZcdUu9qeDTTTHiFeUIGSoLbbf0H3`.
+- The panel exposes three editable values: `t` (current run time, non-negative decimal), AP (Ascension Points, non-negative integer), and GP (Genesis Points, non-negative integer).
+- Applying values re-checks the authenticated UID in the value-changing function, validates all three inputs, updates the live run/prestige UI, resets the frame timestamp to avoid an artificial time jump, and writes the run and prestige save sections through the normal save functions.
+- The panel and status messages are localized in English and Russian. Other signed-in accounts and signed-out users do not see it.
+- This is a client-side developer convenience for the game UI, not a server-side anti-cheat boundary; users who modify their own browser code can always alter their local game state.
+- Implementation files: `index.html`, `assets/css/style.css`, `assets/js/app-ui.js`, `assets/js/firebase-auth.js`, `assets/js/script.js`, `scripts/audit.js`.
+- Manual browser testing remains pending: sign in with the configured developer UID and verify T/AP/GP updates and reload persistence; sign out or sign in with another UID and verify the panel is absent.
