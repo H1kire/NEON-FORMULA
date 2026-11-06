@@ -111,6 +111,7 @@ if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula m
 if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell"'))fail("Displayed formula must use compact product notation for A–E");
 if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}"))fail("Displayed formula must place the complete multiplier product inside the integral");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE]"))fail("All current letter multipliers must be registered inside the global sum");
+if(!timingSource.includes("if(aLevel>0)active.push(getA())")||!timingSource.includes("if(bLevel>0)active.push(getB())")||!timingSource.includes("if(cLevel>0)active.push(getC())")||!timingSource.includes("if(dLevel>0)active.push(getD())")||!timingSource.includes("if(eLevel>0)active.push(getE())"))fail("A–E multipliers must join the production product only after their first purchase");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
 if(!timingSource.includes("function getGlobalSumAdditionalWeight()")||!timingSource.includes("return n*(1+0.25*legacy)"))fail("Global Sum must expose the combined contribution of all additional weights");
 if(!timingSource.includes("formatPrecise(getGlobalSumAdditionalWeight(),2)"))fail("Live Global Sum value must display the aggregate additional-weight contribution");
@@ -142,6 +143,15 @@ try{
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
   pass("Production tests: base, NODE #0001 integral, Global Sum, aggregate weight display and Ascension Legacy scaling");
+  const letterProductSource=timingSource.slice(timingSource.indexOf("function getLetterProduct()"),timingSource.indexOf("window.FAMathSystem"));
+  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
+  vm.runInNewContext(letterProductSource+";globalThis.__letterProduct=getLetterProduct;",letterContext);
+  if(letterContext.__letterProduct()!==1)fail("Unpurchased A–E letters must not affect production");
+  letterContext.aLevel=1;if(letterContext.__letterProduct()!==2)fail("First A purchase must activate A exactly once");
+  letterContext.cLevel=1;if(letterContext.__letterProduct()!==10)fail("First C purchase must add C while unpurchased letters remain excluded");
+  letterContext.bLevel=1;letterContext.dLevel=1;letterContext.eLevel=1;if(letterContext.__letterProduct()!==2310)fail("All five purchased letters must multiply together");
+  pass("Letter unlock tests: no unpurchased contribution; each letter activates on its first purchase");
+
 }catch(error){fail("Production rate runtime test: "+error.message)}
 const prestigeSource= sources["assets/js/prestige.js"];
 try{
