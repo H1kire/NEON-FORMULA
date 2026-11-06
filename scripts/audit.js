@@ -3,10 +3,10 @@ const fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const root=path.resolve(__dirname,".."),errors=[],warnings=[];
 const read=file=>fs.readFileSync(path.join(root,file),"utf8"),exists=file=>fs.existsSync(path.join(root,file));
 const fail=message=>errors.push(message),pass=message=>process.stdout.write("  OK  "+message+"\n");
-const required=["index.html","README.md","docs/LEGACY_FORMULAS.md","package.json","assets/css/style.css","assets/css/formula-math.css","assets/vendor/katex/katex.min.css","assets/vendor/katex/katex.min.js","assets/vendor/katex/fonts","assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js"];
+const required=["index.html","README.md","docs/LEGACY_FORMULAS.md","package.json","assets/css/style.css","assets/css/formula-math.css","assets/vendor/katex/katex.min.css","assets/vendor/katex/katex.min.js","assets/vendor/katex/fonts","assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
 for(const file of required){if(!exists(file))fail("Missing "+file);else pass("Found "+file)}
 if(exists(".idea"))warnings.push(".idea should not be committed.");
-const html=read("index.html"),css=read("assets/css/style.css"),mathCss=read("assets/css/formula-math.css"),jsFiles=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js"];
+const html=read("index.html"),css=read("assets/css/style.css"),mathCss=read("assets/css/formula-math.css"),jsFiles=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
 const sources=Object.fromEntries(jsFiles.map(file=>[file,read(file)]));
 for(const file of jsFiles){try{new vm.Script(sources[file],{filename:file});pass("Syntax "+file)}catch(error){fail("Syntax "+file+": "+error.message)}}
 let pkg;try{pkg=JSON.parse(read("package.json"));pass("Valid package.json")}catch(error){fail("Invalid package.json: "+error.message)}
@@ -16,10 +16,15 @@ const idSet=new Set(ids);
 for(const file of jsFiles)for(const m of sources[file].matchAll(/getElementById\(["']([^"']+)["']\)/g))if(!idSet.has(m[1]))fail(file+" missing HTML ID #"+m[1]);
 const scriptRefs=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(m=>m[1]);
 for(const src of scriptRefs)if(!src.startsWith("http")&&!exists(src))fail("Missing script "+src);
-const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/vendor/katex/katex.min.js","assets/js/formula-renderer.js","assets/js/script.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js","assets/js/firebase-auth.js"];
+const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/vendor/katex/katex.min.js","assets/js/formula-renderer.js","assets/js/script.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
 if(order.join("|")!==scriptRefs.join("|"))fail("Script order incorrect");else pass("Script dependency order");
 for(const m of html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css)["']/g)){if(!exists(m[1]))fail("Missing CSS "+m[1]);else pass("CSS path "+m[1])}
 if(!html.includes("firebase-auth.js")||!html.includes("firebase-auth-compat.js"))fail("Firebase Authentication SDK scripts are missing");
+if(!html.includes("firebase-database-compat.js")||!html.includes("firebase-cloud-save.js"))fail("Firebase Realtime Database cloud-save scripts are missing");
+if(!sources["assets/js/firebase-cloud-save.js"].includes("saveTreeProgress")||!sources["assets/js/firebase-cloud-save.js"].includes("parseSnapshotData")||!sources["assets/js/firebase-cloud-save.js"].includes("restoreFromCloud"))fail("Complete cloud save/restore implementation is incomplete");
+if(!sources["assets/js/firebase-cloud-save.js"].includes('"/cloudSave"')||!sources["assets/js/firebase-cloud-save.js"].includes('record.uid !== user.uid'))fail("Cloud save must use a per-UID path and verify ownership");
+if(!sources["assets/js/firebase-cloud-save.js"].includes("FAStorage.getRaw")||!sources["assets/js/firebase-cloud-save.js"].includes("FAStorage.setRaw"))fail("Cloud save must use guarded raw storage helpers");
+try{const rules=JSON.parse(read("database.rules.json"));if(rules.rules?.users?.["$uid"]?.[".read"]!=="auth !== null && auth.uid === $uid"||rules.rules?.users?.["$uid"]?.[".write"]!=="auth !== null && auth.uid === $uid"||rules.rules?.[".read"]||rules.rules?.[".write"])fail("Realtime Database rules must grant only per-user authenticated access");else pass("Firebase Realtime Database owner-only rules")}catch(error){fail("Invalid database.rules.json: "+error.message)}
 if(!sources["assets/js/firebase-auth.js"].includes("signInWithPopup")||!sources["assets/js/firebase-auth.js"].includes("onAuthStateChanged")||!sources["assets/js/firebase-auth.js"].includes("signOut"))fail("Google sign-in, session restoration, or sign-out handler is missing");
 if(sources["assets/js/firebase-auth.js"].includes("setItem(")||sources["assets/js/firebase-auth.js"].includes("SAVE_KEY"))fail("Firebase Authentication must not modify local game saves");
 const globals=new Set();
@@ -33,7 +38,7 @@ for(const m of sourceHtml.matchAll(/<\/?([a-zA-Z][\w:-]*)\b[^>]*>/g)){const toke
 if(stack.length)fail("Unclosed HTML tags "+stack.join(","));else pass("HTML nesting");
 if((css.match(/{/g)||[]).length!==(css.match(/}/g)||[]).length||(mathCss.match(/{/g)||[]).length!==(mathCss.match(/}/g)||[]).length)fail("CSS brace mismatch");else pass("CSS braces");
 if(!css.includes(".upgrade-title{color:#e2ebe8;font-size:13px;font-weight:700}")||!css.includes(".upgrade-desc{color:#82938e;font:10px var(--mono);")||!css.includes("#formulaModulePanel .upgrade-title{font-size:16pt}")||!css.includes("#formulaModulePanel .upgrade-desc:not(.math-formula){font-size:16pt}")||!mathCss.includes("font-size: 16pt;")||!mathCss.includes("font-size: 25pt;"))fail("Formula typography sizes do not match the 16 pt / 25 pt specification");else pass("Formula typography sizes and original interface defaults");
-for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);
+for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);\nif(!sources["assets/js/storage.js"].includes("function getRaw(")||!sources["assets/js/storage.js"].includes("function setRaw("))fail("Guarded raw storage helpers are missing");
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 const treeSource=sources["assets/js/tree.js"];
 const treeStructureChecks=[
