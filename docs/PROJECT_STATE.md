@@ -408,3 +408,15 @@ Files changed:
 - `database.rules.json`
 
 Implementation commit before this documentation update: `767c80e4c119ca7eda528e0a4f9e9ef11d912f63`.
+
+
+## Cloud save audit and hardening — 2026-11-06
+
+- Full source audit found that the first cloud-save implementation was not included in the static audit's required-file list or JavaScript syntax checks, and the expected script order did not include Firebase Realtime Database SDK or the cloud-save module. The audit has been extended to cover both.
+- Added guarded raw-string read/write methods to `FAStorage`; cloud save/restore no longer accesses `localStorage` directly.
+- Cloud snapshot validation now checks required run fields and formula values, AP/GP and upgrade levels, meta sections, and unique valid upgrade-tree node IDs/levels before enabling restore or changing local data.
+- Cloud-save status checks now ignore stale asynchronous responses after an account switch, validate the snapshot before enabling Restore, and save/restore requests use the UID captured at operation start.
+- Restore now checks each guarded local write/removal and attempts rollback if any operation fails.
+- Audit additionally parses Firebase rules and verifies owner-only read/write permissions, cloud SDK/module loading, cloud-save entry points and guarded storage usage.
+- JavaScript syntax was checked in the development tool runtime. GitHub Actions/npm audit result is pending after this commit; browser testing remains the user's responsibility.
+- Files changed: `assets/js/storage.js`, `assets/js/firebase-cloud-save.js`, `scripts/audit.js`.
