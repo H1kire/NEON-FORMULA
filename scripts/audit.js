@@ -53,7 +53,7 @@ const treeLayoutChecks=[
  ['const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS','80-unit reveal radius'],
  ['revealAround(positions[0])','initial reveal around the center'],
  ['for(const n of nodes)if(n.level>0)revealAround(n)','reveal around every purchased node'],
- ['if(!revealed[a]||!revealed[b]||!edgeOpen(a,b))continue','hide edges outside revealed regions'],
+ ['if(!edgeVisible(a,b))continue','show links only between revealed nodes'],
  ['if(!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
  ['if(!revealed[n.id])continue','prevent selecting hidden nodes'],
  ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
@@ -62,16 +62,29 @@ for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail
 const treeVisualChecks=[
  ['const MIN_SCALE=.0001,MAX_SCALE=2.5','camera zoom bounds'],
  ['scale=Math.max(MIN_SCALE','clamped camera zoom'],
- ['function edgeOpen(a,b)','open-edge visibility rule'],
- ['function selectedPath()','selected route calculation'],
- ['75,151,255,','selected-route blue glow'],
- ['105,226,157,','open-link green glow'],
- ['scale/.28','zoom-aware glow fade'],
+ ['function edgeVisible(a,b)','links limited to revealed nodes'],
+ ['function selectedEdges()','selected node connection highlighting'],
+ ['75,151,255,','selected-link blue neon'],
+ ['105,226,157,','default green neon links'],
+ ['ctx.shadowBlur=(isBlue?10:7)/scale','subtle neon glow'],
+  ['scale/.28','zoom-aware glow fade'],
  ['n.id===selected?22.5:n.id===0?19.5:12.3','node display sizes'],
  ['isBlue?2.25:1.5','link display widths'],
  ['dist=31/scale','mouse hit testing']
 ];
 for(const [token,label] of treeVisualChecks){if(!treeSource.includes(token))fail("Upgrade tree visual/navigation feature missing "+label);else pass("Upgrade tree "+label)}
+const treeEdgeSource=treeSource.slice(treeSource.indexOf("function edgeVisible"),treeSource.indexOf("function pathNode"));
+try{
+ const edgeContext={revealed:new Uint8Array([1,1,1,0]),selected:0,nodes:[{links:[1,2]},{links:[0,2]},{links:[0,1,3]},{links:[2]}]};
+ vm.runInNewContext(treeEdgeSource+";globalThis.__edgeVisible=edgeVisible;globalThis.__selectedEdges=selectedEdges;",edgeContext);
+ if(!edgeContext.__edgeVisible(0,1)||!edgeContext.__edgeVisible(1,2)||edgeContext.__edgeVisible(2,3))fail("Tree links must appear only when both endpoint nodes are revealed");
+ if([...edgeContext.__selectedEdges()].sort().join(",")!=="0:1,0:2")fail("Selecting NODE #0001 must highlight every direct connected link");
+ edgeContext.selected=2;
+ if([...edgeContext.__selectedEdges()].sort().join(",")!=="0:2,1:2,2:3")fail("Selecting another node must highlight all of its direct connected links");
+ edgeContext.selected=-1;
+ if(edgeContext.__selectedEdges().size!==0)fail("No node selection must leave all links green");
+ pass("Upgrade tree link visibility and selected-node connection highlighting");
+}catch(error){fail("Upgrade tree link behavior test: "+error.message)}
 if(pkg&&(!pkg.scripts?.check||!pkg.scripts?.start))fail("Missing npm scripts");
 const formatMatch=sources["assets/js/script.js"].match(/function format\(n\)\{[\s\S]*?\n\}/);
 if(!formatMatch)fail("Could not locate number formatter");
