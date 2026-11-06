@@ -28,8 +28,8 @@
     en:{
       signedOut:"NOT SIGNED IN",
       signedIn:"GOOGLE ACCOUNT CONNECTED",
-      signedInDescription:"You are signed in. Your game progress is still stored locally on this device.",
-      signedOutDescription:"Sign in with Google to connect your player account. Game progress remains on this device.",
+      signedInDescription:"You are signed in. Save your progress to the cloud to access it on another device.",
+      signedOutDescription:"Sign in with Google to save your progress to your personal cloud slot.",
       signInError:"Could not sign in. Please try again.",
       signOutError:"Could not sign out. Please try again.",
       popupClosed:"The sign-in window was closed before completing.",
@@ -42,8 +42,8 @@
     ru:{
       signedOut:"НЕ ВОШЁЛ В АККАУНТ",
       signedIn:"АККАУНТ GOOGLE ПОДКЛЮЧЁН",
-      signedInDescription:"Вы вошли в аккаунт. Прогресс игры по-прежнему хранится локально на этом устройстве.",
-      signedOutDescription:"Войдите через Google, чтобы подключить аккаунт игрока. Прогресс игры остаётся на этом устройстве.",
+      signedInDescription:"Вы вошли в аккаунт. Сохраните прогресс в облако, чтобы использовать его на другом устройстве.",
+      signedOutDescription:"Войдите через Google, чтобы сохранять прогресс в своём облачном хранилище.",
       signInError:"Не удалось войти. Попробуйте ещё раз.",
       signOutError:"Не удалось выйти из аккаунта. Попробуйте ещё раз.",
       popupClosed:"Окно входа было закрыто до завершения авторизации.",
