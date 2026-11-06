@@ -144,6 +144,21 @@
   try{
     if(!window.firebase||!firebase.initializeApp)throw new Error("Firebase SDK failed to load.");
     const app=firebase.apps.length?firebase.app():firebase.initializeApp(config);
+
+    // App Check must be activated before Firebase Auth or Realtime Database is used.
+    try{
+      if(!firebase.appCheck||!firebase.appCheck.ReCaptchaEnterpriseProvider)throw new Error("Firebase App Check SDK failed to load.");
+      const appCheck=firebase.appCheck(app);
+      appCheck.activate(
+        new firebase.appCheck.ReCaptchaEnterpriseProvider("6LeHzRMuAAAAABhZcCo-TLLav_-95kDqxsDoZYJS"),
+        true
+      );
+      window.FAAppCheck={initialized:true,provider:"reCAPTCHA Enterprise"};
+    }catch(appCheckError){
+      window.FAAppCheck={initialized:false,error:appCheckError&&appCheckError.message||"App Check initialization failed."};
+      console.error("Firebase App Check initialization failed:",appCheckError);
+    }
+
     auth=firebase.auth(app);
     auth.onAuthStateChanged(user=>{
       currentUser=user||null;
