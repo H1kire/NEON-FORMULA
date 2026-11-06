@@ -201,7 +201,6 @@ function updateFormulaText(){
  }else{
   latex="\\begin{aligned}f(t)&=t^{2}\\cdot"+sumTerm+productTerm;
  }
- if(sumLevel>0)latex+="\\\\w_0&=1,\\quad w_{i>0}=1+0.25L";
  latex+="\\end{aligned}";
  const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ × ":"")+"Π(all letter modules)"+(sumLevel>0?",  w₀=1, wᵢ>0=1+0.25L":"");
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
@@ -226,7 +225,21 @@ function updateUI(){
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
- updateFormulaText();if(window.refreshTree)window.refreshTree();
+ const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE()};
+  for(const letter of ["a","b","c","d","e"]){
+   const display=$("formulaValue"+letter.toUpperCase());
+   if(display)display.textContent=formatPrecise(liveValues[letter],2);
+  }
+  const sumLevel=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
+  const weightList=$("formulaWeightValues");
+  if(weightList){
+   weightList.hidden=sumLevel<=0;
+   const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
+   const w0Display=$("formulaValueW0"),wiDisplay=$("formulaValueWi");
+   if(w0Display)w0Display.textContent="1";
+   if(wiDisplay)wiDisplay.textContent=formatPrecise(1+0.25*legacy,2);
+  }
+  updateFormulaText();if(window.refreshTree)window.refreshTree();
 }
 function autoBuy(){
  const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;
