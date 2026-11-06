@@ -440,3 +440,34 @@ Implementation commit before this documentation update: `767c80e4c119ca7eda528e0
 - This is a client-side developer convenience for the game UI, not a server-side anti-cheat boundary; users who modify their own browser code can always alter their local game state.
 - Implementation files: `index.html`, `assets/css/style.css`, `assets/js/app-ui.js`, `assets/js/firebase-auth.js`, `assets/js/script.js`, `scripts/audit.js`.
 - Manual browser testing remains pending: sign in with the configured developer UID and verify T/AP/GP updates and reload persistence; sign out or sign in with another UID and verify the panel is absent.
+
+## Security and project audit — 2026-11-06
+
+Audited the current development branch at `b24de05001c4d7142d33649845a087ec0b4e1977`.
+
+### Firebase / data protection findings
+
+- GitHub Secret Scanning reports the Firebase Web API key in `assets/js/firebase-auth.js` (first introduced in commit `260a5822`). Firebase Web API keys are public project/app identifiers by design; they are not passwords or administrative credentials. Do not delete or rotate this key solely because of this alert: doing so can break Authentication and the web app. Verify its API restrictions in Google Cloud Console and ensure it is restricted to Firebase-related APIs only; do not reuse it for unrelated Google APIs.
+- The current repository tree contains no `.env` file, service-account JSON, PEM/private-key file, or separate backend credential file. This is a source-tree inspection, not a guarantee about every historical commit or external project setting.
+- `database.rules.json` grants read/write only below `/users/{uid}` when a signed-in Firebase UID matches that path. No root-level public read/write grant exists.
+- Cloud snapshots are stored at `/users/{uid}/cloudSave`; the client verifies snapshot UID/version and validates the payload before restore. The user manually confirmed cloud save and restore work.
+- Firebase App Check is not yet initialized or enforced. This is the principal remaining app-level hardening task. Integrate it only after the user registers the web app with reCAPTCHA Enterprise and supplies the public site key. Never put the reCAPTCHA secret key in the repository or chat. Deploy App Check first, monitor valid request metrics, and only then consider Realtime Database enforcement.
+- The Developer Panel is intentionally a client-side convenience gated by the configured UID. It is not a server-authoritative admin permission or anti-cheat boundary; client-side game values and local saves can be modified by the browser owner. No privileged backend operation is exposed by this panel.
+- Firebase Security Rules protect account data; App Check will add app-attestation/abuse protection but will not replace per-UID rules.
+
+### General source audit
+
+- Reviewed the complete tracked repository tree and the Firebase/auth/cloud-save modules, storage layer, local development server, HTML script loading order, and audit workflow.
+- No service-account/private-key credential or obvious server-side secret was found in the current source tree.
+- No use of `eval`, `new Function`, `document.write`, `fetch`, or `XMLHttpRequest` was found in the game JavaScript. Dynamic `innerHTML` is used for fixed UI templates/localized strings and numeric game values; research titles/descriptions are assigned with `textContent`.
+- Local development server restricts requests to GET/HEAD, rejects dotfiles and traversal outside the project root, and sets `X-Content-Type-Options: nosniff`.
+- Existing static/runtime audit passed on the current HEAD. GitHub Actions audit job: `128159193976`, commit `b24de05001c4d7142d33649845a087ec0b4e1977`. The audit covers syntax, HTML structure/IDs, asset/script order, localization, game formulas, storage behavior, owner-only Firebase rules, cloud-save integration, and developer-panel UID checks.
+- User manually verified that the Developer Panel works correctly. The assistant did not perform a live browser penetration test or inspect the user's Google Cloud/Firebase Console settings.
+
+### Remaining external configuration checks
+
+1. In Google Cloud Console → APIs & Services → Credentials, open the Firebase browser API key and confirm its API restrictions contain only the Firebase-related APIs required by this project. Do not delete it or remove Authentication APIs.
+2. Register the web app in Firebase App Check with reCAPTCHA Enterprise. Supply only the public site key for source integration; keep the secret key in the provider/Firebase Console.
+3. After App Check is deployed, monitor request metrics before enabling enforcement for Realtime Database.
+
+No game source code or save format was changed during this audit. The only code-independent pending work is the App Check console setup and API-key restriction verification.
