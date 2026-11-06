@@ -9,7 +9,7 @@
  const positions=[],graphPositions=[];
  let layoutSeed=0xC0FFEE;
  const layoutRandom=()=>{layoutSeed=(layoutSeed*1664525+1013904223)>>>0;return layoutSeed/4294967296};
- const cellSize=32,minSpacing=32,spatialGrid=new Map();
+ const cellSize=40,minSpacing=40,spatialGrid=new Map();
  const cellKey=(x,y)=>Math.floor(x/cellSize)+":"+Math.floor(y/cellSize);
  const addToGrid=(id,p)=>{
   const key=cellKey(p.x,p.y);
@@ -36,7 +36,7 @@
   for(let attempt=0;attempt<160&&!point;attempt++){
    const anchor=positions[Math.floor(layoutRandom()*positions.length)];
    const angle=layoutRandom()*Math.PI*2;
-   const distance=34+layoutRandom()*126;
+   const distance=42+layoutRandom()*118;
    const x=anchor.x+Math.cos(angle)*distance;
    const y=anchor.y+Math.sin(angle)*distance;
    if(hasRoom(x,y))point={x,y};
