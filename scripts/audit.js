@@ -105,9 +105,11 @@ else{
 }
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
-if(!timingSource.includes("safeProduct(t*t,getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the global sum and include the letter product inside it");
-if(!timingSource.includes("\\\\left(\\\\sum_{i=0}^{"))fail("Displayed formula must group the Global Sum in parentheses");
-if(!timingSource.includes("}w_i\\\\right)\\\\cdot\\\\left(\\\\prod_{"))fail("Displayed formula must group the letter product in parentheses");
+if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the Global Sum and include all letter multipliers");
+if(!timingSource.includes("function getIntegralMultiplier()")||!timingSource.includes("factors.push(getIntegralMultiplier())"))fail("NODE #0001 integral must multiply production after it is permanently unlocked");
+if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula must show Global Sum only after it is purchased");
+if(!timingSource.includes("const productTerm=\"\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell\""))fail("Displayed formula must use compact product notation for A–E");
+if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}"))fail("Displayed formula must place the complete multiplier product inside the integral");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE]"))fail("All current letter multipliers must be registered inside the global sum");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
 if(!timingSource.includes("return 1+n*(1+0.25*legacy)"))fail("Ascension Legacy must increase the effective Global Sum level by 25% per level");
@@ -121,9 +123,14 @@ if(!timingSource.includes("function formatPrecise(n,digits=2)"))fail("Precise HU
 else pass("10 ms tick, accurate elapsed-time integration and HUD precision checks");
 const gainSource=timingSource.slice(timingSource.indexOf("function getGlobalSumMultiplier()"),timingSource.indexOf("function getGrowthPerSecond()"));
 try{
-  const gainContext={t:10,prestigeUpgrades:{simpleBoost:0,globalSum:0},metaBonus:()=>1,getLetterProduct:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),FA_META:{treeUnlocked:false}};
+  const gainContext={t:10,prestigeUpgrades:{simpleBoost:0,globalSum:0},metaBonus:()=>1,getLetterProduct:()=>1,getE:()=>1,safePow:(b,p)=>Math.pow(b,p),window:{isIntegralNodePurchased:()=>false},safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),FA_META:{treeUnlocked:false}};
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
   if(gainContext.__gain!==100)fail("Base production at t=10 must remain exactly 100 before Global Sum");
+  gainContext.window.isIntegralNodePurchased=()=>true;
+  vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
+  const integralFactor=2/3*(Math.pow(2,1.5)-1);
+  if(Math.abs(gainContext.__gain-100*integralFactor)>1e-9)fail("Purchased NODE #0001 must apply the evaluated integral to production");
+  gainContext.window.isIntegralNodePurchased=()=>false;
   gainContext.prestigeUpgrades.globalSum=1;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
   if(gainContext.__gain!==200)fail("One Global Sum purchase must double the letter product without changing t squared");
@@ -133,7 +140,7 @@ try{
   gainContext.prestigeUpgrades.globalSum=0;
   vm.runInNewContext(gainSource+";globalThis.__gain=getGain();",gainContext);
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
-  pass("Production tests: base, Global Sum and Ascension Legacy scaling");
+  pass("Production tests: base, NODE #0001 integral, Global Sum and Ascension Legacy scaling");
 }catch(error){fail("Production rate runtime test: "+error.message)}
 const prestigeSource= sources["assets/js/prestige.js"];
 try{
