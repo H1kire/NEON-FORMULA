@@ -8,7 +8,7 @@
 - Repository: `H1kire/NEON-FORMULA`
 - Active development branch: `тест`
 - Stable branch: `main` — do not modify or merge into it unless the user explicitly asks.
-- Code HEAD before the graph-connected visibility documentation update: `9e1dfb51285277989c83f54d2bf9c63497388f6e`
+- Code HEAD before the Letter F content-node implementation: `9be21c6ac1d3d5047f966d38cc24c68537a51cac`
 - The user performs manual browser testing. Do not claim browser testing unless it was actually performed.
 - Work incrementally: one file = one responsibility; one version = one mechanic; fix errors before adding features; commit at meaningful milestones.
 - Before editing: fetch the exact current file contents and blob SHA from the active branch. Never overwrite based on stale content.
@@ -285,3 +285,24 @@ Implementation files: `assets/js/script.js`, `index.html`, `scripts/audit.js`.
 Implementation follow-up:
 - Commit 4bfa99b32c0875aae70d941a83eae5da0f2af5f5: graph-connected node visibility in assets/js/tree.js.
 - Commit 9e1dfb51285277989c83f54d2bf9c63497388f6e: runtime/static audit coverage in scripts/audit.js.
+
+
+### NODE #0004 — Letter F content unlock — 2026-11-06
+
+- NODE #0004 (id 3) is explicitly assigned the square type, so it is a one-time content node with max level 1.
+- Its fixed purchase price is 5 GP. NODE #0001 retains its 1 GP price.
+- NODE #0004 is now purchasable; the existing purchase flow deducts 5 GP, saves the tree node, and refreshes the UI.
+- Purchasing NODE #0004 unlocks the Letter F module. The unlock is derived from the persisted `faTree` node level, so no new save key or migration is introduced.
+- The Formula Upgrades grid contains a hidden Letter F placeholder card. It appears only after NODE #0004 is purchased. The live formula-values panel also reveals an F row with a placeholder dash.
+- No F mathematical formula, recurrence, production contribution, upgrade price, or automation is implemented yet. Those will be designed separately with the user.
+- All square nodes are identified in the inspector as **CONTENT NODE** and use a dedicated content-node title rather than the ordinary node-type naming.
+- NODE #0001 keeps its Genesis Core title; NODE #0004 has the dedicated Letter F Gate title.
+- Updated `scripts/audit.js` for NODE #0004 type/cost/purchase availability and Letter F UI unlock behavior.
+- Browser visual testing remains the user's responsibility.
+
+Files changed:
+- `assets/js/tree.js`
+- `index.html`
+- `assets/js/script.js`
+- `assets/js/app-ui.js`
+- `scripts/audit.js`
