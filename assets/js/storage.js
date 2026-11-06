@@ -8,7 +8,19 @@
     warned.add(id);
     console.warn("[FAStorage] " + action + " failed for " + key, error);
   }
-  function getRaw(key, fallback = null) {\n    const store = getStorage();\n    if (!store) return fallback;\n    try { const raw = store.getItem(key); return raw === null ? fallback : raw; }\n    catch (error) { warnOnce("read", key, error); return fallback; }\n  }\n  function setRaw(key, value) {\n    const store = getStorage();\n    if (!store || typeof value !== "string") { warnOnce("write", key, new Error("localStorage is unavailable or value is not a string")); return false; }\n    try { store.setItem(key, value); return true; }\n    catch (error) { warnOnce("write", key, error); return false; }\n  }\n  function getJSON(key, fallback = null) {
+  function getRaw(key, fallback = null) {
+    const store = getStorage();
+    if (!store) return fallback;
+    try { const raw = store.getItem(key); return raw === null ? fallback : raw; }
+    catch (error) { warnOnce("read", key, error); return fallback; }
+  }
+  function setRaw(key, value) {
+    const store = getStorage();
+    if (!store || typeof value !== "string") { warnOnce("write", key, new Error("localStorage is unavailable or value is not a string")); return false; }
+    try { store.setItem(key, value); return true; }
+    catch (error) { warnOnce("write", key, error); return false; }
+  }
+  function getJSON(key, fallback = null) {
     const store = getStorage();
     if (!store) return fallback;
     try { const raw = store.getItem(key); return raw === null ? fallback : JSON.parse(raw); }
