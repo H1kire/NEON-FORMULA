@@ -234,7 +234,11 @@ function updateUI(){
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
- const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE()};
+ const letterFUnlocked=typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked();
+  const letterFCard=$("letterFUpgrade"),letterFRow=$("formulaValueFRow");
+  if(letterFCard)letterFCard.hidden=!letterFUnlocked;
+  if(letterFRow)letterFRow.hidden=!letterFUnlocked;
+  const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE()};
   for(const letter of ["a","b","c","d","e"]){
    const display=$("formulaValue"+letter.toUpperCase());
    if(display)display.textContent=formatPrecise(liveValues[letter],2);
