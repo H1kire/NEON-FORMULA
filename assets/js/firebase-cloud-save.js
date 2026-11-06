@@ -51,7 +51,7 @@
   let user = null;
   let database = null;
   let busy = false;
-  let hasCloudSave = false;
+  let hasCloudSave = false;\n  let authGeneration = 0;
 
   function showStatus(value, state) {
     if (!status) return;
@@ -82,10 +82,30 @@
     const prestige = parse(PRESTIGE_KEY);
     const meta = parse(META_KEY);
     const tree = parse(TREE_KEY);
-    if (!game || typeof game !== "object" || !Number.isFinite(Number(game.t)) || Number(game.t) < 0 ||
-        !Number.isFinite(Number(game.value)) || Number(game.value) < 0) throw new Error("Invalid game state");
-    if (!prestige || typeof prestige !== "object" || !meta || typeof meta !== "object" || !Array.isArray(tree)) {
-      throw new Error("Invalid progress sections");
+    const finiteNonNegative = value => Number.isFinite(Number(value)) && Number(value) >= 0;
+    if (!game || typeof game !== "object" || Array.isArray(game) ||
+        !["t", "value", "aLevel", "bLevel", "cLevel", "dLevel", "eLevel", "formulaSteps", "formulaAccumulator", "lastTime"].every(key => finiteNonNegative(game[key])) ||
+        !game.formulaState || typeof game.formulaState !== "object" ||
+        !["a", "b", "c", "d", "e"].every(key => Number.isFinite(Number(game.formulaState[key])) && Number(game.formulaState[key]) >= 1)) {
+      throw new Error("Invalid game state");
+    }
+    if (!prestige || typeof prestige !== "object" || Array.isArray(prestige) ||
+        !finiteNonNegative(prestige.p) || !finiteNonNegative(prestige.gp) ||
+        !prestige.prestigeUpgrades || typeof prestige.prestigeUpgrades !== "object" ||
+        !finiteNonNegative(prestige.prestigeUpgrades.simpleBoost) || !finiteNonNegative(prestige.prestigeUpgrades.globalSum)) {
+      throw new Error("Invalid prestige state");
+    }
+    if (!meta || typeof meta !== "object" || Array.isArray(meta) ||
+        !Array.isArray(meta.research) || meta.research.length !== 10 ||
+        !meta.settings || typeof meta.settings !== "object" ||
+        !meta.automation || typeof meta.automation !== "object" ||
+        !meta.stats || typeof meta.stats !== "object") {
+      throw new Error("Invalid meta state");
+    }
+    if (!Array.isArray(tree) || tree.some(node => !node || !Number.isInteger(node.id) || node.id < 0 || node.id >= 3886 ||
+        !Number.isInteger(node.level) || node.level < 1) ||
+        new Set(tree.map(node => node.id)).size !== tree.length) {
+      throw new Error("Invalid upgrade tree state");
     }
     return { game, prestige, meta, tree };
   }
@@ -100,7 +120,7 @@
     if (results.some(result => result !== true)) throw new Error("Could not flush every local save section");
     const data = {};
     for (const key of SNAPSHOT_KEYS) {
-      const raw = window.localStorage.getItem(key);
+      const raw = window.FAStorage.getRaw(key, null);
       if (typeof raw !== "string") throw new Error("Missing local save section: " + key);
       data[key] = raw;
     }
@@ -115,20 +135,28 @@
 
   async function checkCloudSave() {
     if (!user || !database) return;
+    const checkedUser = user;
+    const generation = authGeneration;
     showStatus(msg("checking"));
     try {
-      const snapshot = await saveReference().once("value");
+      const snapshot = await database.ref("users/" + checkedUser.uid + "/cloudSave").once("value");
+      if (generation !== authGeneration || !user || user.uid !== checkedUser.uid) return;
       const record = snapshot.val();
-      hasCloudSave = !!(record && record.version === 1 && record.uid === user.uid && record.data);
-      if (!hasCloudSave) showStatus(msg("noSave"));
-      else {
+      hasCloudSave = false;
+      if (record && record.version === 1 && record.uid === checkedUser.uid && record.data) {
+        parseSnapshotData(record.data);
+        hasCloudSave = true;
         const date = Number(record.savedAt);
         const formatted = Number.isFinite(date) ? new Date(date).toLocaleString(lang() === "ru" ? "ru-RU" : "en-US") : msg("dateUnknown");
         showStatus(msg("ready") + formatted, "success");
+      } else {
+        showStatus(msg("noSave"));
       }
     } catch (error) {
+      if (generation !== authGeneration) return;
       hasCloudSave = false;
-      showStatus(msg("restoreError"), "error");
+      const invalid = /snapshot|progress sections|state|Missing snapshot/i.test(String(error && error.message));
+      showStatus(invalid ? msg("invalid") : msg("restoreError"), "error");
     }
     render();
   }
@@ -139,15 +167,18 @@
     showStatus(msg("saving"));
     render();
     try {
+      const savingUser = user;
       const data = collectLocalSnapshot();
-      await saveReference().set({
+      await database.ref("users/" + savingUser.uid + "/cloudSave").set({
         version: 1,
-        uid: user.uid,
+        uid: savingUser.uid,
         savedAt: firebase.database.ServerValue.TIMESTAMP,
         data
       });
-      hasCloudSave = true;
-      showStatus(msg("saved"), "success");
+      if (user && user.uid === savingUser.uid) {
+        hasCloudSave = true;
+        showStatus(msg("saved") + " " + new Date().toLocaleString(lang() === "ru" ? "ru-RU" : "en-US"), "success");
+      }
     } catch (error) {
       console.error("[FACloudSave] Save failed", error);
       showStatus(msg("saveError"), "error");
@@ -165,9 +196,11 @@
     render();
     let previous = null;
     try {
-      const snapshot = await saveReference().once("value");
+      const restoringUser = user;
+      const snapshot = await database.ref("users/" + restoringUser.uid + "/cloudSave").once("value");
       const record = snapshot.val();
-      if (!record || record.version !== 1 || record.uid !== user.uid) throw new Error("Snapshot owner/version mismatch");
+      if (!user || user.uid !== restoringUser.uid) throw new Error("Account changed during restore");
+      if (!record || record.version !== 1 || record.uid !== restoringUser.uid) throw new Error("Snapshot owner/version mismatch");
       const parsed = parseSnapshotData(record.data);
       const data = Object.assign({}, record.data);
       // Restoring must reproduce the saved moment, not award offline production accumulated since it.
@@ -176,9 +209,13 @@
 
       const keysToReplace = SNAPSHOT_KEYS.concat(LEGACY_KEYS);
       previous = {};
-      for (const key of keysToReplace) previous[key] = window.localStorage.getItem(key);
-      for (const key of SNAPSHOT_KEYS) window.localStorage.setItem(key, data[key]);
-      for (const key of LEGACY_KEYS) window.localStorage.removeItem(key);
+      for (const key of keysToReplace) previous[key] = window.FAStorage.getRaw(key, null);
+      for (const key of SNAPSHOT_KEYS) {
+        if (!window.FAStorage.setRaw(key, data[key])) throw new Error("Could not write local save section: " + key);
+      }
+      for (const key of LEGACY_KEYS) {
+        if (!window.FAStorage.remove(key)) throw new Error("Could not remove legacy save section: " + key);
+      }
       showStatus(msg("restored"), "success");
       window.location.reload();
     } catch (error) {
@@ -186,8 +223,8 @@
       if (previous) {
         try {
           for (const key of Object.keys(previous)) {
-            if (previous[key] === null) window.localStorage.removeItem(key);
-            else window.localStorage.setItem(key, previous[key]);
+            if (previous[key] === null) window.FAStorage.remove(key);
+            else window.FAStorage.setRaw(key, previous[key]);
           }
         } catch (rollbackError) {
           console.error("[FACloudSave] Local rollback failed", rollbackError);
@@ -209,6 +246,7 @@
     const app = firebase.app();
     database = firebase.database(app);
     firebase.auth(app).onAuthStateChanged(nextUser => {
+      authGeneration++;
       user = nextUser || null;
       hasCloudSave = false;
       if (!user) showStatus(msg("signedOut"));
