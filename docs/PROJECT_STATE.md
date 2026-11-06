@@ -369,3 +369,17 @@ Genesis Prestige adds the calculated whole GP to the persistent GP balance, then
 
 Implementation source: \`assets/js/prestige.js\` — \`countThresholds()\`, \`getPrestigeGain()\`, \`getGenesisGain()\`, \`doPrestige()\`, and \`doGenesisPrestige()\`.
 \n\n## Google Authentication — implementation milestone\n\n- Hosting remains on GitHub Pages; Firebase Hosting is not configured or required.\n- Firebase Web SDK is loaded from the official gstatic CDN (compat SDK 10.14.1) and a separate `assets/js/firebase-auth.js` module handles Google sign-in, auth-state restoration, and sign-out.\n- Firebase project configuration uses project ID `formula-ascent`, auth domain `formula-ascent.firebaseapp.com`, and the supplied Realtime Database URL. Analytics is not initialized.\n- The account panel shows the signed-in Google display name, a profile-image avatar when available, and the signed-in state. Login uses a Google popup; auth persistence is explicitly set to browser local persistence.\n- This stage does not read or write Realtime Database data and does not connect cloud saves. Existing local save keys and game save/load logic remain unchanged.\n- Authorized domain `h1kire.github.io` and the Google provider must be enabled in Firebase Authentication.\n- Browser testing remains pending: verify popup sign-in on GitHub Pages, refresh persistence, sign-out, and localized account UI in English/Russian.\n
+
+### Google Authentication implementation — 2026-11-06
+
+- Implemented on the development branch; GitHub Pages remains the hosting platform. Firebase Hosting was not initialized.
+- Firebase JS SDK compat 10.14.1 is loaded from the official gstatic CDN. `assets/js/firebase-auth.js` is a separate module responsible only for Google Authentication.
+- Firebase Web App config uses `projectId: formula-ascent`, `authDomain: formula-ascent.firebaseapp.com`, and the supplied Realtime Database URL. Analytics is not initialized.
+- The Account panel now has Google sign-in and sign-out controls, localized EN/RU labels, signed-in state, display name, and Google profile avatar when available.
+- Login uses `signInWithPopup`; auth persistence is explicitly set to local browser persistence, and `onAuthStateChanged` restores the current session after reload.
+- No Realtime Database reads/writes or cloud saves are implemented. Existing local save keys and game save/load logic remain untouched.
+- The user has already enabled Google Authentication and added `h1kire.github.io` as an authorized domain. If popup login reports `auth/unauthorized-domain`, verify that the domain remains in the same Firebase project's Authentication authorized domains.
+- Files changed: `assets/js/firebase-auth.js`, `index.html`, `assets/js/app-ui.js`, `assets/css/style.css`, `scripts/audit.js`.
+- Implementation/audit commits: `260a582` (auth module), `f59bbf7` (account UI + SDK), `a1381c2` (localization), `ee65979` (styles), `214c3f2` and `11df70e`/`53062cb` (audit updates), `60e26bb` (localized account state). Latest code/audit commit: `53062cbeadc181b81eaf65ba45d2afd787d04d66`.
+- GitHub Actions workflow run was not exposed for this push; no passing audit run is claimed. Browser testing remains pending.
+- User should manually test: Google popup sign-in on `https://h1kire.github.io`, persistence after refresh, sign-out, popup-blocked/error messaging, and EN/RU account UI. Existing local progress should remain present and unchanged.
