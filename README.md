@@ -1,110 +1,116 @@
 # FORMULA ASCENT
 
-Formula Ascent is a browser-based mathematical idle experiment with two prestige layers.
+**FORMULA ASCENT** is a browser-based mathematical idle game. Build up your Score, improve five connected formula modules, perform Ascensions, unlock permanent upgrades and expand your Upgrade Tree.
 
-## Core gameplay
-- The simulation and visible HUD update every 10 milliseconds.
-- Five core formula modules (A–E) modify production.
-- Ascension Points (AP): each next AP threshold is `1 Qa × 1.05^x`, where `x` starts at 2 for every new run and increases by 1 for each additional AP available from that run's Score.
-- Ascension resets the current run but keeps AP, Research Division upgrades and Ascension upgrades.
-- Research Division contains ten AP-funded upgrades. Its eighth upgrade unlocks the automation panel; later levels increase automatic purchase efficiency by 10% per level.
-- The one-time Genesis Gate costs exactly 1,000 AP and permanently unlocks the Upgrade Tree and Genesis Prestige.
-- Genesis Points (GP) use only currently held AP: each next GP threshold is `1,000 × 1.1^(x/2.5)`, where `x` starts at 2 and increases by 1 for each additional GP available from the current AP balance.
-- Genesis Prestige resets the current run, AP, Research Division, automation unlocks and Ascension upgrades. It preserves GP, the Genesis Gate and purchased tree nodes.
-- Each A–E automation module is purchased separately for `10^letter_index` AP, can be toggled independently, and can be paused globally.
-- The Upgrade Tree contains 3,886 nodes arranged as a deterministic, irregular multi-link network laid out as a four-arm logarithmic spiral galaxy. The root sits at the galactic center; IDs cycle across four arms and progress outward along each arm. The central core uses the original 95 base density and 4.5× display-clearance factor, with logarithmic winding and small arm irregularities. The camera can zoom out to 0.0001× to frame the complete network. Nodes use four shapes: squares unlock content (one level), circles are standard upgrades (2–100 levels), triangles are major upgrades (10 levels), and pentagons are hyper upgrades (5 levels). In the initial release, only the root square is purchasable and costs 1 GP; all other nodes are reserved for future content. Connections are drawn only between open nodes, glow green normally, and glow blue along the selected route; their glow fades as the camera zooms out. Node hit areas and visible sizes are enlarged threefold, while connection strokes are 1.5 times thicker.
-- Settings include English/Russian language, number notation, autosave, offline progress, compact numbers and reduced motion.
-- Statistics and a placeholder account page are available. Firebase account linking is planned for a later update.
+The game is available in English and Russian.
 
-## Formula modules A–E
+## How to play
 
-The five formula modules are active from the beginning; their multipliers are always included in production. All formula updates use **real elapsed time** and one synchronous recursive update per second. Every letter is calculated from the previous second's complete A–E state, so no letter is evaluated in a privileged order.
+1. Start a run and let your formula generate Score over time.
+2. Spend Score on upgrades for the five formula modules: A, B, C, D and E.
+3. Unlock Research Division upgrades to improve your progression and automation.
+4. Earn Ascension Points (AP) and perform an **Ascension** to reset the current run while keeping long-term progress.
+5. Save up 1,000 AP to unlock the **Genesis Gate**. This opens the Upgrade Tree and Genesis Prestige.
+6. Earn Genesis Points (GP) to purchase permanent nodes in the Upgrade Tree.
 
-The production formula is:
+## The formula
+
+The game has five connected formula modules. Their multipliers are calculated together, with each update using the previous complete state of the system:
+
+- **A — Power Foundation:** grows with time and receives feedback from C.
+- **B — Root Amplifier:** is influenced by A.
+- **C — Logarithmic Recursion:** uses A, B and its previous value.
+- **D — Nonlinear Coupling:** combines A, B and C.
+- **E — Logarithmic Resonance:** combines B and D.
+
+The current module equations are:
 
 \[
-f(t)=t^2\cdot\sum_{i=0}^{n}w_i\prod_{\ell\in\mathcal L}\ell
+a=\left(1+\frac{t}{60}\right)^{\frac{1+\ln(c)}{1.81}}
 \]
 
-Here **t²** stays outside both grouped factors: the sum of weights **(Σ wᵢ)** and the product of all letter multipliers **(Π letter multipliers)**. The base term has weight **w₀ = 1**; each purchased Global Sum level adds one term with weight **wᵢ = 1 + 0.25L** for i > 0, where **L** is the Ascension Legacy level. Therefore the effective sum multiplier is **1 + n(1 + 0.25L)**. New letter modules register their getter with `window.registerFormulaLetter` so they are included automatically.
+\[
+b=1+\frac{a^{0.652}-1}{1.055}
+\]
 
-Global Sum costs 1 AP initially and its next purchase costs 1,000 times more each time: 1, 1,000, 1,000,000, 1,000,000,000, 1,000,000,000,000 AP. The existing five-purchase limit remains. Ascension Legacy starts at 125 AP; each additional level costs 125 times more, following `125 × 125^L`, where `L` is the number of levels already purchased.
+\[
+c_{n+1}=1+\frac{\ln(1+abc_n)}{1.66}
+\]
 
-- **A — Power Foundation:** \(a=(1+t/60)^{(1+\ln(c))/1.81}\). C feeds back into A's exponent.
-- **B — Root Amplifier:** \(b=1+(a^{0.652}-1)/1.055\).
-- **C — Logarithmic Recursion:** \(c_{n+1}=1+\ln(1+abc_n)/1.66\). C uses its previous value and participates in the A feedback loop.
-- **D — Nonlinear Coupling:** \(d=1+\sqrt{abc}/11.7\).
-- **E — Logarithmic Resonance:** \(e=1+\ln(1+bd)/2.057\).
+\[
+d=1+\frac{\sqrt{abc}}{11.7}
+\]
 
-With no letter upgrades or Research levels, the synchronous baseline reaches approximately **1,096.87×** combined A–E multiplier after 300 real seconds. This is a mathematical baseline, not a promise about a save that already contains upgrades.
+\[
+e=1+\frac{\ln(1+bd)}{2.057}
+\]
 
-The previous A–E system is preserved as an inactive reference in `docs/LEGACY_FORMULAS.md`.
+Here, **t** is the run time. The five module multipliers contribute to production together.
 
-### Letter upgrades
+### Additional formula upgrades
 
-- The first purchase prices remain A=1,000, B=100,000, C=10,000,000, D=1,000,000,000 and E=1,000,000,000,000 Score.
-- With no price research, each subsequent level multiplies the previous price by \(2^3=8\): `price = basePrice × (2^3)^level`. Research 2 reduces the exponent 3 by 0.1% per research level, capped at 99% (990 levels). Research 3 reduces the base 2 by 0.01% per level, down to a floor of 1.00.
-- Each letter has its own parameter: A/C/D/E improve by lowering a divisor; B improves by raising its exponent.
-- Parameter progress uses a smooth curve \(L_{eff}/(300+L_{eff})\). The curve is still meaningful at level 100 and has diminishing returns beyond roughly level 300.
-- Research 1 globally increases effective letter levels by 4% per research level. Research 4 globally expands parameter limits: divisors can pass below 1.00, while exponents can rise above 1.00.
-- Research 5 globally strengthens cross-letter dependencies. Research 1, 4 and 5 apply to all current and future letter modules through the shared math-system helpers.
+- **NODE #0001** unlocks an integral multiplier based on the current value of E. Once purchased, this effect is permanent.
+- **Global Sum** adds weighted terms to production. Its contribution grows with purchases and with **Ascension Legacy**.
+- **Ascension Legacy** is a permanent upgrade purchased with AP. It strengthens the additional Global Sum terms.
+
+After NODE #0001 is unlocked, production includes:
+
+\[
+\int_0^e\sqrt{1+x}\,dx
+=\frac{2}{3}\left((1+e)^{3/2}-1\right)
+\]
+
+The integral uses the current value of E as its upper limit.
+
+## Progression systems
+
+### Score and formula upgrades
+
+Score is generated continuously while a run is active. Each module has its own upgrades and purchase costs. The formula modules influence one another, so improving one can affect the others.
 
 ### Research Division
 
-The first five projects form the global letter-progression layer: Mathematical Efficiency (unlimited), Discount Engineering (up to 99%), Price Stabilization (unlimited), Deep Mathematical Optimization (unlimited), and Dependency Resonance (unlimited). Research 6–10 retain E-input, time, automation, production and prestige specializations. Research 8 (index 7) unlocks the letter automation panel. The one-time Genesis Gate remains the 1,000 AP final research unlock.
+Research upgrades are purchased with AP. They improve formula progression, upgrade prices, dependencies, time-based production, automation and prestige gains. Some research unlocks additional features.
 
-## Mathematical rendering
+### Ascension
 
-The game vendors KaTeX 0.16.22 locally under `assets/vendor/katex/` (including its fonts). No runtime CDN or external math-rendering API is used. `assets/js/formula-renderer.js` is a presentation-only adapter; it renders the current formula strings into the existing UI and caches unchanged expressions so the 10 ms simulation loop does not repeatedly typeset identical math. The existing typography is preserved throughout the interface. Inside Formula Upgrades, card titles, descriptions and A–E formulas use **16 pt**; the main `f(t)` formula uses **25 pt**. Other windows retain their original font sizes. KaTeX does not participate in Score, AP, GP, upgrade, or save calculations.
+Ascension resets the current run and its Score, while keeping AP and long-term progression upgrades. AP is used for Research Division and other Ascension upgrades.
 
-## Project structure
+### Genesis Prestige
 
-```text
-FORMULA-ASCENT/
-├── index.html
-├── package.json
-├── README.md
-├── .gitignore
-├── assets/
-│   ├── css/style.css
-│   └── js/
-│       ├── storage.js
-│       ├── prestige.js
-│       ├── tree.js
-│       ├── app-ui.js
-│       └── script.js
-├── docs/ARCHITECTURE.md
-└── scripts/
-    ├── audit.js
-    └── server.js
-```
+The Genesis Gate costs **1,000 AP** and permanently unlocks the Upgrade Tree and Genesis Prestige.
 
-## File responsibilities
-- `index.html` — application markup and navigation.
-- `assets/css/style.css` — responsive visual system.
-- `assets/js/storage.js` — guarded localStorage access.
-- `assets/js/prestige.js` — Ascension and Genesis prestige layers.
-- `assets/js/tree.js` — deterministic 3,886-node irregular multi-link upgrade network with four node types.
-- `assets/js/app-ui.js` — localization, settings, statistics and Research Division.
-- `assets/js/script.js` — idle simulation, formulas, automation and run saves.
-- `scripts/audit.js` — static project checks.
-- `scripts/server.js` — dependency-free local development server.
-- `docs/ARCHITECTURE.md` — data flow and persistence notes.
+Genesis Prestige resets the current run and AP-based progression, but preserves GP, the Genesis Gate and purchased Upgrade Tree nodes.
 
-## Run locally
+### Upgrade Tree
 
-Requires Node.js 18 or newer.
+The Upgrade Tree contains **3,886 nodes** connected in a large network. Nodes have different shapes that indicate their upgrade category. In the current release, **NODE #0001** is available for purchase and costs 1 GP; other nodes are reserved for future content.
 
-- `npm run start` — open `http://127.0.0.1:4173`.
-- `npm run check` — run the static project audit.
-- The game remains a static site and can be deployed directly to GitHub Pages. No build step or framework is required.
+Purchased nodes remain unlocked through prestige resets.
 
-## Save data
+## Automation
 
-Browser local storage is divided into four independent records:
-- `formula_ascent_save_v2` — run timer, Score, A–E module levels and the synchronous recursive formula state/timing accumulator.
-- `prestigeSave` — AP, GP and Ascension upgrades.
-- `faMeta` — language, settings, Research Division, automation and statistics.
-- `faTree` — purchased Upgrade Tree nodes.
+Automation can purchase upgrades for individual formula modules. Each module's automation can be enabled or disabled separately, and automation can also be paused globally. Automation features are unlocked through Research Division progression.
 
-Legacy run keys are migrated to the current run key on load. All storage access is centralized in `assets/js/storage.js`. If browser storage is unavailable, the simulation can continue in memory and save failures are reported instead of crashing the game.
+## Settings and statistics
+
+The settings menu includes:
+
+- English and Russian languages;
+- number notation;
+- autosave;
+- offline progress;
+- compact number display;
+- reduced motion.
+
+The game also includes a statistics page.
+
+## Account and cloud saves
+
+Players can sign in with a Google account. Cloud save lets a player store their game progress in that account and restore it later, including on another supported browser or device.
+
+A cloud save belongs to the signed-in account. Restoring a cloud save replaces the corresponding local game progress, so make sure you select the intended account and save.
+
+## Playing the game
+
+FORMULA ASCENT runs in a web browser. The game is hosted as a static website and does not require a separate game installation.
