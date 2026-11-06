@@ -256,3 +256,15 @@ Implementation files: `assets/js/script.js`, `index.html`, `scripts/audit.js`.
 4. First ask for / use the user's latest manual test result if it has not been provided.
 5. Keep changes on `тест`; leave `main` untouched.
 6. Update this handoff file after each meaningful implementation or diagnosis milestone, including commit SHA, files changed, checks performed, and pending user tests.
+
+
+### Letter multiplier purchase unlock — 2026-11-06
+
+- A–E are still calculated by the recursive formula engine and their live values remain visible.
+- An individual letter contributes to the production multiplier only after its corresponding upgrade has been purchased at least once (level > 0).
+- First purchase permanently activates that letter for the current run/save; further purchases continue improving its parameter as before.
+- Unpurchased letters are omitted from the A–E product and therefore cannot increase production.
+- If no letters have been purchased, the letter-product factor is 1.
+- The existing A–E levels are already persisted in the current save format, so no save-key or migration changes are needed.
+- Runtime audit coverage verifies zero active letters, one active letter, a partial set, and all five active letters.
+- Browser testing remains the user's responsibility.
