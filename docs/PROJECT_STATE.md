@@ -8,7 +8,7 @@
 - Repository: `H1kire/NEON-FORMULA`
 - Active development branch: `тест`
 - Stable branch: `main` — do not modify or merge into it unless the user explicitly asks.
-- Current known HEAD when this file was created: `520671456257b464c42b7b56418f715b6adf6e98`
+- Code HEAD before the graph-connected visibility documentation update: `9e1dfb51285277989c83f54d2bf9c63497388f6e`
 - The user performs manual browser testing. Do not claim browser testing unless it was actually performed.
 - Work incrementally: one file = one responsibility; one version = one mechanic; fix errors before adding features; commit at meaningful milestones.
 - Before editing: fetch the exact current file contents and blob SHA from the active branch. Never overwrite based on stale content.
@@ -273,9 +273,15 @@ Implementation files: `assets/js/script.js`, `index.html`, `scripts/audit.js`.
 ### Upgrade tree neon connection threads — 2026-11-06
 
 - The existing multi-link graph topology and node coordinates remain unchanged.
-- The purchased NODE #0001 reveals its 80-unit area. Existing graph links between all currently revealed nodes are now drawn, including links whose endpoints are still locked for purchase. Hidden nodes and links outside the revealed area remain hidden.
+- Purchased NODE #0001 geometrically reveals its 80-unit area. Only nodes in that area that are graph-connected to NODE #0001 are actually displayed; candidate points without a path through visible links are hidden.
+- Each additional purchased node is also a root for its own connected visible component, preserving future expansion behavior.
+- Links are drawn only when both endpoints survive graph-connected visibility, including links whose endpoints are still locked for purchase.
 - All visible links use a soft neon green by default.
-- Selecting any visible node changes every direct link connected to that node to blue; selecting a different node moves the blue highlight to its own direct connections. With no selection, all visible links are green.
-- Green and blue links retain a restrained glow. No purchase progression, node IDs, graph topology, or save behavior is changed.
-- Audit coverage checks revealed-endpoint visibility and direct-edge highlighting for NODE #0001 and another selected node.
+- Selecting any visible node changes every direct visible link connected to that node to blue; selecting a different node moves the blue highlight to its own direct connections. With no selection, all visible links are green.
+- Green and blue links retain a restrained glow. No purchase progression, node IDs, graph topology, coordinates, or save behavior is changed.
+- Audit coverage verifies that disconnected candidate nodes remain hidden, purchased roots can reveal their own connected components, and selected-node edge highlighting still works.
 - Browser visual testing remains the user's responsibility.
+
+Implementation follow-up:
+- Commit 4bfa99b32c0875aae70d941a83eae5da0f2af5f5: graph-connected node visibility in assets/js/tree.js.
+- Commit 9e1dfb51285277989c83f54d2bf9c63497388f6e: runtime/static audit coverage in scripts/audit.js.
