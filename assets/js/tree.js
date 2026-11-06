@@ -72,7 +72,7 @@
   edgeKeys.add(key);edges.push([lo,hi]);
  };
  const typeFor=id=>{
-  if(id===0)return "square";
+  if(id===0||id===3)return "square";
   const roll=random();
   return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
  };
@@ -82,7 +82,7 @@
   const x=positions[id].x,y=positions[id].y;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
-  const cost=type==="square"?1:type==="pentagon"?100000:type==="triangle"?1000:100;
+  const cost=id===3?5:type==="square"?1:type==="pentagon"?100000:type==="triangle"?1000:100;
   nodes.push({id,type,typeKey:"nodeType"+type[0].toUpperCase()+type.slice(1),depth:Math.floor(Math.sqrt(id)),parent:-1,links:[],maxLevel,level:0,x,y,cost,effect});
  }
  // Build a connected backbone, then add deterministic cross-links to create a tangled graph.
@@ -145,11 +145,11 @@
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.level>=n.maxLevel?1:0),0);
- window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;
+ window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;
  function persist(){return FAStorage.setJSON("faTree",nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level})))}
- function nodeCost(n){return n.id===0?1:Math.ceil(n.cost*Math.pow(1.55,n.level))}
+ function nodeCost(n){return n.id===0?1:n.id===3?5:Math.ceil(n.cost*Math.pow(1.55,n.level))}
  // The first content node is the only active purchase in this initial tree release.
- function available(n){return n.id===0&&n.level<n.maxLevel}
+ function available(n){return (n.id===0||n.id===3)&&n.level<n.maxLevel}
  function canBuy(n){return available(n)&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
  function edgeVisible(a,b){return revealed[a]===1&&revealed[b]===1}
@@ -214,9 +214,9 @@
   const n=nodes[selected],id=document.querySelector(".inspector-id"),title=document.querySelector("#treeInspector h3"),desc=document.querySelector("#treeInspector p"),level=document.getElementById("nodeLevel"),cost=document.getElementById("nodeCost"),btn=document.getElementById("nodeBuy");
   if(!n){id.textContent="NODE —";title.textContent=tr("selectNode");desc.textContent=tr("selectNodeDesc");level.textContent="0 / 1";cost.textContent="—";btn.disabled=true;btn.textContent=tr("selectNode");return}
   const typeName=tr(n.typeKey),shapeLimit=n.type==="circle"?tr("nodeRangeCircle"):n.type==="triangle"?"10":n.type==="pentagon"?"5":"1";
-  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+typeName.toUpperCase()+" · "+n.links.length+" LINKS";
-  title.textContent=n.id===0?tr("nodeRootTitle"):typeName+" "+tr("nodeUpgrade");
-  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
+  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+(n.type==="square"?"CONTENT NODE":typeName.toUpperCase())+" · "+n.links.length+" LINKS";
+  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
+  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
   level.textContent=n.level+" / "+n.maxLevel;
   cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
