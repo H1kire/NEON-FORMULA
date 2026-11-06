@@ -87,7 +87,15 @@ function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;f
 function getA(){return formulaState.a}function getB(){return formulaState.b}function getC(){return formulaState.c}function getD(){return formulaState.d}function getE(){return formulaState.e}
 const formulaLetterGetters=[getA,getB,getC,getD,getE];
 window.registerFormulaLetter=getter=>{if(typeof getter==="function"&&!formulaLetterGetters.includes(getter))formulaLetterGetters.push(getter)};
-function getLetterProduct(){return safeProduct(...formulaLetterGetters.map(getter=>getter()))}
+function getLetterProduct(){
+ const active=[];
+ if(aLevel>0)active.push(getA());
+ if(bLevel>0)active.push(getB());
+ if(cLevel>0)active.push(getC());
+ if(dLevel>0)active.push(getD());
+ if(eLevel>0)active.push(getE());
+ return safeProduct(...active,...formulaLetterGetters.slice(5).map(getter=>getter()));
+}
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
  getParameter:getLetterParameter,
