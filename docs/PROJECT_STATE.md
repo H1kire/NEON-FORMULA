@@ -194,14 +194,33 @@ function getGlobalSumMultiplier(){
 }
 ```
 
-- Global Sum costs: 1, 1k, 1m, 1b, 1t AP; max 5 purchases.
-- `getGlobalSumCost() = Math.min(Number.MAX_SAFE_INTEGER, Math.pow(1000, prestigeUpgrades.globalSum))`.
+- Global Sum costs: 1, 1k, 1m, 1b, 1t AP; max 5 purchases. Stored `globalSum` is n: 0 before purchase, then 2, 3, 4, 5, 6.
+- `globalSumVersion: 2` migrates old saves by adding 1 to any existing positive purchase count, preserving the number of previous purchases.
+- `getGlobalSumCost()` maps n=0 to 1 AP, n=2 to 1k, n=3 to 1m, n=4 to 1b, n=5 to 1t; n=6 is maxed.
 - Simple Boost was renamed Ascension Legacy / «Наследие Вознесения».
 - Ascension Legacy cost: \(125^{(L+1)}\) AP.
 
 ## Latest completed user test
 
 The user manually confirmed on 2026-11-06 that Genesis Prestige activates after accumulating AP, and the integral formula displays correctly. The earlier pending concern about the Genesis Prestige button is resolved; the suspected ~1079 AP threshold was not confirmed and should not be treated as a bug.
+
+## Global Sum first-purchase adjustment and Additional Upgrades visibility
+
+Implemented on branch `тест`:
+- First Global Sum purchase now sets `n=2`, adding two unit-weight terms beyond `w₀`; each later purchase increments n by 1, up to n=6 after five purchases.
+- AP costs remain 1, 1K, 1M, 1B, 1T for purchases 1–5.
+- Existing `prestigeSave` data is migrated once using `globalSumVersion: 2`; any previous positive purchase count is incremented by one to preserve purchase history under the new n representation.
+- “Permanent ascension upgrades” is now “Additional Upgrades” (localized English/Russian) and is visible before the first prestige. Purchase costs and AP requirements remain unchanged.
+- The plain-text formula fallback no longer appends the w definitions as prose.
+
+Files changed:
+- `assets/js/script.js`
+- `assets/js/prestige.js`
+- `assets/js/app-ui.js`
+- `index.html`
+- `scripts/audit.js`
+
+Manual browser testing is pending. Verify an old save with one Global Sum purchase migrates to n=2, a first purchase from a fresh save produces n=2, and Additional Upgrades are visible before prestige.
 
 ## Live formula values panel — implementation in progress
 
