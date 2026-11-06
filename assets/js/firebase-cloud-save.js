@@ -51,7 +51,8 @@
   let user = null;
   let database = null;
   let busy = false;
-  let hasCloudSave = false;\n  let authGeneration = 0;
+  let hasCloudSave = false;
+  let authGeneration = 0;
 
   function showStatus(value, state) {
     if (!status) return;
