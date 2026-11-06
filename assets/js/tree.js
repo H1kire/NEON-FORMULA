@@ -111,9 +111,18 @@
  });
  // Reveal nodes within 80 units of the center or any node purchased at least once.
  const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS;
- const revealed=new Uint8Array(TOTAL);
+ const areaRevealed=new Uint8Array(TOTAL),revealed=new Uint8Array(TOTAL);
+ function rebuildConnectedReveal(candidates,roots,adjacency,output){
+  output.fill(0);
+  const queue=[];
+  for(const id of roots)if(candidates[id]&&!output[id]){output[id]=1;queue.push(id)}
+  for(let head=0;head<queue.length;head++){
+   const id=queue[head];
+   for(const next of adjacency[id])if(candidates[next]&&!output[next]){output[next]=1;queue.push(next)}
+  }
+ }
  function rebuildRevealed(){
-  revealed.fill(0);
+  areaRevealed.fill(0);
   const revealAround=(center)=>{
    const cx=Math.floor(center.x/cellSize),cy=Math.floor(center.y/cellSize);
    for(let gx=cx-2;gx<=cx+2;gx++)for(let gy=cy-2;gy<=cy+2;gy++){
@@ -121,12 +130,14 @@
     if(!bucket)continue;
     for(const id of bucket){
      const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;
-     if(dx*dx+dy*dy<=REVEAL_RADIUS_SQ)revealed[id]=1;
+     if(dx*dx+dy*dy<=REVEAL_RADIUS_SQ)areaRevealed[id]=1;
     }
    }
   };
   revealAround(positions[0]);
-  for(const n of nodes)if(n.level>0)revealAround(n);
+  const roots=[0];
+  for(const n of nodes)if(n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}
+  rebuildConnectedReveal(areaRevealed,roots,nodes.map(n=>n.links),revealed);
  }
  rebuildRevealed();
  const MIN_SCALE=.0001,MAX_SCALE=2.5;
