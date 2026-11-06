@@ -56,6 +56,7 @@
  }
  // Keep the existing graph topology independent from the new visual layout.
  // These legacy coordinates are used only to choose the same nearest neighbors.
+ graphPositions.push({x:0,y:0});
  const oldCoreRadius=95*4.5,oldRadialStep=oldCoreRadius/3.5;
  for(let id=1;id<TOTAL;id++){
   const arm=(id-1)%4,armStep=Math.floor((id-1)/4);
