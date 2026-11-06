@@ -51,9 +51,12 @@ const treeLayoutChecks=[
  ['const distance=42+layoutRandom()*118','short random branch distance'],
  ['if(hasRoom(x,y))point={x,y}','overlap prevention'],
  ['const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS','80-unit reveal radius'],
+ ['const areaRevealed=new Uint8Array(TOTAL),revealed=new Uint8Array(TOTAL)','separate geometric candidates from graph-connected visibility'],
+ ['function rebuildConnectedReveal(candidates,roots,adjacency,output)','graph-connected reveal traversal'],
  ['revealAround(positions[0])','initial reveal around the center'],
- ['for(const n of nodes)if(n.level>0)revealAround(n)','reveal around every purchased node'],
- ['if(!edgeVisible(a,b))continue','show links only between revealed nodes'],
+ ['for(const n of nodes)if(n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}','reveal around every purchased node and seed its connected component'],
+ ['rebuildConnectedReveal(areaRevealed,roots,nodes.map(n=>n.links),revealed)','hide candidate nodes without a path to a visible root'],
+ ['if(!edgeVisible(a,b))continue','show links only between graph-connected revealed nodes'],
  ['if(!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
  ['if(!revealed[n.id])continue','prevent selecting hidden nodes'],
  ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
@@ -73,6 +76,18 @@ const treeVisualChecks=[
  ['dist=31/scale','mouse hit testing']
 ];
 for(const [token,label] of treeVisualChecks){if(!treeSource.includes(token))fail("Upgrade tree visual/navigation feature missing "+label);else pass("Upgrade tree "+label)}
+const revealHelperSource=treeSource.slice(treeSource.indexOf("function rebuildConnectedReveal"),treeSource.indexOf("function rebuildRevealed"));
+try{
+ const revealContext={};
+ vm.runInNewContext(revealHelperSource+";globalThis.__rebuildConnectedReveal=rebuildConnectedReveal;",revealContext);
+ const candidates=new Uint8Array([1,1,1,1,1,1,0]),visible=new Uint8Array(7);
+ const adjacency=[[1],[0,2],[1],[4],[3,5],[4],[6]];
+ revealContext.__rebuildConnectedReveal(candidates,[0],adjacency,visible);
+ if([...visible].join("")!=="1110000")fail("Nodes without a graph path to the visible root must remain hidden");
+ revealContext.__rebuildConnectedReveal(candidates,[0,4],adjacency,visible);
+ if([...visible].join("")!=="1111110")fail("A separately purchased node must reveal its own connected component");
+ pass("Upgrade tree graph-connected node visibility and disconnected-node hiding");
+}catch(error){fail("Upgrade tree connected reveal runtime test: "+error.message)}
 const treeEdgeSource=treeSource.slice(treeSource.indexOf("function edgeVisible"),treeSource.indexOf("function pathNode"));
 try{
  const edgeContext={revealed:new Uint8Array([1,1,1,0]),selected:0,nodes:[{links:[1,2]},{links:[0,2]},{links:[0,1,3]},{links:[2]}]};
