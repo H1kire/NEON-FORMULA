@@ -33,15 +33,45 @@ if(!css.includes(".upgrade-title{color:#e2ebe8;font-size:13px;font-weight:700}")
 for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fail("Direct localStorage access in "+file);
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 const treeSource=sources["assets/js/tree.js"];
-for(const token of ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5','n.id===0?1','function available(n){return n.id===0&&n.level<n.maxLevel}','const addEdge=','n.links.push(b);nodes[b].links.push(a)','"circle"?"triangle"'])
- if(!treeSource.includes(token))fail("Upgrade tree structure missing expected feature: "+token);
-else pass("Upgrade tree typed-node and multi-link structure");
-if(!treeSource.includes('type==="pentagon"?1.5+random()'))fail("Hyper nodes must retain intentionally powerful effects");
-for(const token of ['const positions=[]','const armCount=4,spiralSpacing=95,displayClearance=4.5','const coreRadius=spiralSpacing*displayClearance','const radialStep=coreRadius/3.5','const winding=2.35,armJitter=.045','const arm=(id-1)%armCount','const armStep=Math.floor((id-1)/armCount)','Math.log1p(radius/coreRadius)','const MIN_SCALE=.0001,MAX_SCALE=2.5','scale=Math.max(MIN_SCALE','function edgeOpen(a,b)','if(!edgeOpen(a,b))continue','function selectedPath()','rgba(75,151,255,','105,226,157,','scale/.28','n.id===selected?22.5:n.id===0?19.5:12.3','isBlue?2.25:1.5','dist=31/scale'])
- if(!treeSource.includes(token))fail("Upgrade tree visual/navigation feature missing: "+token);
-pass("Upgrade tree four-arm galaxy layout, expanded camera zoom-out, open-edge glow, selected route and enlarged nodes");
-
-
+const treeStructureChecks=[
+ ['const TOTAL=3886','fixed 3,886-node network'],
+ ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5','node type level limits'],
+ ['n.id===0?1','root node base cost'],
+ ['function available(n){return n.id===0&&n.level<n.maxLevel}','current root-only purchase gate'],
+ ['const addEdge=','deduplicated edge builder'],
+ ['nodes[a].links.push(b);nodes[b].links.push(a)','bidirectional multi-link adjacency'],
+ ['type==="pentagon"?1.5+random()','hyper node effect scaling']
+];
+for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
+const treeLayoutChecks=[
+ ['const positions=[],graphPositions=[]','separate visual and topology coordinates'],
+ ['const cellSize=40,minSpacing=40','40-unit minimum node spacing'],
+ ['const anchor=positions[Math.floor(layoutRandom()*positions.length)]','random anchor chosen from the whole existing cloud'],
+ ['const angle=layoutRandom()*Math.PI*2','random placement angle'],
+ ['const distance=42+layoutRandom()*118','short random branch distance'],
+ ['if(hasRoom(x,y))point={x,y}','overlap prevention'],
+ ['const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS','80-unit reveal radius'],
+ ['revealAround(positions[0])','initial reveal around the center'],
+ ['for(const n of nodes)if(n.level>0)revealAround(n)','reveal around every purchased node'],
+ ['if(!revealed[a]||!revealed[b]||!edgeOpen(a,b))continue','hide edges outside revealed regions'],
+ ['if(!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
+ ['if(!revealed[n.id])continue','prevent selecting hidden nodes'],
+ ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
+];
+for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail("Upgrade tree layout/reveal check missing "+label);else pass("Upgrade tree "+label)}
+const treeVisualChecks=[
+ ['const MIN_SCALE=.0001,MAX_SCALE=2.5','camera zoom bounds'],
+ ['scale=Math.max(MIN_SCALE','clamped camera zoom'],
+ ['function edgeOpen(a,b)','open-edge visibility rule'],
+ ['function selectedPath()','selected route calculation'],
+ ['75,151,255,','selected-route blue glow'],
+ ['105,226,157,','open-link green glow'],
+ ['scale/.28','zoom-aware glow fade'],
+ ['n.id===selected?22.5:n.id===0?19.5:12.3','node display sizes'],
+ ['isBlue?2.25:1.5','link display widths'],
+ ['dist=31/scale','mouse hit testing']
+];
+for(const [token,label] of treeVisualChecks){if(!treeSource.includes(token))fail("Upgrade tree visual/navigation feature missing "+label);else pass("Upgrade tree "+label)}
 if(pkg&&(!pkg.scripts?.check||!pkg.scripts?.start))fail("Missing npm scripts");
 const formatMatch=sources["assets/js/script.js"].match(/function format\(n\)\{[\s\S]*?\n\}/);
 if(!formatMatch)fail("Could not locate number formatter");
