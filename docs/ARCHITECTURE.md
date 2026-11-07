@@ -4,7 +4,7 @@ FORMULA ASCENT is built around several connected stages of progression. This gui
 
 ## 1. Build your Score
 
-The five formula modules A–E generate the production multiplier. Their values are connected: changing one module can influence the others.
+The six formula modules A–F contribute to the production multiplier. A–E form the core recursive system. F is unlocked separately through NODE #0004 and adds an integral-exponential multiplier after 5 seconds of run time.
 
 Spend Score on module upgrades to increase production. The formula updates as the run progresses.
 
@@ -35,13 +35,13 @@ The tree contains 3,886 connected nodes. Node shapes identify different upgrade 
 - Triangles — major upgrades.
 - Pentagons — hyper upgrades.
 
-In the current release, NODE #0001 is the available purchase. It costs 1 GP and unlocks an integral multiplier in the production formula. Other nodes are reserved for future content.
+In the current release, NODE #0001 costs 1 GP and unlocks an integral multiplier. NODE #0004 costs 5 GP and unlocks Letter F. Other nodes are reserved for future content.
 
 ## 6. Permanent formula improvements
 
 **Global Sum** increases production by adding weighted terms. **Ascension Legacy** strengthens the additional terms. NODE #0001 adds an integral based on the current E multiplier.
 
-These upgrades expand the production formula beyond the basic product of A–E.
+These upgrades expand the production formula beyond the basic product of A–E, with Letter F adding a separate integral-exponential multiplier.
 
 ## 7. Accounts and progress
 
