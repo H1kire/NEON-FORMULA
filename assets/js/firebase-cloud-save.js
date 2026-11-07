@@ -93,14 +93,24 @@
     if (!prestige || typeof prestige !== "object" || Array.isArray(prestige) ||
         !finiteNonNegative(prestige.p) || !finiteNonNegative(prestige.gp) ||
         !prestige.prestigeUpgrades || typeof prestige.prestigeUpgrades !== "object" ||
-        !finiteNonNegative(prestige.prestigeUpgrades.simpleBoost) || !finiteNonNegative(prestige.prestigeUpgrades.globalSum)) {
+        !Number.isInteger(prestige.prestigeUpgrades.simpleBoost) || prestige.prestigeUpgrades.simpleBoost < 0 ||
+        !Number.isInteger(prestige.prestigeUpgrades.globalSum) || prestige.prestigeUpgrades.globalSum < 0) {
       throw new Error("Invalid prestige state");
     }
     if (!meta || typeof meta !== "object" || Array.isArray(meta) ||
         !Array.isArray(meta.research) || meta.research.length !== 10 ||
-        !meta.settings || typeof meta.settings !== "object" ||
-        !meta.automation || typeof meta.automation !== "object" ||
-        !meta.stats || typeof meta.stats !== "object") {
+        !meta.research.every(value => Number.isInteger(value) && value >= 0) ||
+        !meta.settings || typeof meta.settings !== "object" || Array.isArray(meta.settings) ||
+        !meta.automation || typeof meta.automation !== "object" || Array.isArray(meta.automation) ||
+        !Array.isArray(meta.automation.unlocked) || meta.automation.unlocked.length !== 5 ||
+        !meta.automation.unlocked.every(value => typeof value === "boolean") ||
+        !Array.isArray(meta.automation.enabled) || meta.automation.enabled.length !== 5 ||
+        !meta.automation.enabled.every(value => typeof value === "boolean") ||
+        typeof meta.automation.paused !== "boolean" ||
+        !meta.stats || typeof meta.stats !== "object" || Array.isArray(meta.stats) ||
+        !["totalPlayTime", "lifetimeValue", "ascensions", "genesisPrestiges", "purchases"].every(key => finiteNonNegative(meta.stats[key])) ||
+        (meta.treeUnlocked !== undefined && typeof meta.treeUnlocked !== "boolean") ||
+        (meta.treePassPurchased !== undefined && typeof meta.treePassPurchased !== "boolean")) {
       throw new Error("Invalid meta state");
     }
     if (!Array.isArray(tree) || tree.some(node => !node || !Number.isInteger(node.id) || node.id < 0 || node.id >= 3886 ||
