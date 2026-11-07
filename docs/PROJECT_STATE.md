@@ -5,7 +5,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 ## Available gameplay
 
 - Six connected formula modules: A, B, C, D, E and F.
-- Letter F unlocks through NODE #0004 for 5 GP and activates after 5 seconds of run time.
+- Letter F unlocks through NODE #0004 for 5 GP, must be purchased for 1 Qa Score, and activates after 5 seconds of run time. Each subsequent upgrade raises p by 0.0001 up to 0.85 using the shared letter price curve.
 - Score production and individual module upgrades.
 - Research Division upgrades purchased with Ascension Points.
 - Ascension, which resets the current run while preserving long-term AP progression.
