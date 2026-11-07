@@ -162,7 +162,7 @@ function integrateOffline(seconds){
  }finally{t=origin}
  return Math.min(Number.MAX_VALUE,total*.82);
 }
-function manualSave(){const results=[saveGame(true),saveMeta(),savePrestige()],ok=results.every(Boolean);const button=$("manualSaveBtn");if(button){const old=button.textContent;button.textContent=ok?(FA_META.language==="ru"?"СОХРАНЕНО":"SAVED"):(FA_META.language==="ru"?"ОШИБКА СОХРАНЕНИЯ":"SAVE FAILED");setTimeout(()=>button.textContent=old,1600)}}
+function manualSave(){const results=[saveGame(true),saveMeta(),savePrestige(),saveTreeProgress()],ok=results.every(Boolean);const button=$("manualSaveBtn");if(button){const old=button.textContent;button.textContent=ok?(FA_META.language==="ru"?"СОХРАНЕНО":"SAVED"):(FA_META.language==="ru"?"ОШИБКА СОХРАНЕНИЯ":"SAVE FAILED");setTimeout(()=>button.textContent=old,1600)}}
 function resetSave(){
  if(!confirm(FA_META.language==="ru"?"Удалить весь прогресс, включая исследования и древо?":"Delete all progress, including research and the tree?"))return;
  FAStorage.removeMany([SAVE_KEY,LEGACY_SAVE_KEY,OLD_SAVE_KEY,"prestigeSave","faMeta","faTree"]);
@@ -257,11 +257,10 @@ function updateUI(){
   if(letterFCard)letterFCard.hidden=!letterFUnlocked;
   if(letterFRow)letterFRow.hidden=!letterFUnlocked;
   const fLevelDisplay=$("fLevel"),fCostDisplay=$("fCost"),fBuyButton=$("btnF");
-  if(fLevelDisplay)fLevelDisplay.textContent=fLevel+" / "+LETTER_F_MAX_LEVEL;
+  if(fLevelDisplay)fLevelDisplay.textContent=fLevel;
   if(fCostDisplay)fCostDisplay.textContent=fLevel>=LETTER_F_MAX_LEVEL?tr("maxed"):format(getFCost());
   if(fBuyButton){setBtn(fBuyButton,getFCost());fBuyButton.disabled=fLevel>=LETTER_F_MAX_LEVEL;fBuyButton.textContent=fLevel===0?tr("buyF"):tr("buyUpgrade");}
   const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE(),f:getF()};
-  const fExponentDisplay=$("fExponent");if(fExponentDisplay)fExponentDisplay.textContent=getFExponent().toFixed(4);
   for(const letter of ["a","b","c","d","e","f"]){
    const display=$("formulaValue"+letter.toUpperCase());
    if(display)display.textContent=formatPrecise(liveValues[letter],2);
