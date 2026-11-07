@@ -273,7 +273,7 @@ if(!prestigeSource.includes("fLevel=0"))fail("Letter F level must reset with the
 const resetSource=sources["assets/js/script.js"].match(/function resetSave\(\)[\s\S]*?\n\}/)?.[0]||"";
 if(!resetSource.includes("resetRun()")||!resetSource.includes("saveGame(true)")||!resetSource.includes("FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY])"))fail("Manual RESET must clear and save only the current run");
 if(/"prestigeSave"|"faMeta"|"faTree"|cloudSave|removeMany\(\[SAVE_KEY/.test(resetSource))fail("Manual RESET must preserve prestige, meta, tree and cloud-save data");else pass("Manual RESET preserves prestige/meta/tree and never touches cloud saves");
-const runResetSource=prestigeSource.match(/function resetRun\(\)[\s\S]*?\n\}/)?.[0];
+const runResetSource=prestigeSource.match(/function resetRun\(\)\{[^}]*\}/)?.[0];
 if(!runResetSource)fail("Current-run reset function is missing");
 else{
  try{
