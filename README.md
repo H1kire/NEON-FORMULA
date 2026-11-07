@@ -114,3 +114,15 @@ A cloud save belongs to the signed-in account. Restoring a cloud save replaces t
 ## Playing the game
 
 FORMULA ASCENT runs in a web browser. The game is hosted as a static website and does not require a separate game installation.
+
+---
+
+**Copyright © 2026 NEON FORMULA. All rights reserved.**
+
+NEON FORMULA and its original source code are the intellectual property of their respective copyright holder.
+
+The source code is publicly available for viewing and educational inspection only.
+
+No permission is granted to use, copy, modify, distribute, sublicense, or commercially exploit this project or its source code without prior written permission from the copyright holder.
+
+For licensing or commercial use inquiries, please contact the project author.
