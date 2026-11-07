@@ -178,7 +178,7 @@ else{
 }
 const fFormulaSource=sources["assets/js/script.js"].slice(sources["assets/js/script.js"].indexOf("const LETTER_F_BASE_EXPONENT"),sources["assets/js/script.js"].indexOf("const formulaLetterGetters"));
 try{
- const fContext={fLevel:0,t:10,window:{isLetterFUnlocked:()=>true},getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
+ const fContext={fLevel:0,t:10,LETTER_BASE_COSTS:{f:1e15},window:{isLetterFUnlocked:()=>true},getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
  vm.runInNewContext(fFormulaSource+";globalThis.__f={getF,getFExponent,getFCost};",fContext);
  if(fContext.__f.getF()!==1)throw new Error("Unpurchased F must remain neutral");
  if(fContext.__f.getFCost()!==1e15)throw new Error("First F purchase must cost exactly 1 Qa");
