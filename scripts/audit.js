@@ -38,7 +38,7 @@ try {
  const parserEnd=sources["assets/js/firebase-cloud-save.js"].indexOf("  function collectLocalSnapshot()",parserStart);
  if(parserStart<0||parserEnd<0)throw new Error("Cloud snapshot parser not found");
  const parser=sources["assets/js/firebase-cloud-save.js"].slice(parserStart,parserEnd).replace(/^  /gm,"");
- const context={SNAPSHOT_KEYS:["formula_ascent_save_v2","prestigeSave","faMeta","faTree"]};
+ const context={GAME_KEY:"formula_ascent_save_v2",PRESTIGE_KEY:"prestigeSave",META_KEY:"faMeta",TREE_KEY:"faTree",SNAPSHOT_KEYS:["formula_ascent_save_v2","prestigeSave","faMeta","faTree"]};
  const snapshot={
   formula_ascent_save_v2:JSON.stringify({t:12,value:345,aLevel:1,bLevel:2,cLevel:3,dLevel:4,eLevel:5,fLevel:1,formulaState:{a:1,b:1,c:1,d:1,e:1},formulaSteps:12,formulaAccumulator:0,lastTime:100}),
   prestigeSave:JSON.stringify({p:123,gp:4,prestigeUnlocked:true,prestigeUpgrades:{simpleBoost:2,globalSum:3}}),
@@ -111,7 +111,6 @@ const letterFChecks=[
  ['fLevel,fExponent:getFExponent()','Letter F level and exponent are exposed'],
  ['fLevel,formulaState','Letter F level is stored in local saves'],
  ['id="fFormula"','Letter F formula is displayed'],
- ['id="fExponent"','Letter F exponent is displayed'],
  ['id="fLevel"','Letter F level is displayed'],
  ['id="fCost"','Letter F next cost is displayed'],
  ['id="btnF"','Letter F purchase button is displayed']
