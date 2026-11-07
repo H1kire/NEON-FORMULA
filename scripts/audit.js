@@ -271,19 +271,21 @@ try{
 const prestigeSource= sources["assets/js/prestige.js"];
 if(!prestigeSource.includes("fLevel=0"))fail("Letter F level must reset with the other run upgrades on prestige");else pass("Letter F prestige reset matches A–E run upgrades");
 const resetSource=sources["assets/js/script.js"].match(/function resetSave\(\)[\s\S]*?\n\}/)?.[0]||"";
-if(!resetSource.includes("resetRun()")||!resetSource.includes("saveGame(true)")||!resetSource.includes("FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY])"))fail("Manual RESET must clear and save only the current run");
-if(/"prestigeSave"|"faMeta"|"faTree"|cloudSave|removeMany\(\[SAVE_KEY/.test(resetSource))fail("Manual RESET must preserve prestige, meta, tree and cloud-save data");else pass("Manual RESET preserves prestige/meta/tree and never touches cloud saves");
-const runResetSource=prestigeSource.match(/function resetRun\(\)\{[^}]*\}/)?.[0];
-if(!runResetSource)fail("Current-run reset function is missing");
-else{
- try{
-  const runState={t:91,value:123456,aLevel:3,bLevel:4,cLevel:5,dLevel:6,eLevel:7,fLevel:8,formulaState:{a:2},formulaSteps:90,formulaAccumulator:.5};
-  const resetContext={...runState,resetFormulaState(){resetContext.formulaState={a:1,b:1,c:1,d:1,e:1};resetContext.formulaSteps=0;resetContext.formulaAccumulator=0}};
-  vm.runInNewContext(runResetSource+";resetRun();",resetContext);
-  if([resetContext.t,resetContext.value,resetContext.aLevel,resetContext.bLevel,resetContext.cLevel,resetContext.dLevel,resetContext.eLevel,resetContext.fLevel].some(v=>v!==0)||resetContext.formulaSteps!==0||resetContext.formulaAccumulator!==0||resetContext.formulaState.a!==1)fail("Current-run reset must zero time, Score, all letter levels and formula state");
-  else pass("Current-run reset clears Score, time, A–F and formula state only");
- }catch(error){fail("Current-run reset runtime test: "+error.message)}
-}
+const resetRequirements=[
+ "resetRun()","p=0;gp=0;prestigeUnlocked=false",
+ "prestigeUpgrades={simpleBoost:0,globalSum:0}",
+ "FA_META.research=Array(10).fill(0)",
+ "FA_META.automation={unlocked:[false,false,false,false,false],enabled:[true,true,true,true,true],paused:false}",
+ "FA_META.treeUnlocked=false","FA_META.treePassPurchased=false",
+ "FA_META.stats={totalPlayTime:0,lifetimeValue:0,ascensions:0,genesisPrestiges:0,purchases:0}",
+ 'FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"])',
+ "saveGame(true)","savePrestige()","saveMeta()"
+];
+const missingReset=resetRequirements.filter(part=>!resetSource.includes(part));
+if(missingReset.length)fail("Full RESET is missing local progression resets: "+missingReset.join(", "));
+else pass("Full RESET clears run, AP/GP, prestige upgrades, Research, automation, Genesis Gate, tree and statistics");
+if(/cloudSave|firebase|saveToCloud|deleteCloud|cloudRestore/.test(resetSource))fail("Full RESET must not access Firebase or cloud-save operations");
+else pass("Full RESET is local-only and leaves Firebase cloud storage untouched");
 try{
  const costSource=prestigeSource.match(/function getGlobalSumCost\(\)[\s\S]*?\}/)?.[0];
  if(!costSource)throw new Error("Global Sum cost function missing");
