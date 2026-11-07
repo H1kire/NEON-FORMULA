@@ -1,13 +1,13 @@
 # FORMULA ASCENT
 
-**FORMULA ASCENT** is a browser-based mathematical idle game. Build up your Score, improve five connected formula modules, perform Ascensions, unlock permanent upgrades and expand your Upgrade Tree.
+**FORMULA ASCENT** is a browser-based mathematical idle game. Build up your Score, improve six connected formula modules, perform Ascensions, unlock permanent upgrades and expand your Upgrade Tree.
 
 The game is available in English and Russian.
 
 ## How to play
 
 1. Start a run and let your formula generate Score over time.
-2. Spend Score on upgrades for the five formula modules: A, B, C, D and E.
+2. Spend Score on upgrades for the five core formula modules: A, B, C, D and E. Unlock the additional F module through NODE #0004.
 3. Unlock Research Division upgrades to improve your progression and automation.
 4. Earn Ascension Points (AP) and perform an **Ascension** to reset the current run while keeping long-term progress.
 5. Save up 1,000 AP to unlock the **Genesis Gate**. This opens the Upgrade Tree and Genesis Prestige.
@@ -15,13 +15,14 @@ The game is available in English and Russian.
 
 ## The formula
 
-The game has five connected formula modules. Their multipliers are calculated together, with each update using the previous complete state of the system:
+The game has six connected formula modules. A–E form the core recursive system; F is unlocked separately through NODE #0004. Their multipliers contribute to production together:
 
 - **A — Power Foundation:** grows with time and receives feedback from C.
 - **B — Root Amplifier:** is influenced by A.
 - **C — Logarithmic Recursion:** uses A, B and its previous value.
 - **D — Nonlinear Coupling:** combines A, B and C.
 - **E — Logarithmic Resonance:** combines B and D.
+- **F — Integral Exponential:** combines elapsed time with an integral whose upper limit is the product of A and E. It activates at 5 seconds and requires NODE #0004.
 
 The current module equations are:
 
@@ -45,7 +46,11 @@ d=1+\frac{\sqrt{abc}}{11.7}
 e=1+\frac{\ln(1+bd)}{2.057}
 \]
 
-Here, **t** is the run time. The five module multipliers contribute to production together.
+\[
+f=1+\exp\left(\left[\ln(1+t)\cdot\int_0^{ae}\frac{1}{1+x}\,dx\right]^{0.40}\right),\quad t\geq5
+\]
+
+Here, **t** is the run time. Before 5 seconds, F remains inactive and contributes a neutral multiplier of 1. The six module multipliers contribute to production together.
 
 ### Additional formula upgrades
 
@@ -84,7 +89,7 @@ Genesis Prestige resets the current run and AP-based progression, but preserves 
 
 ### Upgrade Tree
 
-The Upgrade Tree contains **3,886 nodes** connected in a large network. Nodes have different shapes that indicate their upgrade category. In the current release, **NODE #0001** is available for purchase and costs 1 GP; other nodes are reserved for future content.
+The Upgrade Tree contains **3,886 nodes** connected in a large network. Nodes have different shapes that indicate their upgrade category. In the current release, **NODE #0001** is available for 1 GP and **NODE #0004** is available for 5 GP. NODE #0004 unlocks the F module. Other nodes are reserved for future content.
 
 Purchased nodes remain unlocked through prestige resets.
 
