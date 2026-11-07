@@ -7,7 +7,7 @@ The game is available in English and Russian.
 ## How to play
 
 1. Start a run and let your formula generate Score over time.
-2. Spend Score on upgrades for the five core formula modules: A, B, C, D and E. Unlock the additional F module through NODE #0004.
+2. Spend Score on upgrades for A, B, C, D and E. Unlock Letter F through NODE #0004, then purchase it for 1 Qa Score and improve it like the other letters.
 3. Unlock Research Division upgrades to improve your progression and automation.
 4. Earn Ascension Points (AP) and perform an **Ascension** to reset the current run while keeping long-term progress.
 5. Save up 1,000 AP to unlock the **Genesis Gate**. This opens the Upgrade Tree and Genesis Prestige.
@@ -22,7 +22,7 @@ The game has six connected formula modules. A–E form the core recursive system
 - **C — Logarithmic Recursion:** uses A, B and its previous value.
 - **D — Nonlinear Coupling:** combines A, B and C.
 - **E — Logarithmic Resonance:** combines B and D.
-- **F — Integral Exponential:** combines elapsed time with an integral whose upper limit is the product of A and E. It activates at 5 seconds and requires NODE #0004.
+- **F — Integral Exponential:** combines elapsed time with an integral whose upper limit is the product of A and E. It requires NODE #0004, a separate 1 Qa Score purchase, and activates at 5 seconds. Each subsequent upgrade raises p by 0.0001 up to 0.85 using the shared letter price curve.
 
 The current module equations are:
 
@@ -50,7 +50,7 @@ e=1+\frac{\ln(1+bd)}{2.057}
 f=1+\exp\left(\left[\ln(1+t)\cdot\int_0^{ae}\frac{1}{1+x}\,dx\right]^{0.40}\right),\quad t\geq5
 \]
 
-Here, **t** is the run time. Before 5 seconds, F remains inactive and contributes a neutral multiplier of 1. The six module multipliers contribute to production together.
+Here, **t** is the run time. F contributes a neutral multiplier of 1 until it is purchased, and remains inactive before 5 seconds. Its first purchase sets p = 0.40; subsequent upgrades raise p by 0.0001 up to 0.85. The six module multipliers contribute to production together.
 
 ### Additional formula upgrades
 
