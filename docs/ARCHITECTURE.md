@@ -35,7 +35,7 @@ The tree contains 3,886 connected nodes. Node shapes identify different upgrade 
 - Triangles — major upgrades.
 - Pentagons — hyper upgrades.
 
-In the current release, NODE #0001 costs 1 GP and unlocks an integral multiplier. NODE #0004 costs 5 GP and unlocks Letter F. Other nodes are reserved for future content.
+In the current release, NODE #0001 costs 1 GP and unlocks an integral multiplier. NODE #0004 costs 5 GP and unlocks Letter F. F must then be purchased for 1 Qa Score; subsequent upgrades use the standard letter price curve and raise p by 0.0001 up to 0.85. Other nodes are reserved for future content.
 
 ## 6. Permanent formula improvements
 
