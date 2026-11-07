@@ -1,7 +1,7 @@
 // FORMULA ASCENT — core idle simulation and universal letter mathematics
 const TICK=10, AUTOSAVE_INTERVAL=5000;
 let lastFrame=Date.now(),t=0,value=0;
-let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0;
+let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0,fLevel=0;
 const SAVE_KEY="formula_ascent_save_v2",LEGACY_SAVE_KEY="formula_ascent_save_v1",OLD_SAVE_KEY="neon_formula_idle_v4_5";
 const $=id=>document.getElementById(id);
 const timeDisplay=$("time"),valueDisplay=$("value"),growthDisplay=$("growth"),formulaDisplay=$("formulaText");
@@ -10,7 +10,7 @@ const btnA=$("btnA"),btnB=$("btnB"),btnC=$("btnC"),btnD=$("btnD"),btnE=$("btnE")
 const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dCostDisplay=$("dCost"),eCostDisplay=$("eCost");
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
 let formulaState={a:1,b:1,c:1,d:1,e:1},formulaSteps=0,formulaAccumulator=0;
-const LETTER_BASE_COSTS={a:1000,b:100000,c:10000000,d:1000000000,e:1000000000000};
+const LETTER_BASE_COSTS={a:1000,b:100000,c:10000000,d:1000000000,e:1000000000000,f:1000000000000000};
 const LETTER_BASE_PARAMETERS={a:1.81,b:0.652,c:1.66,d:11.7,e:2.057};
 function safeProduct(...values){
  let result=1;
@@ -85,11 +85,12 @@ function advanceFormulaClock(delta){
 }
 function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;formulaAccumulator=0}
 function getA(){return formulaState.a}function getB(){return formulaState.b}function getC(){return formulaState.c}function getD(){return formulaState.d}function getE(){return formulaState.e}
-const LETTER_F_BASE_EXPONENT=0.40;
-function getFExponent(){return LETTER_F_BASE_EXPONENT}
+const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501;
+function getFExponent(){return Math.min(LETTER_F_MAX_EXPONENT,LETTER_F_BASE_EXPONENT+Math.max(0,fLevel-1)*0.0001)}
+function getFCost(){return fLevel>=LETTER_F_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.f,fLevel)}
 function getF(){
  const unlocked=typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked();
- if(!unlocked||t<5)return 1;
+ if(fLevel<=0||!unlocked||t<5)return 1;
  const upper=safeProduct(getA(),getE());
  const integral=Math.log1p(upper);
  const x=safeProduct(Math.log1p(t),integral);
@@ -107,7 +108,8 @@ function getLetterProduct(){
  if(cLevel>0)active.push(getC());
  if(dLevel>0)active.push(getD());
  if(eLevel>0)active.push(getE());
- return safeProduct(...active,...formulaLetterGetters.slice(5).map(getter=>getter()));
+ if(fLevel>0&&typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked())active.push(getF());
+ return safeProduct(...active,...formulaLetterGetters.slice(6).map(getter=>getter()));
 }
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
@@ -116,11 +118,11 @@ window.FAMathSystem={
  getDependencyStrength:()=>Math.max(1,metaBonus("coupling")),
  getParameters:getLetterParameters,
  getLetterPrice:getLetterPrice,
- getState:()=>({...formulaState,f:getF()})
+ getState:()=>({...formulaState,f:getF(),fLevel,fExponent:getFExponent()})
 };
 function saveGame(force=false){
  if(!force&&FA_META.settings.autosave===false)return false;
- const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,formulaState,formulaSteps,formulaAccumulator,lastTime:Date.now()};
+ const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,fLevel,formulaState,formulaSteps,formulaAccumulator,lastTime:Date.now()};
  return FAStorage.setJSON(SAVE_KEY,data);
 }
 function loadGame(){
@@ -130,7 +132,7 @@ function loadGame(){
  if(!d||typeof d!=="object")return;
  try{
   t=Math.max(0,Number(d.t)||0);value=Math.min(Number.MAX_VALUE,Math.max(0,Number(d.value)||0));
-  aLevel=Math.max(0,Math.floor(Number(d.aLevel)||0));bLevel=Math.max(0,Math.floor(Number(d.bLevel)||0));cLevel=Math.max(0,Math.floor(Number(d.cLevel)||0));dLevel=Math.max(0,Math.floor(Number(d.dLevel)||0));eLevel=Math.max(0,Math.floor(Number(d.eLevel)||0));
+  aLevel=Math.max(0,Math.floor(Number(d.aLevel)||0));bLevel=Math.max(0,Math.floor(Number(d.bLevel)||0));cLevel=Math.max(0,Math.floor(Number(d.cLevel)||0));dLevel=Math.max(0,Math.floor(Number(d.dLevel)||0));eLevel=Math.max(0,Math.floor(Number(d.eLevel)||0));fLevel=Math.max(0,Math.min(LETTER_F_MAX_LEVEL,Math.floor(Number(d.fLevel)||0)));
   const savedState=d.formulaState;
   if(savedState&&["a","b","c","d","e"].every(k=>Number.isFinite(Number(savedState[k]))&&Number(savedState[k])>=1)){
    formulaState={a:Number(savedState.a),b:Number(savedState.b),c:Number(savedState.c),d:Number(savedState.d),e:Number(savedState.e)};
@@ -212,6 +214,7 @@ function getGrowthPerSecond(){return getGain()}
 function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost);btn.classList.toggle("bad",value<cost)}
 function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
 function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
+function buyF(){if(fLevel>=LETTER_F_MAX_LEVEL)return;purchase(getFCost(),()=>fLevel++)}
 function updateFormulaText(){
  const sumLevel=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
  const integralUnlocked=typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
@@ -253,6 +256,10 @@ function updateUI(){
   const letterFCard=$("letterFUpgrade"),letterFRow=$("formulaValueFRow");
   if(letterFCard)letterFCard.hidden=!letterFUnlocked;
   if(letterFRow)letterFRow.hidden=!letterFUnlocked;
+  const fLevelDisplay=$("fLevel"),fCostDisplay=$("fCost"),fBuyButton=$("btnF");
+  if(fLevelDisplay)fLevelDisplay.textContent=fLevel+" / "+LETTER_F_MAX_LEVEL;
+  if(fCostDisplay)fCostDisplay.textContent=fLevel>=LETTER_F_MAX_LEVEL?tr("maxed"):format(getFCost());
+  if(fBuyButton){setBtn(fBuyButton,getFCost());fBuyButton.disabled=fLevel>=LETTER_F_MAX_LEVEL;fBuyButton.textContent=fLevel===0?tr("buyF"):tr("buyUpgrade");}
   const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE(),f:getF()};
   const fExponentDisplay=$("fExponent");if(fExponentDisplay)fExponentDisplay.textContent=getFExponent().toFixed(4);
   for(const letter of ["a","b","c","d","e","f"]){
