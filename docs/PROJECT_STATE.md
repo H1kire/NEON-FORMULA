@@ -1,10 +1,11 @@
 # FORMULA ASCENT — Game overview
 
-FORMULA ASCENT is a browser-based mathematical idle game. Players build Score through five connected formula modules, improve them with upgrades, and progress through two prestige systems.
+FORMULA ASCENT is a browser-based mathematical idle game. Players build Score through six connected formula modules, improve the core modules with upgrades, unlock F through the Upgrade Tree, and progress through two prestige systems.
 
 ## Available gameplay
 
-- Five connected formula modules: A, B, C, D and E.
+- Six connected formula modules: A, B, C, D, E and F.
+- Letter F unlocks through NODE #0004 for 5 GP and activates after 5 seconds of run time.
 - Score production and individual module upgrades.
 - Research Division upgrades purchased with Ascension Points.
 - Ascension, which resets the current run while preserving long-term AP progression.
@@ -19,7 +20,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 
 ## Current Upgrade Tree content
 
-The tree contains four node categories, represented by different shapes. NODE #0001 is currently available for purchase and costs 1 GP. The remaining nodes are reserved for future content.
+The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. Other nodes are reserved for future content.
 
 ## Progress and accounts
 
