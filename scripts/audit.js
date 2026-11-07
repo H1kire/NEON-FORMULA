@@ -75,8 +75,17 @@ const letterFChecks=[
  ['function getF()','Letter F formula implementation'],
  ['if(!unlocked||t<5)return 1','Letter F remains neutral before unlock or before 5 seconds'],
  ['const LETTER_F_BASE_EXPONENT=0.40','Letter F starts at exponent 0.40'],
+ ['const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501','Letter F has a bounded upgrade progression'],
+ ['function getFCost()','Letter F uses the shared letter price curve'],
+ ['if(fLevel<=0||!unlocked||t<5)return 1','Letter F is inactive until purchased, unlocked and t reaches five seconds'],
+ ['function buyF()','Letter F can be purchased and upgraded'],
+ ['fLevel,fExponent:getFExponent()','Letter F level and exponent are exposed'],
+ ['fLevel,formulaState','Letter F level is stored in local saves'],
  ['id="fFormula"','Letter F formula is displayed'],
- ['id="fExponent"','Letter F exponent is displayed']
+ ['id="fExponent"','Letter F exponent is displayed'],
+ ['id="fLevel"','Letter F level is displayed'],
+ ['id="fCost"','Letter F next cost is displayed'],
+ ['id="btnF"','Letter F purchase button is displayed']
 ];
 for(const [token,label] of letterFChecks){if(!treeSource.includes(token)&&!html.includes(token)&&!sources["assets/js/script.js"].includes(token)&&!sources["assets/js/app-ui.js"].includes(token))fail("Letter F unlock check missing "+label);else pass("Letter F "+label)}
 const treeLayoutChecks=[
@@ -167,6 +176,19 @@ else{
     pass("Recursive A-E five-minute baseline, global research, soft-cap and price tests");
   }catch(error){fail("Recursive A-E formula runtime test: "+error.message)}
 }
+const fFormulaSource=sources["assets/js/script.js"].slice(sources["assets/js/script.js"].indexOf("const LETTER_F_BASE_EXPONENT"),sources["assets/js/script.js"].indexOf("const formulaLetterGetters"));
+try{
+ const fContext={fLevel:0,t:10,window:{isLetterFUnlocked:()=>true},getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
+ vm.runInNewContext(fFormulaSource+";globalThis.__f={getF,getFExponent,getFCost};",fContext);
+ if(fContext.__f.getF()!==1)throw new Error("Unpurchased F must remain neutral");
+ if(fContext.__f.getFCost()!==1e15)throw new Error("First F purchase must cost exactly 1 Qa");
+ fContext.fLevel=1;if(fContext.__f.getFExponent()!==0.4||fContext.__f.getFCost()!==8e15)throw new Error("F first purchase must start at p=0.40 and next price must follow the shared 8x curve");
+ fContext.t=4;if(fContext.__f.getF()!==1)throw new Error("F must remain inactive before t=5");
+ fContext.t=5;if(!(fContext.__f.getF()>1))throw new Error("Purchased F must activate at t=5");
+ fContext.fLevel=2;if(Math.abs(fContext.__f.getFExponent()-0.4001)>1e-12)throw new Error("Each F upgrade must increase p by 0.0001");
+ fContext.fLevel=4501;if(fContext.__f.getFExponent()!==0.85)throw new Error("F exponent must cap at 0.85");
+ pass("Letter F runtime tests: purchase gating, activation threshold, 1 Qa base price, shared price growth and p progression");
+}catch(error){fail("Letter F runtime test: "+error.message)}
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
 if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the Global Sum and include all letter multipliers");
@@ -209,12 +231,12 @@ try{
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
   pass("Production tests: base, NODE #0001 integral, Global Sum, aggregate weight display and Ascension Legacy scaling");
   const letterProductSource=timingSource.slice(timingSource.indexOf("function getLetterProduct()"),timingSource.indexOf("window.FAMathSystem"));
-  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,getF:()=>1,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11,()=>letterContext.getF()],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
+  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,fLevel:0,window:{isLetterFUnlocked:()=>true},getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,getF:()=>1,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11,()=>letterContext.getF()],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
   vm.runInNewContext(letterProductSource+";globalThis.__letterProduct=getLetterProduct;",letterContext);
   if(letterContext.__letterProduct()!==1)fail("Unpurchased A–E letters must not affect production");
   letterContext.aLevel=1;if(letterContext.__letterProduct()!==2)fail("First A purchase must activate A exactly once");
   letterContext.cLevel=1;if(letterContext.__letterProduct()!==10)fail("First C purchase must add C while unpurchased letters remain excluded");
-  letterContext.bLevel=1;letterContext.dLevel=1;letterContext.eLevel=1;if(letterContext.__letterProduct()!==2310)fail("All five purchased core letters must multiply together");letterContext.getF=()=>13;if(letterContext.__letterProduct()!==30030)fail("Unlocked Letter F must join the production product");
+  letterContext.bLevel=1;letterContext.dLevel=1;letterContext.eLevel=1;if(letterContext.__letterProduct()!==2310)fail("All five purchased core letters must multiply together");letterContext.fLevel=1;letterContext.getF=()=>13;if(letterContext.__letterProduct()!==30030)fail("Purchased and unlocked Letter F must join the production product");letterContext.window.isLetterFUnlocked=()=>false;if(letterContext.__letterProduct()!==2310)fail("Letter F must remain excluded when its tree node is locked");
   pass("Letter unlock tests: no unpurchased contribution; each letter activates on its first purchase");
 
 }catch(error){fail("Production rate runtime test: "+error.message)}
