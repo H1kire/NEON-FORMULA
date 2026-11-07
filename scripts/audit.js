@@ -33,6 +33,28 @@ if(!sources["assets/js/firebase-cloud-save.js"].includes("for (const key of SNAP
 if(!sources["assets/js/script.js"].includes("savePrestige(),saveTreeProgress()"))fail("Manual local save must include upgrade-tree purchases");
 if(html.includes('id="fExponent"')||html.includes("letterFPower")||html.includes("letterFActivation"))fail("Letter F card must show only LEVEL and COST stats");
 else pass("Letter F compact LEVEL/COST-only card");
+try {
+ const parserStart=sources["assets/js/firebase-cloud-save.js"].indexOf("  function parseSnapshotData(data) {");
+ const parserEnd=sources["assets/js/firebase-cloud-save.js"].indexOf("  function collectLocalSnapshot()",parserStart);
+ if(parserStart<0||parserEnd<0)throw new Error("Cloud snapshot parser not found");
+ const parser=sources["assets/js/firebase-cloud-save.js"].slice(parserStart,parserEnd).replace(/^  /gm,"");
+ const context={SNAPSHOT_KEYS:["formula_ascent_save_v2","prestigeSave","faMeta","faTree"]};
+ const snapshot={
+  formula_ascent_save_v2:JSON.stringify({t:12,value:345,aLevel:1,bLevel:2,cLevel:3,dLevel:4,eLevel:5,fLevel:1,formulaState:{a:1,b:1,c:1,d:1,e:1},formulaSteps:12,formulaAccumulator:0,lastTime:100}),
+  prestigeSave:JSON.stringify({p:123,gp:4,prestigeUnlocked:true,prestigeUpgrades:{simpleBoost:2,globalSum:3}}),
+  faMeta:JSON.stringify({research:[1,2,3,4,5,6,7,1,9,10],settings:{autosave:true,offline:true,compact:true,reducedMotion:false},automation:{unlocked:[true,false,false,false,false],enabled:[true,true,true,true,true],paused:false},stats:{totalPlayTime:10,lifetimeValue:100,ascensions:2,genesisPrestiges:1,purchases:20},treeUnlocked:true,treePassPurchased:true}),
+  faTree:JSON.stringify([{id:0,level:1},{id:3,level:1}])
+ };
+ vm.runInNewContext(parser+";globalThis.__parse=parseSnapshotData;",context);
+ const parsed=context.__parse(snapshot);
+ if(parsed.meta.research[7]!==1||parsed.meta.research[9]!==10||parsed.meta.automation.unlocked[0]!==true||parsed.tree.length!==2||parsed.prestige.p!==123||parsed.game.fLevel!==1)throw new Error("A saved progression section or purchase was lost during snapshot parsing");
+ const bad=JSON.parse(snapshot.faMeta);bad.research[3]=-1;
+ snapshot.faMeta=JSON.stringify(bad);
+ let rejected=false;try{context.__parse(snapshot)}catch(error){rejected=true}
+ if(!rejected)throw new Error("Invalid Research levels must be rejected instead of accepted as a complete save");
+ pass("Cloud snapshot round-trip validation preserves Research, automation, tree, prestige and letter purchases");
+}catch(error){fail("Cloud progression snapshot runtime test: "+error.message)}
+
 
 try{const rules=JSON.parse(read("database.rules.json"));if(rules.rules?.users?.["$uid"]?.[".read"]!=="auth !== null && auth.uid === $uid"||rules.rules?.users?.["$uid"]?.[".write"]!=="auth !== null && auth.uid === $uid"||rules.rules?.[".read"]||rules.rules?.[".write"])fail("Realtime Database rules must grant only per-user authenticated access");else pass("Firebase Realtime Database owner-only rules")}catch(error){fail("Invalid database.rules.json: "+error.message)}
 if(!sources["assets/js/firebase-auth.js"].includes("signInWithPopup")||!sources["assets/js/firebase-auth.js"].includes("onAuthStateChanged")||!sources["assets/js/firebase-auth.js"].includes("signOut"))fail("Google sign-in, session restoration, or sign-out handler is missing");
