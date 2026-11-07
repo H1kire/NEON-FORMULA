@@ -73,7 +73,7 @@ const letterFChecks=[
  ['nodeLetterFTitle','NODE #0004 has a dedicated content-node name'],
  ['nodeContentTitle','all square content nodes have a special inspector name'],
  ['function getF()','Letter F formula implementation'],
- ['if(!unlocked||t<5)return 1','Letter F remains neutral before unlock or before 5 seconds'],
+ ['if(fLevel<=0||!unlocked||t<5)return 1','Letter F remains neutral until purchased, unlocked and t reaches 5 seconds'],
  ['const LETTER_F_BASE_EXPONENT=0.40','Letter F starts at exponent 0.40'],
  ['const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501','Letter F has a bounded upgrade progression'],
  ['function getFCost()','Letter F uses the shared letter price curve'],
@@ -241,6 +241,7 @@ try{
 
 }catch(error){fail("Production rate runtime test: "+error.message)}
 const prestigeSource= sources["assets/js/prestige.js"];
+if(!prestigeSource.includes("fLevel=0"))fail("Letter F level must reset with the other run upgrades on prestige");else pass("Letter F prestige reset matches A–E run upgrades");
 try{
  const costSource=prestigeSource.match(/function getGlobalSumCost\(\)[\s\S]*?\}/)?.[0];
  if(!costSource)throw new Error("Global Sum cost function missing");
