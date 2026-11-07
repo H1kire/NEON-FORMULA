@@ -165,15 +165,24 @@ function integrateOffline(seconds){
 function manualSave(){const results=[saveGame(true),saveMeta(),savePrestige(),saveTreeProgress()],ok=results.every(Boolean);const button=$("manualSaveBtn");if(button){const old=button.textContent;button.textContent=ok?(FA_META.language==="ru"?"СОХРАНЕНО":"SAVED"):(FA_META.language==="ru"?"ОШИБКА СОХРАНЕНИЯ":"SAVE FAILED");setTimeout(()=>button.textContent=old,1600)}}
 function resetSave(){
  const message=FA_META.language==="ru"
-  ?"Сбросить текущий забег? Score, время и уровни A–F будут обнулены. AP, GP, исследования, престижные улучшения и древо сохранятся. Облачное сохранение не изменится."
-  :"Reset the current run? Score, time and A–F levels will return to zero. AP, GP, Research, prestige upgrades and the tree will remain. Your cloud save will not be changed.";
+  ?"Полностью начать игру заново? Будут удалены ВСЕ локальные игровые достижения и улучшения: Score, время, A–F, AP, GP, Research, автоматизация, престижные улучшения, Врата Генезиса и все узлы древа. Настройки и вход в Google сохранятся. Облачное сохранение Firebase НЕ будет затронуто."
+  :"Start the game completely from scratch? ALL local game progress will be erased: Score, time, A–F, AP, GP, Research, automation, prestige upgrades, Genesis Gate and every tree node. Settings and Google sign-in will remain. Your Firebase cloud save will NOT be touched.";
  if(!confirm(message))return;
  resetRun();
+ p=0;gp=0;prestigeUnlocked=false;
+ prestigeUpgrades={simpleBoost:0,globalSum:0};
+ window.prestigeUpgrades=prestigeUpgrades;
+ FA_META.research=Array(10).fill(0);
+ FA_META.researchVersion=2;
+ FA_META.automation={unlocked:[false,false,false,false,false],enabled:[true,true,true,true,true],paused:false};
+ FA_META.treeUnlocked=false;
+ FA_META.treePassPurchased=false;
+ FA_META.stats={totalPlayTime:0,lifetimeValue:0,ascensions:0,genesisPrestiges:0,purchases:0};
  lastFrame=Date.now();
- const saved=saveGame(true);
- FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY]);
- if(!saved){
-  alert(FA_META.language==="ru"?"Не удалось сохранить сброс на этом устройстве. Проверьте доступ к локальному хранилищу.":"Could not save the reset on this device. Check local storage access.");
+ const removed=FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"]);
+ const saved=[saveGame(true),savePrestige(),saveMeta()].every(Boolean);
+ if(!removed||!saved){
+  alert(FA_META.language==="ru"?"Не удалось полностью сохранить сброс на этом устройстве. Проверьте доступ к локальному хранилищу и повторите попытку.":"The full reset could not be saved on this device. Check local storage access and try again.");
   return;
  }
  location.reload();
