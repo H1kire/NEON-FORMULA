@@ -85,7 +85,20 @@ function advanceFormulaClock(delta){
 }
 function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;formulaAccumulator=0}
 function getA(){return formulaState.a}function getB(){return formulaState.b}function getC(){return formulaState.c}function getD(){return formulaState.d}function getE(){return formulaState.e}
-const formulaLetterGetters=[getA,getB,getC,getD,getE];
+const LETTER_F_BASE_EXPONENT=0.40;
+function getFExponent(){return LETTER_F_BASE_EXPONENT}
+function getF(){
+ const unlocked=typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked();
+ if(!unlocked||t<5)return 1;
+ const upper=safeProduct(getA(),getE());
+ const integral=Math.log1p(upper);
+ const x=safeProduct(Math.log1p(t),integral);
+ const powered=safePow(x,getFExponent());
+ if(powered>=Math.log(Number.MAX_VALUE))return Number.MAX_VALUE;
+ const result=1+Math.exp(powered);
+ return Number.isFinite(result)?Math.min(result,Number.MAX_VALUE):Number.MAX_VALUE;
+}
+const formulaLetterGetters=[getA,getB,getC,getD,getE,getF];
 window.registerFormulaLetter=getter=>{if(typeof getter==="function"&&!formulaLetterGetters.includes(getter))formulaLetterGetters.push(getter)};
 function getLetterProduct(){
  const active=[];
@@ -103,7 +116,7 @@ window.FAMathSystem={
  getDependencyStrength:()=>Math.max(1,metaBonus("coupling")),
  getParameters:getLetterParameters,
  getLetterPrice:getLetterPrice,
- getState:()=>({...formulaState})
+ getState:()=>({...formulaState,f:getF()})
 };
 function saveGame(force=false){
  if(!force&&FA_META.settings.autosave===false)return false;
@@ -224,12 +237,14 @@ function updateUI(){
   FAFormula.render("cFormula","c_{n+1}=1+\\frac{\\ln(1+abc_n"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+ ")}{"+p.c.toFixed(4)+"}");
   FAFormula.render("dFormula","d=1+\\frac{\\sqrt{abc"+(coupling===1?"":"\\cdot "+coupling.toFixed(2))+"}}{"+p.d.toFixed(4)+"}");
   FAFormula.render("eFormula","e=1+\\frac{\\ln(1+bd"+(eInput*coupling===1?"":"\\cdot "+(eInput*coupling).toFixed(2))+ ")}{"+p.e.toFixed(4)+"}");
+  FAFormula.render("fFormula","f=1+\\exp\\left(\\left[\\ln(1+t)\\cdot\\int_{0}^{ae}\\frac{1}{1+x}\\,dx\\right]^{"+getFExponent().toFixed(4)+"}\\right)");
  }else{
   $("aFormula").textContent="a = (1 + t / 60)^((1 + ln(c)"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.a.toFixed(4)+")";
   $("bFormula").textContent="b = 1 + (a^"+(p.b*coupling).toFixed(4)+" - 1) / 1.055";
   $("cFormula").textContent="c[n+1] = 1 + ln(1 + a*b*c[n]"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.c.toFixed(4);
   $("dFormula").textContent="d = 1 + sqrt(a*b*c"+(coupling===1?"":" × "+coupling.toFixed(2))+") / "+p.d.toFixed(4);
   $("eFormula").textContent="e = 1 + ln(1 + b*d"+(eInput*coupling===1?"":" × "+(eInput*coupling).toFixed(2))+") / "+p.e.toFixed(4);
+  $("fFormula").textContent="f = 1 + exp([ln(1 + t) × ∫₀ᵃᵉ 1/(1 + x) dx]^"+getFExponent().toFixed(4)+")";
  }
  setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  aCostDisplay.textContent=format(getACost());bCostDisplay.textContent=format(getBCost());cCostDisplay.textContent=format(getCCost());dCostDisplay.textContent=format(getDCost());eCostDisplay.textContent=format(getECost());
@@ -238,8 +253,9 @@ function updateUI(){
   const letterFCard=$("letterFUpgrade"),letterFRow=$("formulaValueFRow");
   if(letterFCard)letterFCard.hidden=!letterFUnlocked;
   if(letterFRow)letterFRow.hidden=!letterFUnlocked;
-  const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE()};
-  for(const letter of ["a","b","c","d","e"]){
+  const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE(),f:getF()};
+  const fExponentDisplay=$("fExponent");if(fExponentDisplay)fExponentDisplay.textContent=getFExponent().toFixed(4);
+  for(const letter of ["a","b","c","d","e","f"]){
    const display=$("formulaValue"+letter.toUpperCase());
    if(display)display.textContent=formatPrecise(liveValues[letter],2);
   }
