@@ -164,8 +164,18 @@ function integrateOffline(seconds){
 }
 function manualSave(){const results=[saveGame(true),saveMeta(),savePrestige(),saveTreeProgress()],ok=results.every(Boolean);const button=$("manualSaveBtn");if(button){const old=button.textContent;button.textContent=ok?(FA_META.language==="ru"?"СОХРАНЕНО":"SAVED"):(FA_META.language==="ru"?"ОШИБКА СОХРАНЕНИЯ":"SAVE FAILED");setTimeout(()=>button.textContent=old,1600)}}
 function resetSave(){
- if(!confirm(FA_META.language==="ru"?"Удалить весь прогресс, включая исследования и древо?":"Delete all progress, including research and the tree?"))return;
- FAStorage.removeMany([SAVE_KEY,LEGACY_SAVE_KEY,OLD_SAVE_KEY,"prestigeSave","faMeta","faTree"]);
+ const message=FA_META.language==="ru"
+  ?"Сбросить текущий забег? Score, время и уровни A–F будут обнулены. AP, GP, исследования, престижные улучшения и древо сохранятся. Облачное сохранение не изменится."
+  :"Reset the current run? Score, time and A–F levels will return to zero. AP, GP, Research, prestige upgrades and the tree will remain. Your cloud save will not be changed.";
+ if(!confirm(message))return;
+ resetRun();
+ lastFrame=Date.now();
+ const saved=saveGame(true);
+ FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY]);
+ if(!saved){
+  alert(FA_META.language==="ru"?"Не удалось сохранить сброс на этом устройстве. Проверьте доступ к локальному хранилищу.":"Could not save the reset on this device. Check local storage access.");
+  return;
+ }
  location.reload();
 }
 function format(n){
