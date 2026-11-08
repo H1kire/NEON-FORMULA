@@ -53,6 +53,16 @@ try {
  let rejected=false;try{context.__parse(snapshot)}catch(error){rejected=true}
  if(!rejected)throw new Error("Invalid Research levels must be rejected instead of accepted as a complete save");
  pass("Cloud snapshot round-trip validation preserves Research, automation, tree, prestige and letter purchases");
+
+ const preferenceSource=sources["assets/js/firebase-cloud-save.js"].match(/function mergeLocalPreferences\(cloudMeta\) \{[\\s\\S]*?\\n  \}/)?.[0];
+ if(!preferenceSource)throw new Error("Local preference merge helper missing");
+ const localPreferences={language:"ru",notation:"scientific",settings:{autosave:false,offline:false,compact:false,reducedMotion:true}};
+ const preferenceContext={META_KEY:"faMeta",window:{FAStorage:{getJSON:()=>localPreferences},FA_META:{}}};
+ vm.runInNewContext(preferenceSource+";globalThis.__merge=mergeLocalPreferences;",preferenceContext);
+ const restoredMeta=preferenceContext.__merge({language:"en",notation:"standard",settings:{autosave:true,offline:true,compact:true,reducedMotion:false},research:[1]});
+ if(restoredMeta.language!=="ru"||restoredMeta.notation!=="scientific"||restoredMeta.settings.autosave!==false||restoredMeta.settings.reducedMotion!==true||restoredMeta.research[0]!==1)throw new Error("Cloud restore must preserve local interface preferences while restoring cloud progression");
+ if(!sources["assets/js/firebase-cloud-save.js"].includes("mergeLocalPreferences(parsed.meta)")||!sources["assets/js/firebase-cloud-save.js"].includes('data[META_KEY] = JSON.stringify(parsed.meta)'))throw new Error("Cloud restore does not apply preserved local preferences to the restored meta snapshot");
+ pass("Cloud restore replaces progression but preserves local language, notation and interface settings");
 }catch(error){fail("Cloud progression snapshot runtime test: "+error.message)}
 
 
