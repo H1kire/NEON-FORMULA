@@ -121,6 +121,16 @@
     return { game, prestige, meta, tree };
   }
 
+  function mergeLocalPreferences(cloudMeta) {
+    const localMeta = window.FAStorage.getJSON(META_KEY, null) || window.FA_META || {};
+    if (localMeta.language === "ru" || localMeta.language === "en") cloudMeta.language = localMeta.language;
+    if (["standard", "scientific", "engineering"].includes(localMeta.notation)) cloudMeta.notation = localMeta.notation;
+    if (localMeta.settings && typeof localMeta.settings === "object" && !Array.isArray(localMeta.settings)) {
+      cloudMeta.settings = Object.assign({}, cloudMeta.settings, localMeta.settings);
+    }
+    return cloudMeta;
+  }
+
   function collectLocalSnapshot() {
     const results = [
       typeof window.saveGame === "function" && window.saveGame(true),
@@ -214,6 +224,11 @@
       if (!record || record.version !== 1 || record.uid !== restoringUser.uid) throw new Error("Snapshot owner/version mismatch");
       const parsed = parseSnapshotData(record.data);
       const data = Object.assign({}, record.data);
+
+      // Cloud restores replace game progression, while device-specific UI preferences stay local.
+      mergeLocalPreferences(parsed.meta);
+      data[META_KEY] = JSON.stringify(parsed.meta);
+
       // Restoring must reproduce the saved moment, not award offline production accumulated since it.
       parsed.game.lastTime = Date.now();
       data[GAME_KEY] = JSON.stringify(parsed.game);
