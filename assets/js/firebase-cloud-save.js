@@ -183,19 +183,34 @@
   }
 
   async function saveToCloud() {
-    if (!user || busy) return;
+    if (!user || busy || window.FA_CLOUD_RESTORING) return;
     busy = true;
     showStatus(msg("saving"));
     render();
     try {
       const savingUser = user;
       const data = collectLocalSnapshot();
-      await database.ref("users/" + savingUser.uid + "/cloudSave").set({
+      const reference = database.ref("users/" + savingUser.uid + "/cloudSave");
+      await reference.set({
         version: 1,
         uid: savingUser.uid,
         savedAt: firebase.database.ServerValue.TIMESTAMP,
         data
       });
+
+      // Read the server copy back and compare every serialized section before reporting success.
+      const verification = await reference.once("value");
+      const stored = verification.val();
+      if (!stored || stored.version !== 1 || stored.uid !== savingUser.uid) {
+        throw new Error("Cloud save verification failed: owner/version mismatch");
+      }
+      parseSnapshotData(stored.data);
+      for (const key of SNAPSHOT_KEYS) {
+        if (stored.data[key] !== data[key]) {
+          throw new Error("Cloud save verification failed for section: " + key);
+        }
+      }
+
       if (user && user.uid === savingUser.uid) {
         hasCloudSave = true;
         showStatus(msg("saved") + " " + new Date().toLocaleString(lang() === "ru" ? "ru-RU" : "en-US"), "success");
@@ -210,9 +225,10 @@
   }
 
   async function restoreFromCloud() {
-    if (!user || busy || !hasCloudSave) return;
+    if (!user || busy || !hasCloudSave || window.FA_CLOUD_RESTORING) return;
     if (!window.confirm(msg("confirm"))) return;
     busy = true;
+    window.FA_CLOUD_RESTORING = true;
     showStatus(msg("restoring"));
     render();
     let previous = null;
@@ -236,13 +252,30 @@
       const keysToReplace = SNAPSHOT_KEYS.concat(LEGACY_KEYS);
       previous = {};
       for (const key of keysToReplace) previous[key] = window.FAStorage.getRaw(key, null);
+
+      // Freeze every local writer before replacing keys. Otherwise beforeunload/autosave can
+      // write the old in-memory game state over the freshly restored snapshot.
       for (const key of SNAPSHOT_KEYS) {
         if (!window.FAStorage.setRaw(key, data[key])) throw new Error("Could not write local save section: " + key);
+        if (window.FAStorage.getRaw(key, null) !== data[key]) {
+          throw new Error("Local restore verification failed for section: " + key);
+        }
       }
       for (const key of LEGACY_KEYS) {
-        if (!window.FAStorage.remove(key)) throw new Error("Could not remove legacy save section: " + key);
+        if (!window.FAStorage.remove(key) || window.FAStorage.getRaw(key, null) !== null) {
+          throw new Error("Could not remove legacy save section: " + key);
+        }
       }
+
+      const restoredData = {};
+      for (const key of SNAPSHOT_KEYS) restoredData[key] = window.FAStorage.getRaw(key, null);
+      parseSnapshotData(restoredData);
+      for (const key of SNAPSHOT_KEYS) {
+        if (restoredData[key] !== data[key]) throw new Error("Local restore verification failed for section: " + key);
+      }
+
       showStatus(msg("restored"), "success");
+      // Keep the writer lock active through the navigation and beforeunload event.
       window.location.reload();
     } catch (error) {
       console.error("[FACloudSave] Restore failed", error);
@@ -256,6 +289,7 @@
           console.error("[FACloudSave] Local rollback failed", rollbackError);
         }
       }
+      window.FA_CLOUD_RESTORING = false;
       const invalid = /snapshot|progress sections|game state|Missing snapshot/i.test(String(error && error.message));
       showStatus(invalid ? msg("invalid") : msg("restoreError"), "error");
     } finally {
