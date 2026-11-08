@@ -62,7 +62,44 @@ try {
  const restoredMeta=preferenceContext.__merge({language:"en",notation:"standard",settings:{autosave:true,offline:true,compact:true,reducedMotion:false},research:[1]});
  if(restoredMeta.language!=="ru"||restoredMeta.notation!=="scientific"||restoredMeta.settings.autosave!==false||restoredMeta.settings.reducedMotion!==true||restoredMeta.research[0]!==1)throw new Error("Cloud restore must preserve local interface preferences while restoring cloud progression");
  if(!sources["assets/js/firebase-cloud-save.js"].includes("mergeLocalPreferences(parsed.meta)")||!sources["assets/js/firebase-cloud-save.js"].includes('data[META_KEY] = JSON.stringify(parsed.meta)'))throw new Error("Cloud restore does not apply preserved local preferences to the restored meta snapshot");
+
  pass("Cloud restore replaces progression but preserves local language, notation and interface settings");
+
+ const restoreSource=sources["assets/js/firebase-cloud-save.js"];
+ const coreSource=sources["assets/js/script.js"];
+ const uiSource=sources["assets/js/app-ui.js"];
+ const treePersistenceSource=sources["assets/js/tree.js"];
+ const cloudRestore=restoreSource.slice(restoreSource.indexOf("async function restoreFromCloud()"),restoreSource.indexOf('if (saveButton) saveButton.addEventListener'));
+ const cloudSave=restoreSource.slice(restoreSource.indexOf("async function saveToCloud()"),restoreSource.indexOf("async function restoreFromCloud()"));
+ const writerGuards=[
+  [coreSource.includes("if(window.FA_CLOUD_RESTORING)return false;"),"run autosave is blocked during restore"],
+  [coreSource.includes("if(window.FA_CLOUD_RESTORING)return;\n const now=performance.now()"),"game simulation pauses during restore"],
+  [coreSource.includes('if(window.FA_CLOUD_RESTORING)return;saveGame();saveMeta()'),"beforeunload cannot overwrite restored data"],
+  [uiSource.includes('window.saveMeta=()=>window.FA_CLOUD_RESTORING?false:'),"Research/settings metadata writer is blocked during restore"],
+  [sources["assets/js/prestige.js"].includes("function savePrestige(){if(window.FA_CLOUD_RESTORING)return false;"),"AP/GP and prestige writer is blocked during restore"],
+  [treePersistenceSource.includes("function persist(){if(window.FA_CLOUD_RESTORING)return false;"),"tree writer is blocked during restore"]
+ ];
+ for(const [ok,label] of writerGuards)if(!ok)throw new Error("Missing restore race protection: "+label);
+ const lockPosition=cloudRestore.indexOf("window.FA_CLOUD_RESTORING = true;");
+ const requestPosition=cloudRestore.indexOf(".once(\"value\")");
+ if(lockPosition<0||requestPosition<0||lockPosition>requestPosition)throw new Error("Restore writer lock must be set before any asynchronous fetch");
+ if(!cloudRestore.includes("window.FA_CLOUD_RESTORING = false;")||!cloudRestore.includes("window.location.reload();"))throw new Error("Restore must unlock writers on failure and reload on success");
+ if(!cloudRestore.includes('window.FAStorage.getRaw(key, null) !== data[key]')||!cloudRestore.includes('restoredData[key] !== data[key]'))throw new Error("Restore must read back and verify every local save section");
+ if(!cloudSave.includes('const verification = await reference.once("value")')||!cloudSave.includes('stored.data[key] !== data[key]'))throw new Error("Cloud save must read back and verify every uploaded section");
+ pass("Cloud restore race test: game loop, autosaves and beforeunload cannot overwrite restored state");
+ pass("Cloud save/restore read-back verification covers all four persistence sections");
+
+ const persistentKeys=new Set();
+ for(const source of Object.values(sources)){
+  for(const match of source.matchAll(/FAStorage\\.(?:getJSON|setJSON|getRaw|setRaw)\\(["']([^"']+)["']/g))persistentKeys.add(match[1]);
+  for(const match of source.matchAll(/(?:SAVE_KEY|PRESTIGE_KEY|META_KEY|TREE_KEY)\\s*=\\s*["']([^"']+)["']/g))persistentKeys.add(match[1]);
+ }
+ const includedKeys=new Set(["formula_ascent_save_v2","prestigeSave","faMeta","faTree","formula_ascent_save_v1","neon_formula_idle_v4_5"]);
+ const missingKeys=[...persistentKeys].filter(key=>!includedKeys.has(key));
+ if(missingKeys.length)throw new Error("Untracked persistent local save keys: "+missingKeys.join(", "));
+ for(const key of ["formula_ascent_save_v2","prestigeSave","faMeta","faTree"])if(!persistentKeys.has(key))throw new Error("Expected persistence section not found: "+key);
+ pass("Persistence inventory: every local game-save key is represented in the cloud snapshot");
+
 }catch(error){fail("Cloud progression snapshot runtime test: "+error.message)}
 
 
