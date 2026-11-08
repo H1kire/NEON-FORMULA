@@ -91,8 +91,8 @@ try {
 
  const persistentKeys=new Set();
  for(const source of Object.values(sources)){
-  for(const match of source.matchAll(/FAStorage\\.(?:getJSON|setJSON|getRaw|setRaw)\\(["']([^"']+)["']/g))persistentKeys.add(match[1]);
-  for(const match of source.matchAll(/(?:SAVE_KEY|PRESTIGE_KEY|META_KEY|TREE_KEY)\\s*=\\s*["']([^"']+)["']/g))persistentKeys.add(match[1]);
+  for(const match of source.matchAll(/FAStorage\.(?:getJSON|setJSON|getRaw|setRaw)\\(["']([^"']+)["']/g))persistentKeys.add(match[1]);
+  for(const match of source.matchAll(/(?:SAVE_KEY|PRESTIGE_KEY|META_KEY|TREE_KEY)\s*=\\s*["']([^"']+)["']/g))persistentKeys.add(match[1]);
  }
  const includedKeys=new Set(["formula_ascent_save_v2","prestigeSave","faMeta","faTree","formula_ascent_save_v1","neon_formula_idle_v4_5"]);
  const missingKeys=[...persistentKeys].filter(key=>!includedKeys.has(key));
