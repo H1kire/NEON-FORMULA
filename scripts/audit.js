@@ -54,7 +54,7 @@ try {
  if(!rejected)throw new Error("Invalid Research levels must be rejected instead of accepted as a complete save");
  pass("Cloud snapshot round-trip validation preserves Research, automation, tree, prestige and letter purchases");
 
- const preferenceSource=sources["assets/js/firebase-cloud-save.js"].match(/function mergeLocalPreferences\(cloudMeta\) \{[\\s\\S]*?\\n  \}/)?.[0];
+ const preferenceSource=sources["assets/js/firebase-cloud-save.js"].match(/function mergeLocalPreferences\(cloudMeta\) \{[\s\S]*?\n  \}/)?.[0];
  if(!preferenceSource)throw new Error("Local preference merge helper missing");
  const localPreferences={language:"ru",notation:"scientific",settings:{autosave:false,offline:false,compact:false,reducedMotion:true}};
  const preferenceContext={META_KEY:"faMeta",window:{FAStorage:{getJSON:()=>localPreferences},FA_META:{}}};
