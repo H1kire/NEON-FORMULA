@@ -121,6 +121,7 @@ window.FAMathSystem={
  getState:()=>({...formulaState,f:getF(),fLevel,fExponent:getFExponent()})
 };
 function saveGame(force=false){
+ if(window.FA_CLOUD_RESTORING)return false;
  if(!force&&FA_META.settings.autosave===false)return false;
  const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,fLevel,formulaState,formulaSteps,formulaAccumulator,lastTime:Date.now()};
  return FAStorage.setJSON(SAVE_KEY,data);
@@ -323,6 +324,7 @@ function autoBuy(){
  for(let i=0;i<5;i++)if(a.unlocked[i]&&a.enabled[i]&&value>=costs[i])purchase(costs[i],actions[i]);
 }
 function loop(){
+ if(window.FA_CLOUD_RESTORING)return;
  const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;
  const rateBefore=getGain();
  t+=delta;advanceFormulaClock(delta);
@@ -337,4 +339,4 @@ function loop(){
 }
 loadGame();updateUI();lastFrame=performance.now();
 setInterval(loop,TICK);setInterval(saveGame,AUTOSAVE_INTERVAL);setInterval(saveMeta,10000);
-window.addEventListener("beforeunload",()=>{saveGame();saveMeta()});
+window.addEventListener("beforeunload",()=>{if(window.FA_CLOUD_RESTORING)return;saveGame();saveMeta()});
