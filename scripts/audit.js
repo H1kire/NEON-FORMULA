@@ -141,6 +141,11 @@ const treeStructureChecks=[
  ['type==="pentagon"?1.5+random()','hyper node effect scaling']
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
+if(!treeSource.includes('const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||""'))fail("Upgrade Tree must reserve NODE #1987–#1990 for letters G–J");else pass("Upgrade Tree G–J gate assignments");
+if(!treeSource.includes("window.refundUpgradeTree=()=>")||!treeSource.includes("window.FAAuth.isDeveloper()")||!treeSource.includes("gp=Math.min(Number.MAX_VALUE,gp+refunded)")||!treeSource.includes("for(const n of nodes)if(n.active)n.level=0"))fail("Developer tree refund must be UID-restricted, return spent GP and clear active node levels");else pass("Developer-only Upgrade Tree refund and bonus deactivation");
+if(!treeSource.includes("const savedTree=persist(),savedPrestige=savePrestige()"))fail("Tree refund must persist both tree and Genesis Point progress");
+if(!html.includes('id="developerTreeRefundBtn"')||!sources["assets/js/script.js"].includes('$("developerTreeRefundBtn")?.addEventListener("click",applyDeveloperTreeRefund)'))fail("Developer tree refund button is not connected");else pass("Developer refund button wiring");
+if(!sources["assets/js/app-ui.js"].includes("nodeLetterGTitle")||!sources["assets/js/app-ui.js"].includes("nodeLetterJTitle"))fail("G–J node labels must be localized");else pass("G–J gate labels are localized");
 if(treeSource.includes("spatialGrid")||treeSource.includes("cellSize"))fail("Upgrade tree reveal must not reference the removed spatial index");
 else pass("Upgrade tree reveal has no stale spatial-index references");
 if(!treeSource.includes("const revealAround=(center)=>{")||!treeSource.includes("for(let id=0;id<TOTAL;id++){\n    if(!nodes[id].active)continue;\n    const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;"))
