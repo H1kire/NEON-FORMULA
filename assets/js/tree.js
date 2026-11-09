@@ -3,9 +3,7 @@
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
- // Fully chaotic organic placement: every new point branches from a randomly
- // selected existing point, with a random angle and distance. No rows, rays,
- // waves, rings, or visual ordering by node ID.
+ // Every node occupies one unique cell in the same regular rectangular grid.
  const positions=[],gridCoords=[],gridIndex=new Map();
  // One grid step preserves the previous center-to-NODE #0004 distance.
  const GRID_SPACING=73.00156874163076;
@@ -46,7 +44,7 @@
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
-  // Coordinates are independently randomized; ID order does not define visual placement.
+  // Node IDs retain their gameplay identity; their positions follow the fixed grid.
   const x=positions[id].x,y=positions[id].y;
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
@@ -55,7 +53,7 @@
  }
  // Build a randomized spanning network over the grid so every node remains reachable.
  const cardinalDirections=[[-1,0],[1,0],[0,-1],[0,1]];
- const diagonalDirections=[[-1,-1],[1,-1],[-1,1],[1,1]];
+ const diagonalDirections=[[-1,1],[1,1]];
  const gridNeighbors=(id,directions)=>{
   const p=gridCoords[id],result=[];
   for(const [dx,dy] of directions){
@@ -96,7 +94,7 @@
    const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
    if(neighbor!==undefined&&edgeRandom()<.28)addEdge(id,neighbor);
   }
-  for(const [dx,dy] of [[-1,1],[1,1]]){
+  for(const [dx,dy] of diagonalDirections){
    const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
    if(neighbor!==undefined&&edgeRandom()<.10)addEdge(id,neighbor);
   }
