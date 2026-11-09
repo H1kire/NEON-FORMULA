@@ -199,7 +199,7 @@ const treeLayoutChecks=[
  ['const areaRevealed=new Uint8Array(TOTAL),revealed=new Uint8Array(TOTAL)','separate geometric candidates from graph-connected visibility'],
  ['function rebuildConnectedReveal(candidates,roots,adjacency,output)','graph-connected reveal traversal'],
  ['revealAround(positions[0])','initial reveal around the center'],
- ['for(const n of nodes)if(n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}','reveal around every purchased node and seed its connected component'],
+ ['for(const n of nodes)if(n.active&&n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}','reveal around every purchased node and seed its connected component'],
  ['rebuildConnectedReveal(areaRevealed,roots,nodes.map(n=>n.links),revealed)','hide candidate nodes without a path to a visible root'],
  ['if(!edgeVisible(a,b))continue','show links only between graph-connected revealed nodes'],
  ['if(!n.active||!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
