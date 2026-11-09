@@ -11,7 +11,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 - Ascension, which resets the current run while preserving long-term AP progression.
 - Genesis Gate, unlocked for 1,000 AP.
 - Genesis Prestige and Genesis Points.
-- Upgrade Tree with 3,886 connected nodes.
+- Upgrade Tree with 2,076 connected nodes.
 - NODE #0001, which unlocks a permanent integral multiplier.
 - Global Sum and Ascension Legacy upgrades.
 - Module automation, settings and statistics.
