@@ -123,14 +123,10 @@
  function rebuildRevealed(){
   areaRevealed.fill(0);
   const revealAround=(center)=>{
-   const cx=Math.floor(center.x/cellSize),cy=Math.floor(center.y/cellSize);
-   for(let gx=cx-2;gx<=cx+2;gx++)for(let gy=cy-2;gy<=cy+2;gy++){
-    const bucket=spatialGrid.get(gx+":"+gy);
-    if(!bucket)continue;
-    for(const id of bucket){
-     const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;
-     if(dx*dx+dy*dy<=REVEAL_RADIUS_SQ)areaRevealed[id]=1;
-    }
+   // Scan the fixed node array directly; the old spatial index was removed by the grid rewrite.
+   for(let id=0;id<TOTAL;id++){
+    const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;
+    if(dx*dx+dy*dy<=REVEAL_RADIUS_SQ)areaRevealed[id]=1;
    }
   };
   revealAround(positions[0]);
