@@ -141,6 +141,17 @@ const treeStructureChecks=[
  ['type==="pentagon"?1.5+random()','hyper node effect scaling']
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
+if(treeSource.includes("spatialGrid")||treeSource.includes("cellSize"))fail("Upgrade tree reveal must not reference the removed spatial index");
+else pass("Upgrade tree reveal has no stale spatial-index references");
+if(!treeSource.includes("const revealAround=(center)=>{")||!treeSource.includes("for(let id=0;id<TOTAL;id++){\n    const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;"))
+ fail("Upgrade tree must calculate visible nodes directly from the current fixed-grid positions");
+else pass("Upgrade tree reveal scans the fixed-grid positions safely");
+if(!treeSource.includes("const GRID_SPACING=73.00156874163076")||!treeSource.includes("positions[id]={x:(col-CENTER_COLUMN)*GRID_SPACING,y:(row-CENTER_ROW)*GRID_SPACING}"))
+ fail("Upgrade tree nodes must preserve equal grid spacing");
+else pass("Upgrade tree keeps equal horizontal and vertical grid spacing");
+if(!treeSource.includes("edgeRandom()<.28")||!treeSource.includes("edgeRandom()<.10")||!treeSource.includes("if(visitedCount!==TOTAL)"))
+ fail("Upgrade tree must retain randomized cross-links and a fully connected base network");
+else pass("Upgrade tree retains randomized cross-links and full connectivity");
 const letterFChecks=[
  ['id="letterFUpgrade" hidden','Letter F module is hidden before unlock'],
  ['id="formulaValueFRow" hidden','Letter F live-value row is hidden before unlock'],
