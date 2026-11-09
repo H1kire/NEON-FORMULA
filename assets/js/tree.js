@@ -1,6 +1,7 @@
 // FORMULA ASCENT — 3,886-node regular-grid upgrade network
 (() => {
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
+ let ACTIVE_TOTAL=0;
  let seed=0xFA2026;
  const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
  // Every node occupies one unique cell in the same regular rectangular grid.
@@ -11,6 +12,8 @@
  const GRID_ROWS=Math.ceil(TOTAL/GRID_COLUMNS);
  const CENTER_COLUMN=Math.floor(GRID_COLUMNS/2);
  const CENTER_ROW=Math.floor(GRID_ROWS/2);
+ const GATE_COLUMN=CENTER_COLUMN+1;
+ const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW;
  const gridKey=(col,row)=>col+":"+row;
  const setGridNode=(id,col,row)=>{
   gridCoords[id]={col,row};
@@ -28,6 +31,8 @@
   setGridNode(nextGridId++,col,row);
  }
  if(nextGridId<TOTAL)throw new Error("Upgrade tree grid does not have enough cells");
+ for(const p of gridCoords)if(isActiveCell(p.col,p.row))ACTIVE_TOTAL++;
+ if(ACTIVE_TOTAL<=0)throw new Error("Upgrade tree has no active nodes");
  let edgeSeed=0xED6E2026;
  const edgeRandom=()=>{edgeSeed=(edgeSeed*1664525+1013904223)>>>0;return edgeSeed/4294967296};
  const addEdge=(a,b)=>{
@@ -40,6 +45,8 @@
   if(id===0)return "square";
   const roll=random();
   if(id===3)return "square";
+  const p=gridCoords[id];
+  if(p.col>GATE_COLUMN&&p.row===CENTER_ROW)return "square";
   return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
  };
  for(let id=0;id<TOTAL;id++){
@@ -49,7 +56,8 @@
   const maxLevel=type==="square"?1:type==="triangle"?10:type==="pentagon"?5:2+Math.floor(random()*99);
   const effect=type==="pentagon"?1.5+random():type==="triangle"?1.05+random()*.1:type==="circle"?1.002+random()*.023:1;
   const cost=id===3?5:type==="square"?1:type==="pentagon"?100000:type==="triangle"?1000:100;
-  nodes.push({id,type,typeKey:"nodeType"+type[0].toUpperCase()+type.slice(1),depth:Math.floor(Math.sqrt(id)),parent:-1,links:[],maxLevel,level:0,x,y,cost,effect});
+  const cell=gridCoords[id],active=isActiveCell(cell.col,cell.row);
+  nodes.push({id,active,type,typeKey:"nodeType"+type[0].toUpperCase()+type.slice(1),depth:Math.floor(Math.sqrt(id)),parent:-1,links:[],maxLevel,level:0,x,y,cost,effect});
  }
  // Build a randomized spanning network over the grid so every node remains reachable.
  const cardinalDirections=[[-1,0],[1,0],[0,-1],[0,1]];
@@ -58,7 +66,7 @@
   const p=gridCoords[id],result=[];
   for(const [dx,dy] of directions){
    const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
-   if(neighbor!==undefined)result.push(neighbor);
+   if(neighbor!==undefined&&isActiveCell(gridCoords[neighbor].col,gridCoords[neighbor].row))result.push(neighbor);
   }
   return result;
  };
@@ -90,13 +98,14 @@
  // Add seeded random orthogonal and diagonal cross-links for a loose web of threads.
  for(let id=0;id<TOTAL;id++){
   const p=gridCoords[id];
+  if(!nodes[id].active)continue;
   for(const [dx,dy] of [[1,0],[0,1]]){
    const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
-   if(neighbor!==undefined&&edgeRandom()<.28)addEdge(id,neighbor);
+   if(neighbor!==undefined&&nodes[neighbor].active&&edgeRandom()<.28)addEdge(id,neighbor);
   }
   for(const [dx,dy] of diagonalDirections){
    const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
-   if(neighbor!==undefined&&edgeRandom()<.10)addEdge(id,neighbor);
+   if(neighbor!==undefined&&nodes[neighbor].active&&edgeRandom()<.10)addEdge(id,neighbor);
   }
  }
  for(const [a,b] of edges){nodes[a].links.push(b);nodes[b].links.push(a)}
@@ -125,6 +134,7 @@
   const revealAround=(center)=>{
    // Scan the fixed node array directly; the old spatial index was removed by the grid rewrite.
    for(let id=0;id<TOTAL;id++){
+    if(!nodes[id].active)continue;
     const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;
     if(dx*dx+dy*dy<=REVEAL_RADIUS_SQ)areaRevealed[id]=1;
    }
@@ -139,9 +149,9 @@
  let selected=-1,scale=.28,offsetX=0,offsetY=0,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
- const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.level>=n.maxLevel?1:0),0);
+ const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.active&&n.level>=n.maxLevel?1:0),0);
  window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;
- function persist(){if(window.FA_CLOUD_RESTORING)return false;return FAStorage.setJSON("faTree",nodes.filter(n=>n.level>0).map(n=>({id:n.id,level:n.level})))}
+ function persist(){if(window.FA_CLOUD_RESTORING)return false;return FAStorage.setJSON("faTree",nodes.filter(n=>n.active&&n.level>0).map(n=>({id:n.id,level:n.level})))}
  window.saveTreeProgress=persist;
  function nodeCost(n){return n.id===0?1:n.id===3?5:Math.ceil(n.cost*Math.pow(1.55,n.level))}
  // The first content node is the only active purchase in this initial tree release.
@@ -194,7 +204,7 @@
    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(n.x,n.y);ctx.stroke();ctx.restore();
   }
   for(const n of nodes){
-   if(!revealed[n.id]||n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;
+   if(!n.active||!revealed[n.id]||n.x<left-40||n.x>right+40||n.y<top-40||n.y>bottom+40)continue;
    const s=status(n),r=(n.id===selected?22.5:n.id===0?19.5:12.3)/scale;
    const color=nodeColor(n,s);
    pathNode(n.x,n.y,r,n.type);
@@ -222,7 +232,7 @@
   const n=nodes[selected];if(!n||!canBuy(n))return;
   gp-=nodeCost(n);savePrestige();n.level++;rebuildRevealed();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
  };
- function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
+ function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+ACTIVE_TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
  function centerRoot(){if(!canvas)return;scale=.28;offsetX=canvas.clientWidth/2;offsetY=canvas.clientHeight/2;draw()}
  window.initUpgradeTree=()=>{
   if(initialized){canvasSize();draw();return}
@@ -234,7 +244,7 @@
    if(!drag.moved){
     const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-offsetX)/scale,y=(e.clientY-r.top-offsetY)/scale;
     let best=-1,dist=31/scale;
-    for(const n of nodes){if(!revealed[n.id])continue;const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}
+    for(const n of nodes){if(!n.active||!revealed[n.id])continue;const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n.id}}
     selected=best;updateInspector();draw();
    }
    drag=null;
