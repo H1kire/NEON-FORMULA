@@ -164,12 +164,18 @@ const letterFChecks=[
 ];
 for(const [token,label] of letterFChecks){if(!treeSource.includes(token)&&!html.includes(token)&&!sources["assets/js/script.js"].includes(token)&&!sources["assets/js/app-ui.js"].includes(token))fail("Letter F unlock check missing "+label);else pass("Letter F "+label)}
 const treeLayoutChecks=[
- ['const positions=[],graphPositions=[]','separate visual and topology coordinates'],
- ['const cellSize=40,minSpacing=40','40-unit minimum node spacing'],
- ['const anchor=positions[Math.floor(layoutRandom()*positions.length)]','random anchor chosen from the whole existing cloud'],
- ['const angle=layoutRandom()*Math.PI*2','random placement angle'],
- ['const distance=42+layoutRandom()*118','short random branch distance'],
- ['if(hasRoom(x,y))point={x,y}','overlap prevention'],
+ ['const positions=[],gridCoords=[],gridIndex=new Map()','fixed rectangular grid coordinates'],
+ ['const GRID_SPACING=73.00156874163076','grid step matches the previous center-to-NODE #0004 distance'],
+ ['const GRID_COLUMNS=Math.ceil(Math.sqrt(TOTAL))','regular grid width'],
+ ['const GRID_ROWS=Math.ceil(TOTAL/GRID_COLUMNS)','regular grid height'],
+ ['setGridNode(0,CENTER_COLUMN,CENTER_ROW)','root remains at the center of the map'],
+ ['setGridNode(3,CENTER_COLUMN+1,CENTER_ROW)','NODE #0004 remains one grid step from the root'],
+ ['const edgeRandom=()=>','separate deterministic random-link generator'],
+ ['const cardinalDirections=[[-1,0],[1,0],[0,-1],[0,1]]','orthogonal grid adjacency'],
+ ['const diagonalDirections=[[-1,-1],[1,-1],[-1,1],[1,1]]','diagonal grid adjacency'],
+ ['while(visitedCount<TOTAL&&frontier.length)','connected randomized spanning network'],
+ ['if(edgeRandom()<.28)addEdge(id,neighbor)','random orthogonal cross-links'],
+ ['if(edgeRandom()<.10)addEdge(id,neighbor)','random diagonal cross-links'],
  ['const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS','80-unit reveal radius'],
  ['const areaRevealed=new Uint8Array(TOTAL),revealed=new Uint8Array(TOTAL)','separate geometric candidates from graph-connected visibility'],
  ['function rebuildConnectedReveal(candidates,roots,adjacency,output)','graph-connected reveal traversal'],
@@ -182,6 +188,21 @@ const treeLayoutChecks=[
  ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
 ];
 for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail("Upgrade tree layout/reveal check missing "+label);else pass("Upgrade tree "+label)}
+const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[];"),treeSource.indexOf("const addEdge="));
+try{
+ const gridContext={TOTAL:3886};
+ vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW};",gridContext);
+ const g=gridContext.__grid;
+ if(g.positions.length!==3886||g.gridCoords.length!==3886||g.gridIndex.size!==3886)throw new Error("The grid must contain exactly 3,886 unique node cells");
+ if(g.positions[0].x!==0||g.positions[0].y!==0)throw new Error("NODE #0001 must remain at the map center");
+ if(Math.abs(Math.hypot(g.positions[3].x-g.positions[0].x,g.positions[3].y-g.positions[0].y)-g.GRID_SPACING)>1e-9)throw new Error("NODE #0004 must remain exactly one grid step from the root");
+ for(let id=0;id<3886;id++){
+  const p=g.positions[id],c=g.gridCoords[id];
+  if(!p||!c||Math.abs(p.x-(c.col-g.CENTER_COLUMN)*g.GRID_SPACING)>1e-9||Math.abs(p.y-(c.row-g.CENTER_ROW)*g.GRID_SPACING)>1e-9)throw new Error("Node "+id+" is not aligned to the regular grid");
+ }
+ if(!(g.GRID_SPACING<80&&Math.SQRT2*g.GRID_SPACING>80))throw new Error("The existing reveal radius must include direct grid neighbors but exclude diagonal neighbors");
+ pass("Upgrade tree grid runtime: 3,886 unique aligned points, preserved center-to-F distance and reveal spacing");
+}catch(error){fail("Upgrade tree grid runtime test: "+error.message)}
 const treeVisualChecks=[
  ['const MIN_SCALE=.0001,MAX_SCALE=2.5','camera zoom bounds'],
  ['scale=Math.max(MIN_SCALE','clamped camera zoom'],
