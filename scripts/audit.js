@@ -232,7 +232,8 @@ try{
   const c=g.gridCoords[id],expected=c.col<=g.GATE_COLUMN||c.row===g.CENTER_ROW||(c.col===g.CENTER_COLUMN+2&&Math.abs(c.row-g.CENTER_ROW)<=4);
   if(g.isActiveCell(c.col,c.row)!==expected)throw new Error("Node "+id+" has an incorrect retained/removed state");
   if(expected)activeCount++;
-  if(c.col>g.GATE_COLUMN&&c.row!==g.CENTER_ROW&&expected)throw new Error("A node above/below the rightward ray was not removed");
+  const isGBranch=c.col===g.CENTER_COLUMN+2&&Math.abs(c.row-g.CENTER_ROW)<=4;
+  if(c.col>g.GATE_COLUMN&&c.row!==g.CENTER_ROW&&!isGBranch&&expected)throw new Error("A node outside the horizontal ray and G innovation branches was not removed");
  }
  if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL!==2084)throw new Error("Active node count must include the 2,076-node base plus eight G innovation squares");
  if(!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-4)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+4)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-5)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+5))throw new Error("The G gate must have exactly four active cells upward and downward");
