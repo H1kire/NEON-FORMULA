@@ -192,8 +192,8 @@ const treeLayoutChecks=[
  ['const cell=gridCoords[id],active=isActiveCell(cell.col,cell.row)','removed cells are excluded from the active tree'],
  ['n.active&&n.level>=n.maxLevel','tree progress counts only retained nodes'],
  ['nodes.filter(n=>n.active&&n.level>0)','removed nodes are excluded from tree persistence'],
- ['if(neighbor!==undefined&&edgeRandom()<.28)addEdge(id,neighbor)','random orthogonal cross-links'],
- ['if(neighbor!==undefined&&edgeRandom()<.10)addEdge(id,neighbor)','random diagonal cross-links'],
+ ['if(neighbor!==undefined&&nodes[neighbor].active&&edgeRandom()<.28)addEdge(id,neighbor)','random orthogonal cross-links'],
+ ['if(neighbor!==undefined&&nodes[neighbor].active&&edgeRandom()<.10)addEdge(id,neighbor)','random diagonal cross-links'],
  ['const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS','80-unit reveal radius'],
  ['if(!nodes[id].active)continue','removed nodes are excluded from visibility calculation'],
  ['const areaRevealed=new Uint8Array(TOTAL),revealed=new Uint8Array(TOTAL)','separate geometric candidates from graph-connected visibility'],
@@ -202,8 +202,8 @@ const treeLayoutChecks=[
  ['for(const n of nodes)if(n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}','reveal around every purchased node and seed its connected component'],
  ['rebuildConnectedReveal(areaRevealed,roots,nodes.map(n=>n.links),revealed)','hide candidate nodes without a path to a visible root'],
  ['if(!edgeVisible(a,b))continue','show links only between graph-connected revealed nodes'],
- ['if(!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
- ['if(!revealed[n.id])continue','prevent selecting hidden nodes'],
+ ['if(!n.active||!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
+ ['if(!n.active||!revealed[n.id])continue','prevent selecting hidden nodes'],
  ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
 ];
 for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail("Upgrade tree layout/reveal check missing "+label);else pass("Upgrade tree "+label)}
