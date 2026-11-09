@@ -149,7 +149,7 @@ else pass("Upgrade tree reveal scans the fixed-grid positions safely");
 if(!treeSource.includes("const GRID_SPACING=73.00156874163076")||!treeSource.includes("positions[id]={x:(col-CENTER_COLUMN)*GRID_SPACING,y:(row-CENTER_ROW)*GRID_SPACING}"))
  fail("Upgrade tree nodes must preserve equal grid spacing");
 else pass("Upgrade tree keeps equal horizontal and vertical grid spacing");
-if(!treeSource.includes("edgeRandom()<.28")||!treeSource.includes("edgeRandom()<.10")||!treeSource.includes("if(visitedCount!==TOTAL)"))
+if(!treeSource.includes("edgeRandom()<.28")||!treeSource.includes("edgeRandom()<.10")||!treeSource.includes("if(visitedCount!==ACTIVE_TOTAL)"))
  fail("Upgrade tree must retain randomized cross-links and a fully connected base network");
 else pass("Upgrade tree retains randomized cross-links and full connectivity");
 const letterFChecks=[
@@ -184,10 +184,18 @@ const treeLayoutChecks=[
  ['const edgeRandom=()=>','separate deterministic random-link generator'],
  ['const cardinalDirections=[[-1,0],[1,0],[0,-1],[0,1]]','orthogonal grid adjacency'],
  ['const diagonalDirections=[[-1,1],[1,1]]','diagonal grid adjacency'],
- ['while(visitedCount<TOTAL&&frontier.length)','connected randomized spanning network'],
+ ['while(visitedCount<ACTIVE_TOTAL&&frontier.length)','connected randomized spanning network over retained nodes'],
+ ['if(visitedCount!==ACTIVE_TOTAL)','all retained nodes remain connected'],
+ ['const GATE_COLUMN=CENTER_COLUMN+1','F gate defines the start of the horizontal ray'],
+ ['const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW','only cells left of the gate and the rightward ray remain active'],
+ ['if(p.col>GATE_COLUMN&&p.row===CENTER_ROW)return "square"','all nodes to the right of the F gate are squares'],
+ ['const cell=gridCoords[id],active=isActiveCell(cell.col,cell.row)','removed cells are excluded from the active tree'],
+ ['n.active&&n.level>=n.maxLevel','tree progress counts only retained nodes'],
+ ['nodes.filter(n=>n.active&&n.level>0)','removed nodes are excluded from tree persistence'],
  ['if(neighbor!==undefined&&edgeRandom()<.28)addEdge(id,neighbor)','random orthogonal cross-links'],
  ['if(neighbor!==undefined&&edgeRandom()<.10)addEdge(id,neighbor)','random diagonal cross-links'],
  ['const REVEAL_RADIUS=80,REVEAL_RADIUS_SQ=REVEAL_RADIUS*REVEAL_RADIUS','80-unit reveal radius'],
+ ['if(!nodes[id].active)continue','removed nodes are excluded from visibility calculation'],
  ['const areaRevealed=new Uint8Array(TOTAL),revealed=new Uint8Array(TOTAL)','separate geometric candidates from graph-connected visibility'],
  ['function rebuildConnectedReveal(candidates,roots,adjacency,output)','graph-connected reveal traversal'],
  ['revealAround(positions[0])','initial reveal around the center'],
@@ -202,7 +210,7 @@ for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail
 const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[],gridIndex=new Map();"),treeSource.indexOf("const addEdge="));
 try{
  const gridContext={TOTAL:3886};
- vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW};",gridContext);
+ vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW,GATE_COLUMN,ACTIVE_TOTAL,isActiveCell};",gridContext);
  const g=gridContext.__grid;
  if(g.positions.length!==3886||g.gridCoords.length!==3886||g.gridIndex.size!==3886)throw new Error("The grid must contain exactly 3,886 unique node cells");
  if(g.positions[0].x!==0||g.positions[0].y!==0)throw new Error("NODE #0001 must remain at the map center");
@@ -212,7 +220,16 @@ try{
   if(!p||!c||Math.abs(p.x-(c.col-g.CENTER_COLUMN)*g.GRID_SPACING)>1e-9||Math.abs(p.y-(c.row-g.CENTER_ROW)*g.GRID_SPACING)>1e-9)throw new Error("Node "+id+" is not aligned to the regular grid");
  }
  if(!(g.GRID_SPACING<80&&Math.SQRT2*g.GRID_SPACING>80))throw new Error("The existing reveal radius must include direct grid neighbors but exclude diagonal neighbors");
- pass("Upgrade tree grid runtime: 3,886 unique aligned points, preserved center-to-F distance and reveal spacing");
+ let activeCount=0;
+ for(let id=0;id<3886;id++){
+  const c=g.gridCoords[id],expected=c.col<=g.GATE_COLUMN||c.row===g.CENTER_ROW;
+  if(g.isActiveCell(c.col,c.row)!==expected)throw new Error("Node "+id+" has an incorrect retained/removed state");
+  if(expected)activeCount++;
+  if(c.col>g.GATE_COLUMN&&c.row!==g.CENTER_ROW&&expected)throw new Error("A node above/below the rightward ray was not removed");
+ }
+ if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL>=3886)throw new Error("Active node count must exclude the pruned right-side branches");
+ if(!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+1))throw new Error("The square ray must continue right while adjacent rows are removed");
+ pass("Upgrade tree grid runtime: equal spacing, preserved IDs, square-ray corridor and pruned upper/lower right branches");
 }catch(error){fail("Upgrade tree grid runtime test: "+error.message)}
 const treeVisualChecks=[
  ['const MIN_SCALE=.0001,MAX_SCALE=2.5','camera zoom bounds'],
