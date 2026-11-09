@@ -13,7 +13,9 @@
  const CENTER_COLUMN=Math.floor(GRID_COLUMNS/2);
  const CENTER_ROW=Math.floor(GRID_ROWS/2);
  const GATE_COLUMN=CENTER_COLUMN+1;
- const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW;
+ // NODE #1987 (Letter G) opens four square innovation nodes in each vertical direction.
+ const G_BRANCH_COLUMN=CENTER_COLUMN+2,G_BRANCH_RADIUS=4;
+ const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
  const gridKey=(col,row)=>col+":"+row;
  const setGridNode=(id,col,row)=>{
   gridCoords[id]={col,row};
@@ -47,6 +49,7 @@
   if(id===3)return "square";
   const p=gridCoords[id];
   if(p.col>GATE_COLUMN&&p.row===CENTER_ROW)return "square";
+  if(p.col===G_BRANCH_COLUMN&&Math.abs(p.row-CENTER_ROW)<=G_BRANCH_RADIUS)return "square";
   return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
  };
  for(let id=0;id<TOTAL;id++){
@@ -221,9 +224,10 @@
   if(!n){id.textContent="NODE —";title.textContent=tr("selectNode");desc.textContent=tr("selectNodeDesc");level.textContent="0 / 1";cost.textContent="—";btn.disabled=true;btn.textContent=tr("selectNode");return}
   const typeName=tr(n.typeKey),shapeLimit=n.type==="circle"?tr("nodeRangeCircle"):n.type==="triangle"?"10":n.type==="pentagon"?"5":"1";
   const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||"";
-  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+(letterGate?"LETTER "+letterGate+" GATE":n.type==="square"?"CONTENT NODE":typeName.toUpperCase())+" · "+n.links.length+" LINKS";
-  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):letterGate?tr("nodeLetter"+letterGate+"Title"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
-  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):letterGate?tr("nodeLetter"+letterGate+"Desc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
+  const innovationNode=n.type==="square"&&n.id!==0&&n.id!==3&&!letterGate&&gridCoords[n.id].col===G_BRANCH_COLUMN&&Math.abs(gridCoords[n.id].row-CENTER_ROW)<=G_BRANCH_RADIUS;
+  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+(letterGate?"LETTER "+letterGate+" GATE":innovationNode?"INNOVATION NODE":n.type==="square"?"CONTENT NODE":typeName.toUpperCase())+" · "+n.links.length+" LINKS";
+  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):letterGate?tr("nodeLetter"+letterGate+"Title"):innovationNode?tr("nodeInnovationTitle"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
+  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):letterGate?tr("nodeLetter"+letterGate+"Desc"):innovationNode?tr("nodeInnovationDesc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
   level.textContent=n.level+" / "+n.maxLevel;
   cost.textContent=letterGate?"—":(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
