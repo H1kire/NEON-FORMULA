@@ -143,7 +143,7 @@ const treeStructureChecks=[
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
 if(treeSource.includes("spatialGrid")||treeSource.includes("cellSize"))fail("Upgrade tree reveal must not reference the removed spatial index");
 else pass("Upgrade tree reveal has no stale spatial-index references");
-if(!treeSource.includes("const revealAround=(center)=>{")||!treeSource.includes("for(let id=0;id<TOTAL;id++){\n    const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;"))
+if(!treeSource.includes("const revealAround=(center)=>{")||!treeSource.includes("for(let id=0;id<TOTAL;id++){\n    if(!nodes[id].active)continue;\n    const p=positions[id],dx=p.x-center.x,dy=p.y-center.y;"))
  fail("Upgrade tree must calculate visible nodes directly from the current fixed-grid positions");
 else pass("Upgrade tree reveal scans the fixed-grid positions safely");
 if(!treeSource.includes("const GRID_SPACING=73.00156874163076")||!treeSource.includes("positions[id]={x:(col-CENTER_COLUMN)*GRID_SPACING,y:(row-CENTER_ROW)*GRID_SPACING}"))
@@ -209,7 +209,7 @@ const treeLayoutChecks=[
 for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail("Upgrade tree layout/reveal check missing "+label);else pass("Upgrade tree "+label)}
 const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[],gridIndex=new Map();"),treeSource.indexOf("const addEdge="));
 try{
- const gridContext={TOTAL:3886};
+ const gridContext={TOTAL:3886,ACTIVE_TOTAL:0};
  vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW,GATE_COLUMN,ACTIVE_TOTAL,isActiveCell};",gridContext);
  const g=gridContext.__grid;
  if(g.positions.length!==3886||g.gridCoords.length!==3886||g.gridIndex.size!==3886)throw new Error("The grid must contain exactly 3,886 unique node cells");
