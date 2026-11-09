@@ -142,6 +142,7 @@ const treeStructureChecks=[
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
 if(!treeSource.includes('const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||""'))fail("Upgrade Tree must reserve NODE #1987–#1990 for letters G–J");else pass("Upgrade Tree G–J gate assignments");
+if(!treeSource.includes('if(p.col===G_BRANCH_COLUMN&&Math.abs(p.row-CENTER_ROW)<=G_BRANCH_RADIUS)return "square"')||!treeSource.includes('innovationNode=n.type==="square"'))fail("G branch cells must be square innovation nodes");else pass("G branch nodes are square innovation slots");
 if(!treeSource.includes("window.refundUpgradeTree=()=>")||!treeSource.includes("window.FAAuth.isDeveloper()")||!treeSource.includes("gp=Math.min(Number.MAX_VALUE,gp+refunded)")||!treeSource.includes("for(const n of nodes)if(n.active)n.level=0"))fail("Developer tree refund must be UID-restricted, return spent GP and clear active node levels");else pass("Developer-only Upgrade Tree refund and bonus deactivation");
 if(!treeSource.includes("const savedTree=persist(),savedPrestige=savePrestige()"))fail("Tree refund must persist both tree and Genesis Point progress");
 if(!html.includes('id="developerTreeRefundBtn"')||!sources["assets/js/script.js"].includes('$("developerTreeRefundBtn")?.addEventListener("click",applyDeveloperTreeRefund)'))fail("Developer tree refund button is not connected");else pass("Developer refund button wiring");
@@ -192,7 +193,8 @@ const treeLayoutChecks=[
  ['while(visitedCount<ACTIVE_TOTAL&&frontier.length)','connected randomized spanning network over retained nodes'],
  ['if(visitedCount!==ACTIVE_TOTAL)','all retained nodes remain connected'],
  ['const GATE_COLUMN=CENTER_COLUMN+1','F gate defines the start of the horizontal ray'],
- ['const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW','only cells left of the gate and the rightward ray remain active'],
+ ['const G_BRANCH_COLUMN=CENTER_COLUMN+2,G_BRANCH_RADIUS=4','four-cell vertical branches start at the Letter G gate'],
+ ['const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS)','only cells left of the gate, the horizontal ray and the two G innovation branches remain active'],
  ['if(p.col>GATE_COLUMN&&p.row===CENTER_ROW)return "square"','all nodes to the right of the F gate are squares'],
  ['const cell=gridCoords[id],active=isActiveCell(cell.col,cell.row)','removed cells are excluded from the active tree'],
  ['n.active&&n.level>=n.maxLevel','tree progress counts only retained nodes'],
@@ -227,14 +229,15 @@ try{
  if(!(g.GRID_SPACING<80&&Math.SQRT2*g.GRID_SPACING>80))throw new Error("The existing reveal radius must include direct grid neighbors but exclude diagonal neighbors");
  let activeCount=0;
  for(let id=0;id<3886;id++){
-  const c=g.gridCoords[id],expected=c.col<=g.GATE_COLUMN||c.row===g.CENTER_ROW;
+  const c=g.gridCoords[id],expected=c.col<=g.GATE_COLUMN||c.row===g.CENTER_ROW||(c.col===g.CENTER_COLUMN+2&&Math.abs(c.row-g.CENTER_ROW)<=4);
   if(g.isActiveCell(c.col,c.row)!==expected)throw new Error("Node "+id+" has an incorrect retained/removed state");
   if(expected)activeCount++;
   if(c.col>g.GATE_COLUMN&&c.row!==g.CENTER_ROW&&expected)throw new Error("A node above/below the rightward ray was not removed");
  }
- if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL>=3886)throw new Error("Active node count must exclude the pruned right-side branches");
- if(!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+1))throw new Error("The square ray must continue right while adjacent rows are removed");
- pass("Upgrade tree grid runtime: equal spacing, preserved IDs, square-ray corridor and pruned upper/lower right branches");
+ if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL!==2084)throw new Error("Active node count must include the 2,076-node base plus eight G innovation squares");
+ if(!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-4)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+4)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-5)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+5))throw new Error("The G gate must have exactly four active cells upward and downward");
+ if(g.gridCoords[1986].col!==g.CENTER_COLUMN+2||g.gridCoords[1986].row!==g.CENTER_ROW)throw new Error("NODE #1987 must anchor the vertical innovation branches");
+ pass("Upgrade tree grid runtime: equal spacing, preserved IDs, square ray and symmetric G innovation branches");
 }catch(error){fail("Upgrade tree grid runtime test: "+error.message)}
 const treeVisualChecks=[
  ['const MIN_SCALE=.0001,MAX_SCALE=2.5','camera zoom bounds'],
