@@ -84,7 +84,7 @@
  }
  addFrontierFrom(0);
  for(let id=1;id<TOTAL;id++)if(visited[id])addFrontierFrom(id);
- while(visitedCount<TOTAL&&frontier.length){
+ while(visitedCount<ACTIVE_TOTAL&&frontier.length){
   const index=Math.floor(edgeRandom()*frontier.length),id=frontier[index];
   frontier[index]=frontier[frontier.length-1];frontier.pop();inFrontier[id]=0;
   if(visited[id])continue;
@@ -94,7 +94,7 @@
   addEdge(id,parent);nodes[id].parent=parent;visited[id]=1;visitedCount++;
   addFrontierFrom(id);
  }
- if(visitedCount!==TOTAL)throw new Error("Upgrade tree grid network is disconnected");
+ if(visitedCount!==ACTIVE_TOTAL)throw new Error("Upgrade tree active grid network is disconnected");
  // Add seeded random orthogonal and diagonal cross-links for a loose web of threads.
  for(let id=0;id<TOTAL;id++){
   const p=gridCoords[id];
