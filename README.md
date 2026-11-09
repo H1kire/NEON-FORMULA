@@ -89,7 +89,7 @@ Genesis Prestige resets the current run and AP-based progression, but preserves 
 
 ### Upgrade Tree
 
-The Upgrade Tree contains **3,886 nodes** connected in a large network. Nodes have different shapes that indicate their upgrade category. In the current release, **NODE #0001** is available for 1 GP and **NODE #0004** is available for 5 GP. NODE #0004 unlocks the F module. Other nodes are reserved for future content.
+The Upgrade Tree contains **2,076 nodes** connected in a large network. Nodes have different shapes that indicate their upgrade category. In the current release, **NODE #0001** is available for 1 GP and **NODE #0004** is available for 5 GP. NODE #0004 unlocks the F module. Other nodes are reserved for future content.
 
 Purchased nodes remain unlocked through prestige resets.
 
