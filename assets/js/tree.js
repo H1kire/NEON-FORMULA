@@ -154,7 +154,7 @@
  function persist(){if(window.FA_CLOUD_RESTORING)return false;return FAStorage.setJSON("faTree",nodes.filter(n=>n.active&&n.level>0).map(n=>({id:n.id,level:n.level})))}
  window.saveTreeProgress=persist;
  function nodeCost(n){return n.id===0?1:n.id===3?5:Math.ceil(n.cost*Math.pow(1.55,n.level))}
- // The first content node is the only active purchase in this initial tree release.
+ // Only the root and F gate are purchasable in this release; G–J are reserved gates.
  function available(n){return (n.id===0||n.id===3)&&n.level<n.maxLevel}
  function canBuy(n){return available(n)&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
@@ -220,17 +220,36 @@
   const n=nodes[selected],id=document.querySelector(".inspector-id"),title=document.querySelector("#treeInspector h3"),desc=document.querySelector("#treeInspector p"),level=document.getElementById("nodeLevel"),cost=document.getElementById("nodeCost"),btn=document.getElementById("nodeBuy");
   if(!n){id.textContent="NODE —";title.textContent=tr("selectNode");desc.textContent=tr("selectNodeDesc");level.textContent="0 / 1";cost.textContent="—";btn.disabled=true;btn.textContent=tr("selectNode");return}
   const typeName=tr(n.typeKey),shapeLimit=n.type==="circle"?tr("nodeRangeCircle"):n.type==="triangle"?"10":n.type==="pentagon"?"5":"1";
-  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+(n.type==="square"?"CONTENT NODE":typeName.toUpperCase())+" · "+n.links.length+" LINKS";
-  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
-  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
+  const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||"";
+  id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+(letterGate?"LETTER "+letterGate+" GATE":n.type==="square"?"CONTENT NODE":typeName.toUpperCase())+" · "+n.links.length+" LINKS";
+  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):letterGate?tr("nodeLetter"+letterGate+"Title"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
+  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):letterGate?tr("nodeLetter"+letterGate+"Desc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
   level.textContent=n.level+" / "+n.maxLevel;
-  cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
+  cost.textContent=letterGate?"—":(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
  }
  window.refreshTreeLanguage=updateInspector;
  window.buyTreeNode=()=>{
   const n=nodes[selected];if(!n||!canBuy(n))return;
   gp-=nodeCost(n);savePrestige();n.level++;rebuildRevealed();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
+ };
+ window.refundUpgradeTree=()=>{
+  if(!window.FAAuth||!window.FAAuth.isDeveloper())return false;
+  let refunded=0;
+  for(const n of nodes){
+   if(!n.active||n.level<=0)continue;
+   for(let level=0;level<n.level;level++){
+    const cost=n.id===0?1:n.id===3?5:Math.ceil(n.cost*Math.pow(1.55,level));
+    refunded=Math.min(Number.MAX_VALUE,refunded+cost);
+   }
+  }
+  if(refunded<=0)return {refunded:0,saved:true};
+  gp=Math.min(Number.MAX_VALUE,gp+refunded);
+  for(const n of nodes)if(n.active)n.level=0;
+  selected=-1;rebuildRevealed();recalc();
+  const savedTree=persist(),savedPrestige=savePrestige();
+  updateInspector();updateProgress();draw();updateUI();updatePrestigeUI();refreshStats();
+  return {refunded,saved:savedTree&&savedPrestige};
  };
  function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+ACTIVE_TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
  function centerRoot(){if(!canvas)return;scale=.28;offsetX=canvas.clientWidth/2;offsetY=canvas.clientHeight/2;draw()}
