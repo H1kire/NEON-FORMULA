@@ -1,4 +1,4 @@
-// FORMULA ASCENT — 3,886-node chaotic multi-link upgrade network
+// FORMULA ASCENT — 3,886-node regular-grid upgrade network
 (() => {
  const TOTAL=3886,nodes=[],edges=[],edgeKeys=new Set();
  let seed=0xFA2026;
@@ -6,65 +6,32 @@
  // Fully chaotic organic placement: every new point branches from a randomly
  // selected existing point, with a random angle and distance. No rows, rays,
  // waves, rings, or visual ordering by node ID.
- const positions=[],graphPositions=[];
- let layoutSeed=0xC0FFEE;
- const layoutRandom=()=>{layoutSeed=(layoutSeed*1664525+1013904223)>>>0;return layoutSeed/4294967296};
- const cellSize=40,minSpacing=40,spatialGrid=new Map();
- const cellKey=(x,y)=>Math.floor(x/cellSize)+":"+Math.floor(y/cellSize);
- const addToGrid=(id,p)=>{
-  const key=cellKey(p.x,p.y);
-  if(!spatialGrid.has(key))spatialGrid.set(key,[]);
-  spatialGrid.get(key).push(id);
+ const positions=[],gridCoords=[],gridIndex=new Map();
+ // One grid step preserves the previous center-to-NODE #0004 distance.
+ const GRID_SPACING=73.00156874163076;
+ const GRID_COLUMNS=Math.ceil(Math.sqrt(TOTAL));
+ const GRID_ROWS=Math.ceil(TOTAL/GRID_COLUMNS);
+ const CENTER_COLUMN=Math.floor(GRID_COLUMNS/2);
+ const CENTER_ROW=Math.floor(GRID_ROWS/2);
+ const gridKey=(col,row)=>col+":"+row;
+ const setGridNode=(id,col,row)=>{
+  gridCoords[id]={col,row};
+  positions[id]={x:(col-CENTER_COLUMN)*GRID_SPACING,y:(row-CENTER_ROW)*GRID_SPACING};
+  gridIndex.set(gridKey(col,row),id);
  };
- const hasRoom=(x,y)=>{
-  const cx=Math.floor(x/cellSize),cy=Math.floor(y/cellSize),limit=minSpacing*minSpacing;
-  for(let gx=cx-1;gx<=cx+1;gx++)for(let gy=cy-1;gy<=cy+1;gy++){
-   const bucket=spatialGrid.get(gx+":"+gy);
-   if(!bucket)continue;
-   for(const id of bucket){
-    const p=positions[id],dx=p.x-x,dy=p.y-y;
-    if(dx*dx+dy*dy<limit)return false;
-   }
-  }
-  return true;
- };
- positions.push({x:0,y:0});addToGrid(0,positions[0]);
- for(let id=1;id<TOTAL;id++){
-  let point=null;
-  // Prefer short, irregular branches; every anchor is selected randomly
-  // from the entire cloud, not from the previous ID or a fixed direction.
-  for(let attempt=0;attempt<160&&!point;attempt++){
-   const anchor=positions[Math.floor(layoutRandom()*positions.length)];
-   const angle=layoutRandom()*Math.PI*2;
-   const distance=42+layoutRandom()*118;
-   const x=anchor.x+Math.cos(angle)*distance;
-   const y=anchor.y+Math.sin(angle)*distance;
-   if(hasRoom(x,y))point={x,y};
-  }
-  // If a dense pocket is full, allow a longer random branch rather than
-  // placing nodes on top of one another.
-  for(let attempt=0;attempt<100&&!point;attempt++){
-   const anchor=positions[Math.floor(layoutRandom()*positions.length)];
-   const angle=layoutRandom()*Math.PI*2;
-   const distance=160+layoutRandom()*240;
-   const x=anchor.x+Math.cos(angle)*distance;
-   const y=anchor.y+Math.sin(angle)*distance;
-   if(hasRoom(x,y))point={x,y};
-  }
-  if(!point)point={x:positions[0].x+id*minSpacing,y:0};
-  positions.push(point);addToGrid(id,point);
+ // Keep the root at the map center and NODE #0004 exactly one grid step to its right.
+ setGridNode(0,CENTER_COLUMN,CENTER_ROW);
+ setGridNode(3,CENTER_COLUMN+1,CENTER_ROW);
+ let nextGridId=1;
+ for(let row=0;row<GRID_ROWS;row++)for(let col=0;col<GRID_COLUMNS;col++){
+  if(gridIndex.has(gridKey(col,row)))continue;
+  while(nextGridId===3)nextGridId++;
+  if(nextGridId>=TOTAL)break;
+  setGridNode(nextGridId++,col,row);
  }
- // Keep the existing graph topology independent from the new visual layout.
- // These legacy coordinates are used only to choose the same nearest neighbors.
- graphPositions.push({x:0,y:0});
- const oldCoreRadius=95*4.5,oldRadialStep=oldCoreRadius/3.5;
- for(let id=1;id<TOTAL;id++){
-  const arm=(id-1)%4,armStep=Math.floor((id-1)/4);
-  const radius=oldCoreRadius+armStep*oldRadialStep;
-  const angle=arm*Math.PI*2/4+2.35*Math.log1p(radius/oldCoreRadius)
-    +.045*Math.sin(armStep*.19+arm*1.7);
-  graphPositions.push({x:radius*Math.cos(angle),y:radius*Math.sin(angle)});
- }
+ if(nextGridId<TOTAL)throw new Error("Upgrade tree grid does not have enough cells");
+ let edgeSeed=0xED6E2026;
+ const edgeRandom=()=>{edgeSeed=(edgeSeed*1664525+1013904223)>>>0;return edgeSeed/4294967296};
  const addEdge=(a,b)=>{
   if(a===b||a<0||b<0)return;
   const lo=Math.min(a,b),hi=Math.max(a,b),key=lo+":"+hi;
@@ -86,19 +53,52 @@
   const cost=id===3?5:type==="square"?1:type==="pentagon"?100000:type==="triangle"?1000:100;
   nodes.push({id,type,typeKey:"nodeType"+type[0].toUpperCase()+type.slice(1),depth:Math.floor(Math.sqrt(id)),parent:-1,links:[],maxLevel,level:0,x,y,cost,effect});
  }
- // Build a connected backbone, then add deterministic cross-links to create a tangled graph.
- for(let id=1;id<TOTAL;id++){
-  const n=nodes[id],start=Math.max(0,id-48);
-  let nearest=start,best=Infinity;
-  for(let j=start;j<id;j++){
-   const p=graphPositions[j],q=graphPositions[id],dx=q.x-p.x,dy=q.y-p.y,d=dx*dx+dy*dy;
-   if(d<best){best=d;nearest=j}
+ // Build a randomized spanning network over the grid so every node remains reachable.
+ const cardinalDirections=[[-1,0],[1,0],[0,-1],[0,1]];
+ const diagonalDirections=[[-1,-1],[1,-1],[-1,1],[1,1]];
+ const gridNeighbors=(id,directions)=>{
+  const p=gridCoords[id],result=[];
+  for(const [dx,dy] of directions){
+   const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
+   if(neighbor!==undefined)result.push(neighbor);
   }
-  n.parent=nearest;addEdge(id,nearest);
-  const extraCount=1+(random()<.34?1:0)+(random()<.1?1:0);
-  for(let k=0;k<extraCount;k++){
-   const candidate=Math.max(0,id-48+Math.floor(random()*49));
-   if(candidate!==nearest)addEdge(id,candidate);
+  return result;
+ };
+ const visited=new Uint8Array(TOTAL),inFrontier=new Uint8Array(TOTAL),frontier=[];
+ const addFrontierFrom=id=>{
+  for(const neighbor of gridNeighbors(id,cardinalDirections)){
+   if(!visited[neighbor]&&!inFrontier[neighbor]){inFrontier[neighbor]=1;frontier.push(neighbor)}
+  }
+ };
+ visited[0]=1;
+ let visitedCount=1;
+ // Keep the four immediate neighbors visible around the center from the start.
+ for(const neighbor of gridNeighbors(0,cardinalDirections)){
+  if(!visited[neighbor]){addEdge(0,neighbor);nodes[neighbor].parent=0;visited[neighbor]=1;visitedCount++}
+ }
+ addFrontierFrom(0);
+ for(let id=1;id<TOTAL;id++)if(visited[id])addFrontierFrom(id);
+ while(visitedCount<TOTAL&&frontier.length){
+  const index=Math.floor(edgeRandom()*frontier.length),id=frontier[index];
+  frontier[index]=frontier[frontier.length-1];frontier.pop();inFrontier[id]=0;
+  if(visited[id])continue;
+  const parents=gridNeighbors(id,cardinalDirections).filter(neighbor=>visited[neighbor]);
+  if(!parents.length)continue;
+  const parent=parents[Math.floor(edgeRandom()*parents.length)];
+  addEdge(id,parent);nodes[id].parent=parent;visited[id]=1;visitedCount++;
+  addFrontierFrom(id);
+ }
+ if(visitedCount!==TOTAL)throw new Error("Upgrade tree grid network is disconnected");
+ // Add seeded random orthogonal and diagonal cross-links for a loose web of threads.
+ for(let id=0;id<TOTAL;id++){
+  const p=gridCoords[id];
+  for(const [dx,dy] of [[1,0],[0,1]]){
+   const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
+   if(neighbor!==undefined&&edgeRandom()<.28)addEdge(id,neighbor);
+  }
+  for(const [dx,dy] of [[-1,1],[1,1]]){
+   const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
+   if(neighbor!==undefined&&edgeRandom()<.10)addEdge(id,neighbor);
   }
  }
  for(const [a,b] of edges){nodes[a].links.push(b);nodes[b].links.push(a)}
