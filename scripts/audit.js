@@ -188,7 +188,7 @@ const treeLayoutChecks=[
  ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
 ];
 for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail("Upgrade tree layout/reveal check missing "+label);else pass("Upgrade tree "+label)}
-const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[];"),treeSource.indexOf("const addEdge="));
+const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[],gridIndex=new Map();"),treeSource.indexOf("const addEdge="));
 try{
  const gridContext={TOTAL:3886};
  vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW};",gridContext);
