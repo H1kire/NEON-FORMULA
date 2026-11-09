@@ -172,7 +172,7 @@ const treeLayoutChecks=[
  ['setGridNode(3,CENTER_COLUMN+1,CENTER_ROW)','NODE #0004 remains one grid step from the root'],
  ['const edgeRandom=()=>','separate deterministic random-link generator'],
  ['const cardinalDirections=[[-1,0],[1,0],[0,-1],[0,1]]','orthogonal grid adjacency'],
- ['const diagonalDirections=[[-1,-1],[1,-1],[-1,1],[1,1]]','diagonal grid adjacency'],
+ ['const diagonalDirections=[[-1,1],[1,1]]','diagonal grid adjacency'],
  ['while(visitedCount<TOTAL&&frontier.length)','connected randomized spanning network'],
  ['if(edgeRandom()<.28)addEdge(id,neighbor)','random orthogonal cross-links'],
  ['if(edgeRandom()<.10)addEdge(id,neighbor)','random diagonal cross-links'],
