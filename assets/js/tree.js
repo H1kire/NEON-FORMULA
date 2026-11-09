@@ -114,7 +114,7 @@
   const id=Number(v?.id);
   if(Number.isInteger(id)&&id>=0&&id<TOTAL){
    const level=Math.floor(Number(v.level)||0);
-   nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level));
+   if(nodes[id].active)nodes[id].level=Math.min(nodes[id].maxLevel,Math.max(0,level));
   }
  });
  // Reveal nodes within 80 units of the center or any node purchased at least once.
@@ -141,13 +141,13 @@
   };
   revealAround(positions[0]);
   const roots=[0];
-  for(const n of nodes)if(n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}
+  for(const n of nodes)if(n.active&&n.level>0){revealAround(n);if(n.id!==0)roots.push(n.id)}
   rebuildConnectedReveal(areaRevealed,roots,nodes.map(n=>n.links),revealed);
  }
  rebuildRevealed();
  const MIN_SCALE=.0001,MAX_SCALE=2.5;
  let selected=-1,scale=.28,offsetX=0,offsetY=0,drag=null,initialized=false,canvas,ctx,cachedMultiplier=1,lastTreeRefresh=0;
- const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
+ const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.active&&n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.active&&n.level>=n.maxLevel?1:0),0);
  window.treePurchasedCount=purchasedCount;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;
