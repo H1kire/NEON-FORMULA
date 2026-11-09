@@ -11,7 +11,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 - Ascension, which resets the current run while preserving long-term AP progression.
 - Genesis Gate, unlocked for 1,000 AP.
 - Genesis Prestige and Genesis Points.
-- Upgrade Tree with 2,076 connected nodes.
+- Upgrade Tree with 2,084 active connected nodes.
 - NODE #0001, which unlocks a permanent integral multiplier.
 - Global Sum and Ascension Legacy upgrades.
 - Module automation, settings and statistics.
@@ -20,7 +20,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 
 ## Current Upgrade Tree content
 
-The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray reserves NODE #1987 for G, #1988 for H, #1989 for I and #1990 for J. These are named future gates only; their formulas, costs and module mechanics are not implemented. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
+The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray reserves NODE #1987 for G, #1988 for H, #1989 for I and #1990 for J. These are named future gates only; their formulas, costs and module mechanics are not implemented. NODE #1987 (G) also anchors a vertical branch with four square innovation slots above and four below. These eight squares are reserved for future non-letter gameplay innovations and currently have no effects. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
 
 ## Progress and accounts
 
