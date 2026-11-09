@@ -20,7 +20,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 
 ## Current Upgrade Tree content
 
-The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. Other nodes are reserved for future content.
+The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray reserves NODE #1987 for G, #1988 for H, #1989 for I and #1990 for J. These are named future gates only; their formulas, costs and module mechanics are not implemented. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
 
 ## Progress and accounts
 
