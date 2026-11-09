@@ -318,6 +318,26 @@ function applyDeveloperPanel(){
  if(ok&&window.refreshFirebaseAuthUI)window.refreshFirebaseAuthUI();
 }
 $("developerApplyBtn")?.addEventListener("click",applyDeveloperPanel);
+function applyDeveloperTreeRefund(){
+ if(!window.FAAuth||!window.FAAuth.isDeveloper())return;
+ const status=$("developerTreeRefundStatus");
+ const message=tr("developerTreeRefundConfirm");
+ if(!confirm(message))return;
+ const result=typeof window.refundUpgradeTree==="function"?window.refundUpgradeTree():false;
+ if(!result||typeof result!=="object"){
+  if(status){status.textContent=tr("developerTreeRefundError");status.dataset.state="error";status.hidden=false}
+  return;
+ }
+ if(result.refunded<=0){
+  if(status){status.textContent=tr("developerTreeRefundEmpty");status.dataset.state="success";status.hidden=false}
+  return;
+ }
+ if(status){
+  status.textContent=result.saved?tr("developerTreeRefunded").replace("{amount}",format(result.refunded)):tr("developerTreeRefundError");
+  status.dataset.state=result.saved?"success":"error";status.hidden=false;
+ }
+}
+$("developerTreeRefundBtn")?.addEventListener("click",applyDeveloperTreeRefund);
 function autoBuy(){
  const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;
  const efficiency=metaBonus("auto"),costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost()].map(cost=>cost/efficiency),actions=[()=>aLevel++,()=>bLevel++,()=>cLevel++,()=>dLevel++,()=>eLevel++];
