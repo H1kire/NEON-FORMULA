@@ -134,8 +134,8 @@ const treeStructureChecks=[
  ['if(id===3)return "square"','NODE #0004 is a square content node'],
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
- ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50','G and H gate costs are 25 and 50 GP'],
- ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0))&&n.level<n.maxLevel}','F, G and H gates unlock in sequence'],
+ ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10','G/H gates and Miniaturization cost 25/50/10 GP'],
+ ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
  ['nodes[a].links.push(b);nodes[b].links.push(a)','bidirectional multi-link adjacency'],
@@ -143,7 +143,7 @@ const treeStructureChecks=[
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
 if(!treeSource.includes('const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||""'))fail("Upgrade Tree must reserve NODE #1987–#1990 for letters G–J");else pass("Upgrade Tree G–J gate assignments");
-if(!treeSource.includes('window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;'))fail("Upgrade Tree F–H unlock APIs are missing");else pass("Upgrade Tree F–H unlock APIs");
+if(!treeSource.includes('window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;window.isMiniaturizationUnlocked=()=>nodes[1925].level>0;'))fail("Upgrade Tree F–H and QOL unlock APIs are missing");else pass("Upgrade Tree F–H and QOL unlock APIs");
 if(!treeSource.includes("if(isSquareCell(p.col,p.row))return \"square\"")||!treeSource.includes('innovationNode=n.type==="square"'))fail("Designated square cells must be square innovation nodes");else pass("Designated square nodes are square innovation slots");
 if(!treeSource.includes("window.refundUpgradeTree=()=>")||!treeSource.includes("window.FAAuth.isDeveloper()")||!treeSource.includes("gp=Math.min(Number.MAX_VALUE,gp+refunded)")||!treeSource.includes("for(const n of nodes)if(n.active)n.level=0"))fail("Developer tree refund must be UID-restricted, return spent GP and clear active node levels");else pass("Developer-only Upgrade Tree refund and bonus deactivation");
 if(!treeSource.includes("const savedTree=persist(),savedPrestige=savePrestige()"))fail("Tree refund must persist both tree and Genesis Point progress");
@@ -253,6 +253,10 @@ try{
  const networkContext={};
  vm.runInNewContext(networkSource+";globalThis.__network={nodes,edges,ACTIVE_TOTAL,gridCoords,gridIndex,CENTER_ROW,G_BRANCH_COLUMN,G_BRANCH_RADIUS};})();",networkContext);
  const net=networkContext.__network,adj=net.nodes.map(()=>[]);
+ const miniNode=net.nodes[1925];
+ if(!miniNode||!miniNode.active||miniNode.type!=="square"||miniNode.links.length!==2)throw new Error("NODE #1926 must remain an active square innovation node with exactly two links");
+ const miniCoords=net.gridCoords[1925];
+ if(miniCoords.col!==net.G_BRANCH_COLUMN||miniCoords.row!==net.CENTER_ROW-1)throw new Error("NODE #1926 must remain the first square in the upper G branch");
  for(const [a,b] of net.edges){adj[a].push(b);adj[b].push(a)}
  const seen=new Uint8Array(net.nodes.length),queue=[0];seen[0]=1;
  for(let head=0;head<queue.length;head++)for(const next of adj[queue[head]])if(net.nodes[next].active&&!seen[next]){seen[next]=1;queue.push(next)}
@@ -499,6 +503,11 @@ try{
   if(blocked.FAStorage.setJSON("audit",{ok:true})!==false||blocked.FAStorage.getJSON("audit","fallback")!=="fallback")fail("Storage-unavailable fallback test failed");
   pass("Storage manager and unavailable-storage tests");
 }catch(error){fail("Storage manager runtime test: "+error.message)}
+const uiSource=sources["assets/js/app-ui.js"];
+if(!uiSource.includes("miniUpgrades:false"))fail("Miniaturization must be disabled by default");
+if(!uiSource.includes('window.refreshQolSettings=()=>')||!uiSource.includes('document.body.classList.toggle("mini-upgrades",!!meta.settings.miniUpgrades)'))fail("QOL setting must control and refresh the Miniaturization class");
+if(!html.includes('data-menu-tab="qol"')||!html.includes('id="menu-qol"')||!html.includes('id="qolMiniaturizationToggle"'))fail("Dedicated QOL menu tab and Miniaturization toggle are missing");
+if(!css.includes(".mini-upgrades #upgradesGrid")||!css.includes("@media(max-width:480px){.mini-upgrades #upgradesGrid"))fail("Miniaturization compact desktop/mobile card layouts are missing");
 if(!sources["assets/js/script.js"].includes('const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer");
 if(!sources["assets/js/script.js"].includes("if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey)"))fail("Legacy saves must be migrated using the current in-memory run state");
 if(!sources["assets/js/script.js"].includes('$("manualSaveBtn")'))fail("Manual save button must use its explicit ID");
