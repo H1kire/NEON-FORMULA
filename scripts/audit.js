@@ -214,7 +214,7 @@ const treeLayoutChecks=[
  ['if(!edgeVisible(a,b))continue','show links only between graph-connected revealed nodes'],
  ['if(!n.active||!revealed[n.id]||n.x<left-40','hide nodes outside revealed regions'],
  ['if(!n.active||!revealed[n.id])continue','prevent selecting hidden nodes'],
- ['n.level++;rebuildRevealed()','expand visibility immediately after first purchase']
+ ['n.level++;if(n.id===1925&&window.refreshQolSettings)window.refreshQolSettings();rebuildRevealed()','refresh QOL and expand visibility immediately after first purchase']
 ];
 for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail("Upgrade tree layout/reveal check missing "+label);else pass("Upgrade tree "+label)}
 const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[],gridIndex=new Map();"),treeSource.indexOf("const addEdge="));
