@@ -108,7 +108,8 @@ The settings menu includes:
 - autosave;
 - offline progress;
 - compact number display;
-- reduced motion.
+- reduced motion;
+- a **QOL** tab for optional features unlocked through the Upgrade Tree. Miniaturization can switch upgrade cards to a compact layout and is disabled until the player enables it.
 
 The game also includes a statistics page.
 
