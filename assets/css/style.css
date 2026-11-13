@@ -52,3 +52,19 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .developer-panel{width:100%;margin-top:18px;padding:17px;border:1px solid rgba(107,216,207,.35);background:linear-gradient(145deg,rgba(11,28,32,.75),rgba(13,21,27,.98))}.developer-panel[hidden]{display:none}.developer-panel-heading{margin-bottom:15px}.developer-kicker{color:var(--cyan);font:8px var(--mono);letter-spacing:1.2px}.developer-panel-heading h3{margin-top:7px;color:var(--cyan)}.developer-panel-heading p{margin-top:6px;color:#82918c;font-size:10px;line-height:1.6}.developer-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.developer-fields label{display:flex;flex-direction:column;gap:7px;min-width:0;color:#82918c;font:8px var(--mono);letter-spacing:.5px}.developer-fields input{width:100%;min-width:0;padding:10px 9px;border:1px solid var(--line);background:#080f14;color:var(--accent);font:12px var(--mono);outline:none}.developer-fields input:focus{border-color:var(--cyan)}.developer-apply{margin-top:13px;max-width:240px}.developer-status{margin-top:10px;color:var(--cyan);font:10px var(--mono)}.developer-status[data-state="error"]{color:#ff8d8d}.developer-status[hidden]{display:none}
 .developer-refund{margin-top:14px;border-color:rgba(255,141,141,.45);color:#ffaaaa}.developer-refund:hover{border-color:#ff8d8d;color:#fff}.developer-refund:disabled{opacity:.5}
 @media(max-width:480px){.developer-panel{padding:13px}.developer-fields{grid-template-columns:1fr}.developer-fields label{font-size:9px}.developer-apply{max-width:none}}
+
+
+/* QOL: Miniaturization keeps every upgrade card readable while reducing screen space. */
+.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mini-upgrades .upgrade,.mini-upgrades .research-card{padding:10px}
+.mini-upgrades .upgrade-top{margin-bottom:5px}
+.mini-upgrades .upgrade-symbol{width:25px;height:25px;font-size:11px}
+.mini-upgrades .upgrade-title{font-size:11px}
+.mini-upgrades #formulaModulePanel .upgrade-title{font-size:11px}
+.mini-upgrades .upgrade-desc{font-size:9px;line-height:1.35;min-height:2.7em;max-height:2.7em;overflow:hidden}
+.mini-upgrades #formulaModulePanel .upgrade-desc:not(.math-formula){font-size:9px}
+.mini-upgrades .upgrade-stats{margin:8px 0 7px;padding-top:6px;font-size:7px;letter-spacing:.35px}
+.mini-upgrades .buy-button{padding:7px 8px;font-size:8px;letter-spacing:.45px}
+.mini-upgrades .research-card .upgrade-desc{min-height:3.8em;max-height:3.8em}
+@media(min-width:1200px){.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:480px){.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-upgrades .upgrade,.mini-upgrades .research-card{padding:8px}.mini-upgrades .upgrade-title{font-size:10px}.mini-upgrades .upgrade-desc{font-size:8px}.mini-upgrades .buy-button{padding:7px 6px;font-size:7px}}
