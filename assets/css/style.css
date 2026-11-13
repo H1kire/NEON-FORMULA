@@ -68,3 +68,13 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .mini-upgrades .research-card .upgrade-desc{min-height:3.8em;max-height:3.8em}
 @media(min-width:1200px){.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:480px){.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-upgrades .upgrade,.mini-upgrades .research-card{padding:8px}.mini-upgrades .upgrade-title{font-size:10px}.mini-upgrades .upgrade-desc{font-size:8px}.mini-upgrades .buy-button{padding:7px 6px;font-size:7px}}
+
+/* Formula modules use their letter symbol as the title; keep the formula itself compact. */
+#formulaModulePanel .upgrade-title{display:none}
+#formulaModulePanel .upgrade-desc.math-formula{overflow-x:hidden;padding:2px 0;white-space:normal}
+#formulaModulePanel .upgrade-desc.math-formula .katex{font-size:8pt;white-space:nowrap}
+.mini-upgrades .research-grid{gap:7px}
+.mini-upgrades .research-card{padding:9px}
+.mini-upgrades .research-card .upgrade-desc{font-size:8px}
+@media(max-width:480px){.mini-upgrades .research-card{padding:7px}.mini-upgrades .research-card .upgrade-desc{font-size:7px}}
+@media(max-width:480px){#formulaModulePanel .upgrade-desc.math-formula .katex{font-size:7pt}}
