@@ -41,14 +41,14 @@ try {
  const parser=sources["assets/js/firebase-cloud-save.js"].slice(parserStart,parserEnd).replace(/^  /gm,"");
  const context={GAME_KEY:"formula_ascent_save_v2",PRESTIGE_KEY:"prestigeSave",META_KEY:"faMeta",TREE_KEY:"faTree",SNAPSHOT_KEYS:["formula_ascent_save_v2","prestigeSave","faMeta","faTree"]};
  const snapshot={
-  formula_ascent_save_v2:JSON.stringify({t:12,value:345,aLevel:1,bLevel:2,cLevel:3,dLevel:4,eLevel:5,fLevel:1,formulaState:{a:1,b:1,c:1,d:1,e:1},formulaSteps:12,formulaAccumulator:0,lastTime:100}),
+  formula_ascent_save_v2:JSON.stringify({t:12,value:345,aLevel:1,bLevel:2,cLevel:3,dLevel:4,eLevel:5,fLevel:1,gLevel:2,hLevel:3,formulaState:{a:1,b:1,c:1,d:1,e:1},formulaSteps:12,formulaAccumulator:0,lastTime:100}),
   prestigeSave:JSON.stringify({p:123,gp:4,prestigeUnlocked:true,prestigeUpgrades:{simpleBoost:2,globalSum:3}}),
   faMeta:JSON.stringify({research:[1,2,3,4,5,6,7,1,9,10],settings:{autosave:true,offline:true,compact:true,reducedMotion:false},automation:{unlocked:[true,false,false,false,false],enabled:[true,true,true,true,true],paused:false},stats:{totalPlayTime:10,lifetimeValue:100,ascensions:2,genesisPrestiges:1,purchases:20},treeUnlocked:true,treePassPurchased:true}),
   faTree:JSON.stringify([{id:0,level:1},{id:3,level:1}])
  };
  vm.runInNewContext(parser+";globalThis.__parse=parseSnapshotData;",context);
  const parsed=context.__parse(snapshot);
- if(parsed.meta.research[7]!==1||parsed.meta.research[9]!==10||parsed.meta.automation.unlocked[0]!==true||parsed.tree.length!==2||parsed.prestige.p!==123||parsed.game.fLevel!==1)throw new Error("A saved progression section or purchase was lost during snapshot parsing");
+ if(parsed.meta.research[7]!==1||parsed.meta.research[9]!==10||parsed.meta.automation.unlocked[0]!==true||parsed.tree.length!==2||parsed.prestige.p!==123||parsed.game.fLevel!==1||parsed.game.gLevel!==2||parsed.game.hLevel!==3)throw new Error("A saved progression section or letter purchase was lost during snapshot parsing");
  const bad=JSON.parse(snapshot.faMeta);bad.research[3]=-1;
  snapshot.faMeta=JSON.stringify(bad);
  let rejected=false;try{context.__parse(snapshot)}catch(error){rejected=true}
