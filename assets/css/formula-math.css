@@ -31,3 +31,27 @@
   font-size: 25pt;
   white-space: nowrap;
 }
+
+
+/* Miniaturization uses compact, wrapping KaTeX instead of a horizontal scroller. */
+.mini-upgrades #formulaModulePanel .upgrade-desc.math-formula{
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+  padding:0;
+  text-align:left;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  scrollbar-width:none;
+}
+.mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{
+  display:inline;
+  max-width:100%;
+  font-size:8px;
+  white-space:normal;
+}
+@media(max-width:480px){
+  .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{font-size:7px}
+}
