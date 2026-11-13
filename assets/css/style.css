@@ -125,3 +125,13 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
  .mini-upgrades .automation-heading-copy .upgrade-title{font-size:8px}
  .mini-upgrades .automation-card p{font-size:7px}
 }
+
+/* Preserve the pre-QOL automation header arrangement when compact mode is off. */
+.automation-heading-row{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:32px auto;align-items:center;column-gap:0;row-gap:0;margin-bottom:12px}
+.automation-heading-row>.upgrade-symbol{grid-column:1;grid-row:1}
+.automation-heading-copy{display:contents}
+.automation-heading-copy .upgrade-title{grid-column:1/-1;grid-row:2}
+.automation-heading-copy .automation-state{grid-column:2;grid-row:1;justify-self:end;align-self:center}
+.mini-upgrades .automation-heading-row{display:flex}
+.mini-upgrades .automation-heading-copy{display:block}
+.mini-upgrades .automation-heading-copy .upgrade-title,.mini-upgrades .automation-heading-copy .automation-state{grid-column:auto;grid-row:auto;justify-self:auto}
