@@ -1,57 +1,20 @@
-/* Formula cards use 16 pt; the main f(t) formula uses 25 pt. */
-.upgrade-desc.math-formula {
-  display: block;
-  min-height: 1.5em;
-  max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 2px 5px 3px;
-  text-align: center;
-  white-space: nowrap;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line, rgba(130,147,142,.35)) transparent;
+/* Formula cards use the original 16 pt KaTeX typography; main f(t) uses 25 pt. */
+.upgrade-desc.math-formula{
+  display:block;min-height:1.5em;max-width:100%;overflow-x:auto;overflow-y:hidden;
+  padding:2px 5px 3px;text-align:center;white-space:nowrap;
+  scrollbar-width:thin;scrollbar-color:var(--line,rgba(130,147,142,.35)) transparent;
 }
-.upgrade-desc.math-formula .katex {
-  color: inherit;
-  font-size: 16pt;
-  white-space: nowrap;
-}
-.formula.math-formula {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  text-align: center;
-  white-space: nowrap;
-  scrollbar-width: thin;
-}
-/* f(t) is 11 pt larger than the 14 pt base: 25 pt. */
-#formulaText.math-formula .katex {
-  color: inherit;
-  font-size: 25pt;
-  white-space: nowrap;
-}
-
-
-/* Miniaturization uses compact, wrapping KaTeX instead of a horizontal scroller. */
+.upgrade-desc.math-formula .katex{color:inherit;font-size:16pt;white-space:nowrap}
+.formula.math-formula{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;text-align:center;white-space:nowrap}
+#formulaText.math-formula .katex{color:inherit;font-size:25pt;white-space:nowrap}
+/* Miniaturization: formula is exactly 4 px smaller than the letter symbol. */
 .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula{
-  display:block;
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow:hidden;
-  padding:0;
-  text-align:left;
-  white-space:normal;
-  overflow-wrap:anywhere;
-  scrollbar-width:none;
+  min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:2px 3px;
+  text-align:left;white-space:nowrap;scrollbar-width:thin;
 }
 .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{
-  display:inline;
-  max-width:100%;
-  font-size:8px;
-  white-space:normal;
+  display:inline-block;max-width:none;font-size:10px;white-space:nowrap;
 }
 @media(max-width:480px){
-  .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{font-size:7px}
+  .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{font-size:8px}
 }
