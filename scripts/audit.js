@@ -174,8 +174,8 @@ const letterFChecks=[
  ['function getFCost()','Letter F uses the shared letter price curve'],
  ['if(fLevel<=0||!unlocked||t<5)return 1','Letter F is inactive until purchased, unlocked and t reaches five seconds'],
  ['function buyF()','Letter F can be purchased and upgraded'],
- ['fLevel,fExponent:getFExponent()','Letter F level and exponent are exposed'],
- ['fLevel,formulaState','Letter F level is stored in local saves'],
+ ['fLevel,gLevel,hLevel,fExponent:getFExponent()','Letter F–H levels and F exponent are exposed'],
+ ['fLevel,gLevel,hLevel,formulaState','Letter F–H levels are stored in local saves'],
  ['id="fFormula"','Letter F formula is displayed'],
  ['id="fLevel"','Letter F level is displayed'],
  ['id="fCost"','Letter F next cost is displayed'],
@@ -326,9 +326,9 @@ try{
  const ghContext={fLevel:0,gLevel:0,hLevel:0,t:3600,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>true,isLetterHUnlocked:()=>true},getA:()=>10,getB:()=>10,getC:()=>10,getD:()=>10,getE:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>base>0?Math.pow(base,power):0,getLetterPrice:(base,level)=>base*Math.pow(8,level)};
  vm.runInNewContext(fFormulaSource+";globalThis.__gh={getG,getGCost,getH,getHBase,getHCost,getHExponent,lambertW0};",ghContext);
  if(ghContext.__gh.getG()!==0)throw new Error("Unpurchased G must provide no bonus");
+ if(ghContext.__gh.getGCost()!==1e18)throw new Error("G first purchase must cost 1 Qi");
  ghContext.gLevel=1;const gx=Math.log1p(3600)/5,expectedG=.05*gx*gx/(1+gx*gx);
  if(Math.abs(ghContext.__gh.getG()-expectedG)>1e-12)throw new Error("G time saturation formula mismatch");
- if(ghContext.__gh.getGCost()!==1e18)throw new Error("G first purchase must cost 1 Qi");
  ghContext.hLevel=0;if(ghContext.__gh.getHBase()!==250||ghContext.__gh.getHCost()!==1e21)throw new Error("H initial base or 1 Sx price mismatch");
  ghContext.hLevel=10000;if(ghContext.__gh.getHBase()!==200)throw new Error("H logarithm base must decrease by 0.005 per level");
  ghContext.hLevel=30000;if(ghContext.__gh.getHBase()!==100)throw new Error("H logarithm base must stop at 100");
