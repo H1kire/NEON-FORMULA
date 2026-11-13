@@ -267,13 +267,15 @@
   for(const n of nodes){
    if(!n.active||n.level<=0)continue;
    for(let level=0;level<n.level;level++){
-    const cost=n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:Math.ceil(n.cost*Math.pow(1.55,level));
+    const cost=n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:Math.ceil(n.cost*Math.pow(1.55,level));
     refunded=Math.min(Number.MAX_VALUE,refunded+cost);
    }
   }
   if(refunded<=0)return {refunded:0,saved:true};
   gp=Math.min(Number.MAX_VALUE,gp+refunded);
   for(const n of nodes)if(n.active)n.level=0;
+  if(FA_META.settings){FA_META.settings.miniUpgrades=false;if(typeof saveMeta==="function")saveMeta();document.body.classList.remove("mini-upgrades")}
+  if(window.refreshQolSettings)window.refreshQolSettings();
   selected=-1;rebuildRevealed();recalc();
   const savedTree=persist(),savedPrestige=savePrestige();
   updateInspector();updateProgress();draw();updateUI();updatePrestigeUI();refreshStats();
