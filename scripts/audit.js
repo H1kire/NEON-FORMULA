@@ -270,6 +270,17 @@ try{
   }
  }
  const gGate=1986;
+ const isFBranchNode=id=>id!==0&&((net.gridCoords[id].row===net.CENTER_ROW&&net.gridCoords[id].col>=net.gridCoords[3].col)||(net.gridCoords[id].col===net.G_BRANCH_COLUMN&&Math.abs(net.gridCoords[id].row-net.CENTER_ROW)<=net.G_BRANCH_RADIUS));
+ for(const [a,b] of net.edges){
+  const aBranch=isFBranchNode(a),bBranch=isFBranchNode(b);
+  if((aBranch&&!bBranch&&b!==0)||(bBranch&&!aBranch&&a!==0))throw new Error("An F-branch square connects to a node outside its branch");
+ }
+ if(!net.edges.some(([a,b])=>(a===0&&b===3)||(a===3&&b===0)))throw new Error("The F gate must retain its connection to the central root");
+ for(const square of squareNodes){
+  if(square.id===0)continue;
+  const links=net.nodes[square.id].links;
+  for(const otherId of links)if(otherId!==0&&!isFBranchNode(otherId))throw new Error("Square NODE "+(square.id+1)+" has an external connection");
+ }
  for(let offset=-net.G_BRANCH_RADIUS;offset<=net.G_BRANCH_RADIUS;offset++){
   if(offset===0)continue;
   const id=net.gridIndex.get((net.G_BRANCH_COLUMN)+":"+(net.CENTER_ROW+offset));
