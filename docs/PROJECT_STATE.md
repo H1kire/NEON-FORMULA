@@ -8,6 +8,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 - Letter F unlocks through NODE #0004 for 5 GP and costs 1 Qa Score.
 - Letter G unlocks through NODE #1987 for 25 GP and starts at 1 Qi Score. Each level raises its maximum A–E bonus by 5 percentage points; its time saturation uses K = 5.
 - Letter H unlocks through NODE #1988 for 50 GP and starts at 1 Sx Score. It uses W₀(t/10) raised to max(1, log_B(ABCD)), where B = max(100, 250 − 0.005 × H level).
+- Future letter pricing rule: each new letter's initial Score cost is 1,000× the previous letter's initial Score cost. Research 2 and 3 affect these prices through the shared letter price function; letter-specific efficiency Research does not alter a new letter's own effect unless explicitly designed.
 - Score production and individual module upgrades.
 - Research Division upgrades purchased with Ascension Points.
 - Ascension, which resets the current run while preserving long-term AP progression.
