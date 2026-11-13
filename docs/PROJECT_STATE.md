@@ -14,7 +14,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 - Ascension, which resets the current run while preserving long-term AP progression.
 - Genesis Gate, unlocked for 1,000 AP.
 - Genesis Prestige and Genesis Points.
-- Upgrade Tree with 2,084 active connected nodes.
+- Upgrade Tree with 2,072 active connected nodes.
 - NODE #0001, which unlocks a permanent integral multiplier.
 - Global Sum and Ascension Legacy upgrades.
 - Module automation, settings and statistics.
@@ -23,7 +23,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 
 ## Current Upgrade Tree content
 
-The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray assigns NODE #1987 to G, #1988 to H, #1989 to I and #1990 to J. G and H are purchasable sequential gates; I and J remain future gates. NODE #1987 (G) also anchors a vertical branch with four square innovation slots above and four below. These eight squares are reserved for future non-letter gameplay innovations and currently have no effects. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
+The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray assigns NODE #1987 to G, #1988 to H, #1989 to I and #1990 to J. G and H are purchasable sequential gates; I and J remain future gates. Square nodes are concentrated along the horizontal path extending from the F gate; eight additional square innovation slots branch vertically from NODE #1987 (G), four above and four below. Every square node has a two-grid-step exclusion area for other node types, except for required connecting-path nodes. NODE #0001 and its immediate two-step neighborhood are exempt. The eight G-branch squares are reserved for future non-letter gameplay innovations and currently have no effects. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
 
 ## Progress and accounts
 
