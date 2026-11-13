@@ -15,7 +15,19 @@
  const GATE_COLUMN=CENTER_COLUMN+1;
  // NODE #1987 (Letter G) opens four square innovation nodes in each vertical direction.
  const G_BRANCH_COLUMN=CENTER_COLUMN+2,G_BRANCH_RADIUS=4;
- const isActiveCell=(col,row)=>col<=GATE_COLUMN||row===CENTER_ROW||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
+ const isSquareCell=(col,row)=>(col===GATE_COLUMN&&row===CENTER_ROW)||(col>GATE_COLUMN&&row===CENTER_ROW)||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
+ const isPathCell=(col,row)=>row===CENTER_ROW;
+ const isWithinSquareExclusion=(col,row)=>{
+  for(let dx=-2;dx<=2;dx++)for(let dy=-2;dy<=2;dy++){
+   if(dx*dx+dy*dy>4)continue;
+   if(isSquareCell(col+dx,row+dy))return true;
+  }
+  return false;
+ };
+ const isActiveCell=(col,row)=>{
+  const base=col<=GATE_COLUMN||row===CENTER_ROW||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
+  return base&&(isSquareCell(col,row)||isPathCell(col,row)||!isWithinSquareExclusion(col,row));
+ };
  const gridKey=(col,row)=>col+":"+row;
  const setGridNode=(id,col,row)=>{
   gridCoords[id]={col,row};
@@ -48,9 +60,8 @@
   const roll=random();
   if(id===3)return "square";
   const p=gridCoords[id];
-  if(p.col>GATE_COLUMN&&p.row===CENTER_ROW)return "square";
-  if(p.col===G_BRANCH_COLUMN&&Math.abs(p.row-CENTER_ROW)<=G_BRANCH_RADIUS)return "square";
-  return roll<.58?"circle":roll<.82?"triangle":roll<.94?"square":"pentagon";
+  if(isSquareCell(p.col,p.row))return "square";
+  return roll<.58?"circle":roll<.82?"triangle":"pentagon";
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
@@ -98,6 +109,13 @@
   addFrontierFrom(id);
  }
  if(visitedCount!==ACTIVE_TOTAL)throw new Error("Upgrade tree active grid network is disconnected");
+ // Connect every square innovation node directly to the Letter G gate, forming clear upper/lower branches.
+ const G_GATE_NODE_ID=1986;
+ for(let offset=-G_BRANCH_RADIUS;offset<=G_BRANCH_RADIUS;offset++){
+  if(offset===0)continue;
+  const branchNode=gridIndex.get(gridKey(G_BRANCH_COLUMN,CENTER_ROW+offset));
+  if(branchNode!==undefined&&nodes[branchNode].active&&nodes[branchNode].type==="square")addEdge(G_GATE_NODE_ID,branchNode);
+ }
  // Add seeded random orthogonal and diagonal cross-links for a loose web of threads.
  for(let id=0;id<TOTAL;id++){
   const p=gridCoords[id];
