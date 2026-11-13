@@ -28,6 +28,7 @@ if(!sources["assets/js/firebase-cloud-save.js"].includes("saveTreeProgress")||!s
 if(!sources["assets/js/firebase-cloud-save.js"].includes('"users/" + checkedUser.uid + "/cloudSave"')||!sources["assets/js/firebase-cloud-save.js"].includes('record.uid === checkedUser.uid')||!sources["assets/js/firebase-cloud-save.js"].includes('record.uid !== restoringUser.uid'))fail("Cloud save must use a per-UID path and verify ownership for both status checks and restore");
 if(!sources["assets/js/firebase-cloud-save.js"].includes("FAStorage.getRaw")||!sources["assets/js/firebase-cloud-save.js"].includes("FAStorage.setRaw"))fail("Cloud save must use guarded raw storage helpers");
 if(!sources["assets/js/firebase-cloud-save.js"].includes('const SNAPSHOT_KEYS = [GAME_KEY, PRESTIGE_KEY, META_KEY, TREE_KEY]'))fail("Cloud snapshots must include run, prestige, meta/research and upgrade-tree data");
+if(!sources["assets/js/firebase-cloud-save.js"].includes("(game.gLevel !== undefined && !finiteNonNegative(game.gLevel))")||!sources["assets/js/firebase-cloud-save.js"].includes("(game.hLevel !== undefined && !finiteNonNegative(game.hLevel))"))fail("Cloud restore must validate optional G/H levels");
 if(!sources["assets/js/firebase-cloud-save.js"].includes("meta.research.every(value => Number.isInteger(value) && value >= 0)")||!sources["assets/js/firebase-cloud-save.js"].includes("meta.automation.unlocked.length !== 5"))fail("Cloud snapshot must validate all Research levels and automation purchases");
 if(!sources["assets/js/firebase-cloud-save.js"].includes("for (const key of SNAPSHOT_KEYS) {")||!sources["assets/js/firebase-cloud-save.js"].includes("window.FAStorage.setRaw(key, data[key])"))fail("Cloud restore must replace every saved progression section");
 if(!sources["assets/js/script.js"].includes("savePrestige(),saveTreeProgress()"))fail("Manual local save must include upgrade-tree purchases");
@@ -133,8 +134,8 @@ const treeStructureChecks=[
  ['if(id===3)return "square"','NODE #0004 is a square content node'],
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
- ['function nodeCost(n){return n.id===0?1:n.id===3?5','NODE #0004 fixed one-time purchase cost'],
- ['function available(n){return (n.id===0||n.id===3)&&n.level<n.maxLevel}','only NODE #0001 and NODE #0004 are currently purchasable'],
+ ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50','G and H gate costs are 25 and 50 GP'],
+ ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0))&&n.level<n.maxLevel}','F, G and H gates unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
  ['nodes[a].links.push(b);nodes[b].links.push(a)','bidirectional multi-link adjacency'],
@@ -142,6 +143,7 @@ const treeStructureChecks=[
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
 if(!treeSource.includes('const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||""'))fail("Upgrade Tree must reserve NODE #1987–#1990 for letters G–J");else pass("Upgrade Tree G–J gate assignments");
+if(!treeSource.includes('window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;'))fail("Upgrade Tree F–H unlock APIs are missing");else pass("Upgrade Tree F–H unlock APIs");
 if(!treeSource.includes('if(p.col===G_BRANCH_COLUMN&&Math.abs(p.row-CENTER_ROW)<=G_BRANCH_RADIUS)return "square"')||!treeSource.includes('innovationNode=n.type==="square"'))fail("G branch cells must be square innovation nodes");else pass("G branch nodes are square innovation slots");
 if(!treeSource.includes("window.refundUpgradeTree=()=>")||!treeSource.includes("window.FAAuth.isDeveloper()")||!treeSource.includes("gp=Math.min(Number.MAX_VALUE,gp+refunded)")||!treeSource.includes("for(const n of nodes)if(n.active)n.level=0"))fail("Developer tree refund must be UID-restricted, return spent GP and clear active node levels");else pass("Developer-only Upgrade Tree refund and bonus deactivation");
 if(!treeSource.includes("const savedTree=persist(),savedPrestige=savePrestige()"))fail("Tree refund must persist both tree and Genesis Point progress");
@@ -311,7 +313,7 @@ else{
 }
 const fFormulaSource=sources["assets/js/script.js"].slice(sources["assets/js/script.js"].indexOf("const LETTER_F_BASE_EXPONENT"),sources["assets/js/script.js"].indexOf("const formulaLetterGetters"));
 try{
- const fContext={fLevel:0,t:10,LETTER_BASE_COSTS:{f:1e15},window:{isLetterFUnlocked:()=>true},getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
+ const fContext={fLevel:0,gLevel:0,hLevel:0,t:10,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>false,isLetterHUnlocked:()=>false},getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
  vm.runInNewContext(fFormulaSource+";globalThis.__f={getF,getFExponent,getFCost};",fContext);
  if(fContext.__f.getF()!==1)throw new Error("Unpurchased F must remain neutral");
  if(fContext.__f.getFCost()!==1e15)throw new Error("First F purchase must cost exactly 1 Qa");
@@ -321,6 +323,19 @@ try{
  fContext.fLevel=2;if(Math.abs(fContext.__f.getFExponent()-0.4001)>1e-12)throw new Error("Each F upgrade must increase p by 0.0001");
  fContext.fLevel=4501;if(fContext.__f.getFExponent()!==0.85)throw new Error("F exponent must cap at 0.85");
  pass("Letter F runtime tests: purchase gating, activation threshold, 1 Qa base price, shared price growth and p progression");
+ const ghContext={fLevel:0,gLevel:0,hLevel:0,t:3600,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>true,isLetterHUnlocked:()=>true},getA:()=>10,getB:()=>10,getC:()=>10,getD:()=>10,getE:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>base>0?Math.pow(base,power):0,getLetterPrice:(base,level)=>base*Math.pow(8,level)};
+ vm.runInNewContext(fFormulaSource+";globalThis.__gh={getG,getGCost,getH,getHBase,getHCost,getHExponent,lambertW0};",ghContext);
+ if(ghContext.__gh.getG()!==0)throw new Error("Unpurchased G must provide no bonus");
+ ghContext.gLevel=1;const gx=Math.log1p(3600)/5,expectedG=.05*gx*gx/(1+gx*gx);
+ if(Math.abs(ghContext.__gh.getG()-expectedG)>1e-12)throw new Error("G time saturation formula mismatch");
+ if(ghContext.__gh.getGCost()!==1e18)throw new Error("G first purchase must cost 1 Qi");
+ ghContext.hLevel=0;if(ghContext.__gh.getHBase()!==250||ghContext.__gh.getHCost()!==1e21)throw new Error("H initial base or 1 Sx price mismatch");
+ ghContext.hLevel=10000;if(ghContext.__gh.getHBase()!==200)throw new Error("H logarithm base must decrease by 0.005 per level");
+ ghContext.hLevel=30000;if(ghContext.__gh.getHBase()!==100)throw new Error("H logarithm base must stop at 100");
+ if(Math.abs(ghContext.__gh.lambertW0(Math.E)-1)>1e-12)throw new Error("Lambert W principal branch solver failed W(e)=1");
+ ghContext.hLevel=1;const h=ghContext.__gh.getH();if(!(h>0&&Number.isFinite(h)))throw new Error("H multiplier must be finite and positive at t=3600");
+ pass("Letter G/H runtime tests: time saturation, 5% per level, shared price curve, Lambert W and 100 base floor");
+
 }catch(error){fail("Letter F runtime test: "+error.message)}
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
@@ -329,7 +344,7 @@ if(!timingSource.includes("function getIntegralMultiplier()")||!timingSource.inc
 if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula must show Global Sum only after it is purchased");
 if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell"'))fail("Displayed formula must use compact product notation for A–E");
 if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}"))fail("Displayed formula must place the complete multiplier product inside the integral");
-if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE,getF]"))fail("All current letter multipliers, including F, must be registered inside the global sum");
+if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE,getF,getG,getH]"))fail("All current letter multipliers, including F–H, must be registered inside the global sum");
 if(!timingSource.includes("Math.log1p(t)")||!timingSource.includes("Math.log1p(upper)")||!timingSource.includes("Math.exp(powered)"))fail("Letter F must use the agreed integral-exponential formula");
 if(!timingSource.includes("if(aLevel>0)active.push(getA())")||!timingSource.includes("if(bLevel>0)active.push(getB())")||!timingSource.includes("if(cLevel>0)active.push(getC())")||!timingSource.includes("if(dLevel>0)active.push(getD())")||!timingSource.includes("if(eLevel>0)active.push(getE())"))fail("A–E multipliers must join the production product only after their first purchase");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
@@ -364,7 +379,7 @@ try{
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
   pass("Production tests: base, NODE #0001 integral, Global Sum, aggregate weight display and Ascension Legacy scaling");
   const letterProductSource=timingSource.slice(timingSource.indexOf("function getLetterProduct()"),timingSource.indexOf("window.FAMathSystem"));
-  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,fLevel:0,window:{isLetterFUnlocked:()=>true},getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,getF:()=>1,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11,()=>letterContext.getF()],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
+  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,fLevel:0,gLevel:0,hLevel:0,window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>false,isLetterHUnlocked:()=>false},getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,getF:()=>1,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11,()=>letterContext.getF()],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
   vm.runInNewContext(letterProductSource+";globalThis.__letterProduct=getLetterProduct;",letterContext);
   if(letterContext.__letterProduct()!==1)fail("Unpurchased A–E letters must not affect production");
   letterContext.aLevel=1;if(letterContext.__letterProduct()!==2)fail("First A purchase must activate A exactly once");
@@ -374,7 +389,7 @@ try{
 
 }catch(error){fail("Production rate runtime test: "+error.message)}
 const prestigeSource= sources["assets/js/prestige.js"];
-if(!prestigeSource.includes("fLevel=0"))fail("Letter F level must reset with the other run upgrades on prestige");else pass("Letter F prestige reset matches A–E run upgrades");
+if(!prestigeSource.includes("fLevel=0")||!prestigeSource.includes("gLevel=0")||!prestigeSource.includes("hLevel=0"))fail("Letter F–H levels must reset with the other run upgrades on prestige");else pass("Letter F–H prestige reset");
 const resetSource=sources["assets/js/script.js"].match(/function resetSave\(\)[\s\S]*?\n\}/)?.[0]||"";
 const resetRequirements=[
  "resetRun()","p=0;gp=0;prestigeUnlocked=false",
