@@ -176,12 +176,12 @@
  const recalc=()=>{cachedMultiplier=1;for(const n of nodes)if(n.active&&n.level&&n.effect>1)cachedMultiplier*=Math.pow(n.effect,n.level)};
  recalc();
  const purchasedCount=()=>nodes.reduce((sum,n)=>sum+(n.active&&n.level>=n.maxLevel?1:0),0);
- window.treePurchasedCount=purchasedCount;window.treeActiveCount=()=>ACTIVE_TOTAL;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;
+ window.treePurchasedCount=purchasedCount;window.treeActiveCount=()=>ACTIVE_TOTAL;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;window.isMiniaturizationUnlocked=()=>nodes[1925].level>0;
  function persist(){if(window.FA_CLOUD_RESTORING)return false;return FAStorage.setJSON("faTree",nodes.filter(n=>n.active&&n.level>0).map(n=>({id:n.id,level:n.level})))}
  window.saveTreeProgress=persist;
- function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:Math.ceil(n.cost*Math.pow(1.55,n.level))}
+ function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:Math.ceil(n.cost*Math.pow(1.55,n.level))}
  // Letter gates unlock in sequence: F, then G, then H.
- function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0))&&n.level<n.maxLevel}
+ function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0))&&n.level<n.maxLevel}
  function canBuy(n){return available(n)&&gp>=nodeCost(n)}
  function status(n){return n.level>=n.maxLevel?"purchased":available(n)?"available":"locked"}
  function edgeVisible(a,b){return revealed[a]===1&&revealed[b]===1}
@@ -248,9 +248,10 @@
   const typeName=tr(n.typeKey),shapeLimit=n.type==="circle"?tr("nodeRangeCircle"):n.type==="triangle"?"10":n.type==="pentagon"?"5":"1";
   const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||"";
   const innovationNode=n.type==="square"&&n.id!==0&&n.id!==3&&!letterGate&&gridCoords[n.id].col===G_BRANCH_COLUMN&&Math.abs(gridCoords[n.id].row-CENTER_ROW)<=G_BRANCH_RADIUS;
+  const miniaturizationNode=innovationNode&&n.id===1925;
   id.textContent="NODE #"+String(n.id+1).padStart(4,"0")+" · "+(letterGate?"LETTER "+letterGate+" GATE":innovationNode?"INNOVATION NODE":n.type==="square"?"CONTENT NODE":typeName.toUpperCase())+" · "+n.links.length+" LINKS";
-  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):letterGate?tr("nodeLetter"+letterGate+"Title"):innovationNode?tr("nodeInnovationTitle"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
-  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):letterGate?tr("nodeLetter"+letterGate+"Desc"):innovationNode?tr("nodeInnovationDesc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
+  title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):letterGate?tr("nodeLetter"+letterGate+"Title"):miniaturizationNode?tr("miniaturizationTitle"):innovationNode?tr("nodeInnovationTitle"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
+  desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):letterGate?tr("nodeLetter"+letterGate+"Desc"):miniaturizationNode?tr("miniaturizationNodeDesc"):innovationNode?tr("nodeInnovationDesc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
   level.textContent=n.level+" / "+n.maxLevel;
   cost.textContent=(letterGate==="I"||letterGate==="J")?"—":(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
@@ -258,7 +259,7 @@
  window.refreshTreeLanguage=updateInspector;
  window.buyTreeNode=()=>{
   const n=nodes[selected];if(!n||!canBuy(n))return;
-  gp-=nodeCost(n);savePrestige();n.level++;rebuildRevealed();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
+  gp-=nodeCost(n);savePrestige();n.level++;if(n.id===1925&&window.refreshQolSettings)window.refreshQolSettings();rebuildRevealed();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
  };
  window.refundUpgradeTree=()=>{
   if(!window.FAAuth||!window.FAAuth.isDeveloper())return false;
