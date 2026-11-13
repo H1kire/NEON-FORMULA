@@ -219,7 +219,7 @@ for(const [token,label] of treeLayoutChecks){if(!treeSource.includes(token))fail
 const treeGridSource=treeSource.slice(treeSource.indexOf("const positions=[],gridCoords=[],gridIndex=new Map();"),treeSource.indexOf("const addEdge="));
 try{
  const gridContext={TOTAL:3886,ACTIVE_TOTAL:0};
- vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW,GATE_COLUMN,ACTIVE_TOTAL,isActiveCell,isSquareCell,isPathCell,isWithinSquareExclusion};",gridContext);
+ vm.runInNewContext(treeGridSource+";globalThis.__grid={positions,gridCoords,gridIndex,GRID_SPACING,GRID_COLUMNS,GRID_ROWS,CENTER_COLUMN,CENTER_ROW,GATE_COLUMN,ACTIVE_TOTAL,isActiveCell,isSquareCell,isPathCell,isCenterExceptionCell,isWithinSquareExclusion};",gridContext);
  const g=gridContext.__grid;
  if(g.positions.length!==3886||g.gridCoords.length!==3886||g.gridIndex.size!==3886)throw new Error("The grid must contain exactly 3,886 unique node cells");
  if(g.positions[0].x!==0||g.positions[0].y!==0)throw new Error("NODE #0001 must remain at the map center");
@@ -235,15 +235,16 @@ try{
   const square=g.isSquareCell(c.col,c.row);
   const path=g.isPathCell(c.col,c.row);
   const excluded=g.isWithinSquareExclusion(c.col,c.row);
-  const expected=base&&(square||path||!excluded);
+  const centerException=g.isCenterExceptionCell(c.col,c.row);
+  const expected=base&&(square||path||centerException||!excluded);
   if(g.isActiveCell(c.col,c.row)!==expected)throw new Error("Node "+id+" has an incorrect retained/removed state");
   if(expected)activeCount++;
-  if(expected&&!square&&!path&&excluded)throw new Error("A non-square node remains inside a square's two-step exclusion radius");
+  if(expected&&!square&&!path&&!centerException&&excluded)throw new Error("A non-square node remains inside a square's two-step exclusion radius");
  }
  if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL>=2084)throw new Error("Square exclusion zones must remove nearby non-path nodes while retaining a valid active network");
  if(!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-4)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+4)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-5)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+5))throw new Error("The G gate must have exactly four active cells upward and downward");
  if(!g.isSquareCell(g.CENTER_COLUMN+2,g.CENTER_ROW-4)||!g.isSquareCell(g.CENTER_COLUMN+2,g.CENTER_ROW+4))throw new Error("All eight G branch destinations must be square nodes");
- if(!g.isActiveCell(g.CENTER_COLUMN,g.CENTER_ROW-2)||!g.isActiveCell(g.CENTER_COLUMN,g.CENTER_ROW+2))throw new Error("The center exception must preserve its immediate surroundings");
+ if(!g.isActiveCell(g.CENTER_COLUMN,g.CENTER_ROW-2)||!g.isActiveCell(g.CENTER_COLUMN,g.CENTER_ROW+2)||!g.isCenterExceptionCell(g.CENTER_COLUMN-2,g.CENTER_ROW))throw new Error("The center exception must preserve its full two-step neighborhood");
  if(g.gridCoords[1986].col!==g.CENTER_COLUMN+2||g.gridCoords[1986].row!==g.CENTER_ROW)throw new Error("NODE #1987 must anchor the vertical innovation branches");
  pass("Upgrade tree grid runtime: equal spacing, preserved IDs, square ray and symmetric G innovation branches");
 }catch(error){fail("Upgrade tree grid runtime test: "+error.message)}
@@ -264,7 +265,8 @@ try{
   for(const other of net.nodes){
    if(!other.active||other.type==="square"||other.id===square.id)continue;
    const p=net.gridCoords[other.id],dx=p.col-c.col,dy=p.row-c.row;
-   if(dx*dx+dy*dy<=4&&p.row!==net.CENTER_ROW)throw new Error("A non-path non-square node is inside a square's two-step exclusion radius");
+   const centerDx=p.col-31,centerDy=p.row-net.CENTER_ROW;
+   if(dx*dx+dy*dy<=4&&p.row!==net.CENTER_ROW&&centerDx*centerDx+centerDy*centerDy>4)throw new Error("A non-path non-square node is inside a square's two-step exclusion radius");
   }
  }
  const gGate=1986;
