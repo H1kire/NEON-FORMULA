@@ -241,7 +241,7 @@ try{
   if(expected)activeCount++;
   if(expected&&!square&&!path&&!centerException&&excluded)throw new Error("A non-square node remains inside a square's two-step exclusion radius");
  }
- if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL>=2084)throw new Error("Square exclusion zones must remove nearby non-path nodes while retaining a valid active network");
+ if(activeCount!==g.ACTIVE_TOTAL||g.ACTIVE_TOTAL!==2072)throw new Error("Square exclusion rules must preserve exactly 2,072 active nodes");
  if(!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-4)||!g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+4)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW-5)||g.isActiveCell(g.CENTER_COLUMN+2,g.CENTER_ROW+5))throw new Error("The G gate must have exactly four active cells upward and downward");
  if(!g.isSquareCell(g.CENTER_COLUMN+2,g.CENTER_ROW-4)||!g.isSquareCell(g.CENTER_COLUMN+2,g.CENTER_ROW+4))throw new Error("All eight G branch destinations must be square nodes");
  if(!g.isActiveCell(g.CENTER_COLUMN,g.CENTER_ROW-2)||!g.isActiveCell(g.CENTER_COLUMN,g.CENTER_ROW+2)||!g.isCenterExceptionCell(g.CENTER_COLUMN-2,g.CENTER_ROW))throw new Error("The center exception must preserve its full two-step neighborhood");
