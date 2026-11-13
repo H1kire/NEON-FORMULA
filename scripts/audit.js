@@ -247,6 +247,36 @@ try{
  if(g.gridCoords[1986].col!==g.CENTER_COLUMN+2||g.gridCoords[1986].row!==g.CENTER_ROW)throw new Error("NODE #1987 must anchor the vertical innovation branches");
  pass("Upgrade tree grid runtime: equal spacing, preserved IDs, square ray and symmetric G innovation branches");
 }catch(error){fail("Upgrade tree grid runtime test: "+error.message)}
+try{
+ const networkSource=treeSource.slice(0,treeSource.indexOf(" const saved=FAStorage.getJSON"));
+ const networkContext={};
+ vm.runInNewContext(networkSource+";globalThis.__network={nodes,edges,ACTIVE_TOTAL,gridCoords,gridIndex,CENTER_ROW,G_BRANCH_COLUMN,G_BRANCH_RADIUS};})();",networkContext);
+ const net=networkContext.__network,adj=net.nodes.map(()=>[]);
+ for(const [a,b] of net.edges){adj[a].push(b);adj[b].push(a)}
+ const seen=new Uint8Array(net.nodes.length),queue=[0];seen[0]=1;
+ for(let head=0;head<queue.length;head++)for(const next of adj[queue[head]])if(net.nodes[next].active&&!seen[next]){seen[next]=1;queue.push(next)}
+ if(queue.length!==net.ACTIVE_TOTAL)throw new Error("Every active node must remain reachable from NODE #0001");
+ const squareNodes=net.nodes.filter(n=>n.active&&n.type==="square");
+ for(const square of squareNodes){
+  const c=net.gridCoords[square.id];
+  if(square.id===0)continue;
+  if(!(c.row===net.CENTER_ROW||(c.col===net.G_BRANCH_COLUMN&&Math.abs(c.row-net.CENTER_ROW)<=net.G_BRANCH_RADIUS)))throw new Error("A square node exists outside the F ray or G innovation branch");
+  for(const other of net.nodes){
+   if(!other.active||other.type==="square"||other.id===square.id)continue;
+   const p=net.gridCoords[other.id],dx=p.col-c.col,dy=p.row-c.row;
+   if(dx*dx+dy*dy<=4&&p.row!==net.CENTER_ROW)throw new Error("A non-path non-square node is inside a square's two-step exclusion radius");
+  }
+ }
+ const gGate=1986;
+ for(let offset=-net.G_BRANCH_RADIUS;offset<=net.G_BRANCH_RADIUS;offset++){
+  if(offset===0)continue;
+  const id=net.gridIndex.get((net.G_BRANCH_COLUMN)+":"+(net.CENTER_ROW+offset));
+  if(id===undefined||!net.nodes[id].active||net.nodes[id].type!=="square")throw new Error("A G branch destination is missing or is not square");
+  if(!net.edges.some(([a,b])=>(a===gGate&&b===id)||(a===id&&b===gGate)))throw new Error("G gate is not directly linked to branch square NODE "+(id+1));
+ }
+ if(squareNodes.length<9)throw new Error("The F ray and G branch must retain their dedicated square nodes");
+ pass("Upgrade tree network runtime: connected graph, square exclusion, F-ray placement and all eight direct G branches");
+}catch(error){fail("Upgrade tree network runtime test: "+error.message)}
 const treeVisualChecks=[
  ['const MIN_SCALE=.0001,MAX_SCALE=2.5','camera zoom bounds'],
  ['scale=Math.max(MIN_SCALE','clamped camera zoom'],
