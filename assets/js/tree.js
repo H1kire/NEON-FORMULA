@@ -62,7 +62,7 @@
   if(id===3)return "square";
   const p=gridCoords[id];
   if(isSquareCell(p.col,p.row))return "square";
-  return roll<.58?"circle":roll<.82?"triangle":"pentagon";
+  return roll<.70?"circle":roll<.94?"triangle":"pentagon";
  };
  for(let id=0;id<TOTAL;id++){
   const type=typeFor(id);
