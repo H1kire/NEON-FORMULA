@@ -17,6 +17,7 @@
  const G_BRANCH_COLUMN=CENTER_COLUMN+2,G_BRANCH_RADIUS=4;
  const isSquareCell=(col,row)=>(col===GATE_COLUMN&&row===CENTER_ROW)||(col>GATE_COLUMN&&row===CENTER_ROW)||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
  const isPathCell=(col,row)=>row===CENTER_ROW;
+ const isCenterExceptionCell=(col,row)=>{const dx=col-CENTER_COLUMN,dy=row-CENTER_ROW;return dx*dx+dy*dy<=4};
  const isWithinSquareExclusion=(col,row)=>{
   for(let dx=-2;dx<=2;dx++)for(let dy=-2;dy<=2;dy++){
    if(dx*dx+dy*dy>4)continue;
@@ -26,7 +27,7 @@
  };
  const isActiveCell=(col,row)=>{
   const base=col<=GATE_COLUMN||row===CENTER_ROW||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
-  return base&&(isSquareCell(col,row)||isPathCell(col,row)||!isWithinSquareExclusion(col,row));
+  return base&&(isSquareCell(col,row)||isPathCell(col,row)||isCenterExceptionCell(col,row)||!isWithinSquareExclusion(col,row));
  };
  const gridKey=(col,row)=>col+":"+row;
  const setGridNode=(id,col,row)=>{
