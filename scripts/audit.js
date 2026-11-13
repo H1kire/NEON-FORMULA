@@ -449,7 +449,7 @@ const resetRequirements=[
  "prestigeUpgrades={simpleBoost:0,globalSum:0}",
  "FA_META.research=Array(10).fill(0)",
  "FA_META.automation={unlocked:[false,false,false,false,false],enabled:[true,true,true,true,true],paused:false}",
- "FA_META.treeUnlocked=false","FA_META.treePassPurchased=false",
+ "FA_META.treeUnlocked=false","FA_META.treePassPurchased=false","FA_META.settings.miniUpgrades=false",
  "FA_META.stats={totalPlayTime:0,lifetimeValue:0,ascensions:0,genesisPrestiges:0,purchases:0}",
  'FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"])',
  "saveGame(true)","savePrestige()","saveMeta()"
@@ -506,7 +506,7 @@ try{
 }catch(error){fail("Storage manager runtime test: "+error.message)}
 const uiSource=sources["assets/js/app-ui.js"];
 if(!uiSource.includes("miniUpgrades:false"))fail("Miniaturization must be disabled by default");
-if(!uiSource.includes('window.refreshQolSettings=()=>')||!uiSource.includes('document.body.classList.toggle("mini-upgrades",!!meta.settings.miniUpgrades)'))fail("QOL setting must control and refresh the Miniaturization class");
+if(!uiSource.includes('window.refreshQolSettings=()=>')||!uiSource.includes('document.body.classList.toggle("mini-upgrades",!!meta.settings.miniUpgrades&&typeof window.isMiniaturizationUnlocked==="function"&&window.isMiniaturizationUnlocked())')||!uiSource.includes('if(key==="miniUpgrades"&&v&&!(typeof window.isMiniaturizationUnlocked==="function"&&window.isMiniaturizationUnlocked()))return'))fail("QOL setting must control Miniaturization only after its tree unlock");
 if(!html.includes('data-menu-tab="qol"')||!html.includes('id="menu-qol"')||!html.includes('id="qolMiniaturizationToggle"'))fail("Dedicated QOL menu tab and Miniaturization toggle are missing");
 if(!css.includes(".mini-upgrades #upgradesGrid")||!css.includes("@media(max-width:480px){.mini-upgrades #upgradesGrid"))fail("Miniaturization compact desktop/mobile card layouts are missing");
 if(!sources["assets/js/script.js"].includes('const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer");
