@@ -18,6 +18,10 @@
  const isSquareCell=(col,row)=>(col===GATE_COLUMN&&row===CENTER_ROW)||(col>GATE_COLUMN&&row===CENTER_ROW)||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
  const isPathCell=(col,row)=>row===CENTER_ROW;
  const isCenterExceptionCell=(col,row)=>{const dx=col-CENTER_COLUMN,dy=row-CENTER_ROW;return dx*dx+dy*dy<=4};
+ // The F-ray and its G innovation branch form a closed connection family; only NODE #0001 may connect across its boundary.
+ const isFBranchCell=(col,row)=>(row===CENTER_ROW&&col>=GATE_COLUMN)||(col===G_BRANCH_COLUMN&&Math.abs(row-CENTER_ROW)<=G_BRANCH_RADIUS);
+ const isFBranchNode=id=>id!==0&&isFBranchCell(gridCoords[id].col,gridCoords[id].row);
+ const isBranchCompatible=(a,b)=>a===0||b===0||isFBranchNode(a)===isFBranchNode(b);
  const isWithinSquareExclusion=(col,row)=>{
   for(let dx=-2;dx<=2;dx++)for(let dy=-2;dy<=2;dy++){
    if(dx*dx+dy*dy>4)continue;
@@ -51,7 +55,7 @@
  let edgeSeed=0xED6E2026;
  const edgeRandom=()=>{edgeSeed=(edgeSeed*1664525+1013904223)>>>0;return edgeSeed/4294967296};
  const addEdge=(a,b)=>{
-  if(a===b||a<0||b<0)return;
+  if(a===b||a<0||b<0||!isBranchCompatible(a,b))return;
   const lo=Math.min(a,b),hi=Math.max(a,b),key=lo+":"+hi;
   if(edgeKeys.has(key))return;
   edgeKeys.add(key);edges.push([lo,hi]);
@@ -81,7 +85,7 @@
   const p=gridCoords[id],result=[];
   for(const [dx,dy] of directions){
    const neighbor=gridIndex.get(gridKey(p.col+dx,p.row+dy));
-   if(neighbor!==undefined&&isActiveCell(gridCoords[neighbor].col,gridCoords[neighbor].row))result.push(neighbor);
+   if(neighbor!==undefined&&isActiveCell(gridCoords[neighbor].col,gridCoords[neighbor].row)&&isBranchCompatible(id,neighbor))result.push(neighbor);
   }
   return result;
  };
