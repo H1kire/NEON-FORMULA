@@ -69,40 +69,32 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 @media(min-width:1200px){.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:480px){.mini-upgrades #upgradesGrid,.mini-upgrades .research-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-upgrades .upgrade,.mini-upgrades .research-card{padding:8px}.mini-upgrades .upgrade-title{font-size:10px}.mini-upgrades .upgrade-desc{font-size:8px}.mini-upgrades .buy-button{padding:7px 6px;font-size:7px}}
 
-/* Formula cards: letter marker and formula share one flexible row. */
-#formulaModulePanel .upgrade-title{display:none}
-#formulaModulePanel .upgrade-formula-row{display:flex;align-items:center;gap:13px;min-width:0;min-height:54px;margin:3px 0 8px}
-#formulaModulePanel .upgrade-formula-row .upgrade-symbol{flex:0 0 38px;width:38px;height:38px;font-size:17px}
-#formulaModulePanel .upgrade-formula-row .upgrade-desc{flex:1 1 auto;min-width:0;margin:0;font-size:12px;line-height:1.45;min-height:0;max-height:none;overflow:visible;overflow-wrap:anywhere;word-break:normal}
-.mini-upgrades #formulaModulePanel .upgrade-formula-row{gap:9px;min-height:48px}
-.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-symbol{flex-basis:30px;width:30px;height:30px;font-size:14px}
-.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-desc{font-size:10px;line-height:1.35;min-height:0;max-height:none;overflow:visible}
-.mini-upgrades .research-grid{gap:8px}
-.mini-upgrades .research-card{padding:10.5px}
-.mini-upgrades .research-card .upgrade-desc{font-size:9.45px}
-@media(max-width:480px){
- #formulaModulePanel .upgrade-formula-row{gap:8px;min-height:48px}
- #formulaModulePanel .upgrade-formula-row .upgrade-symbol{flex-basis:34px;width:34px;height:34px;font-size:15px}
- #formulaModulePanel .upgrade-formula-row .upgrade-desc{font-size:11px}
- .mini-upgrades .research-card{padding:8.4px}
- .mini-upgrades .research-card .upgrade-desc{font-size:8.4px}
-}
 
+/* Formula cards retain their original vertical layout unless Miniaturization is active. */
+#formulaModulePanel .upgrade-formula-row{display:block;min-width:0;margin:0 0 8px}
+#formulaModulePanel .upgrade-formula-row .upgrade-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+#formulaModulePanel .upgrade-formula-row .upgrade-symbol{display:grid;place-items:center;flex:none;width:32px;height:32px;font-size:14px}
+#formulaModulePanel .upgrade-formula-row .upgrade-title{display:block;margin:0 0 2px;font-size:16pt}
+#formulaModulePanel .upgrade-formula-row .upgrade-desc{display:block;min-width:0;max-width:100%;margin-top:5px;overflow-x:auto;overflow-y:hidden;text-align:left;white-space:nowrap;scrollbar-width:thin}
 
-/* Default formula-card layout stays unchanged unless Miniaturization is enabled. */
-#formulaModulePanel .upgrade-formula-row{display:block;min-height:0;margin:3px 0 8px}
-#formulaModulePanel .upgrade-formula-row .upgrade-symbol{display:grid;flex:none;width:32px;height:32px;font-size:14px}
-#formulaModulePanel .upgrade-formula-row .upgrade-desc{display:block;margin:6px 0 0;font-size:10px;line-height:1.5;min-height:32px;max-height:none;overflow:visible;text-align:left}
+/* QOL only: letter and formula share one row. Long formulas scroll horizontally. */
+.mini-upgrades #formulaModulePanel .upgrade-formula-row{display:flex;align-items:center;gap:9px;min-height:44px;margin:2px 0 7px;min-width:0}
+.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-top{flex:0 0 30px;width:30px;margin:0}
+.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-symbol{width:30px;height:30px;font-size:14px}
+.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-title{display:none}
+.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-desc{display:block;flex:1 1 0;min-width:0;width:0;max-width:100%;margin:0;padding:2px 3px;overflow-x:auto;overflow-y:hidden;text-align:left;white-space:nowrap;overflow-wrap:normal;word-break:normal;scrollbar-width:thin}
 
-/* QOL compact layout: keep letter formulas and automation headings inside each card. */
-.mini-upgrades #formulaModulePanel .upgrade-formula-row{display:flex;align-items:center;gap:9px;min-height:48px;margin:2px 0 7px}
-.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-symbol{flex:0 0 30px;width:30px;height:30px;font-size:14px}
-.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-desc{flex:1 1 0;min-width:0;margin:0;font-size:9px;line-height:1.3;min-height:0;max-height:none;overflow:hidden;text-align:left;overflow-wrap:anywhere;word-break:break-word}
+/* Automation compact cards are also strictly scoped to the QOL setting. */
+.automation-heading-row{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:32px auto;align-items:center;column-gap:0;row-gap:0;margin-bottom:12px}
+.automation-heading-row>.upgrade-symbol{grid-column:1;grid-row:1}
+.automation-heading-copy{display:contents}
+.automation-heading-copy .upgrade-title{grid-column:1/-1;grid-row:2}
+.automation-heading-copy .automation-state{grid-column:2;grid-row:1;justify-self:end;align-self:center}
 .mini-upgrades .automation-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .mini-upgrades .automation-card{padding:10px;min-width:0}
 .mini-upgrades .automation-heading-row{display:flex;align-items:center;gap:8px;min-width:0;min-height:34px;margin-bottom:7px}
 .mini-upgrades .automation-heading-row>.upgrade-symbol{flex:0 0 26px;width:26px;height:26px;font-size:11px}
-.mini-upgrades .automation-heading-copy{flex:1 1 auto;min-width:0}
+.mini-upgrades .automation-heading-copy{display:block;flex:1 1 auto;min-width:0}
 .mini-upgrades .automation-heading-copy .upgrade-title{font-size:9px;line-height:1.3;overflow-wrap:anywhere}
 .mini-upgrades .automation-heading-copy .automation-state{display:block;margin-top:3px;font-size:7px;line-height:1.2}
 .mini-upgrades .automation-card p{font-size:8px;line-height:1.4;min-height:2.8em;margin-top:5px;overflow-wrap:anywhere}
@@ -112,12 +104,9 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 @media(min-width:1200px){.mini-upgrades .automation-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:700px){.mini-upgrades .automation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){
- #formulaModulePanel .upgrade-formula-row{display:block;min-height:0}
- #formulaModulePanel .upgrade-formula-row .upgrade-symbol{width:32px;height:32px;font-size:14px}
- #formulaModulePanel .upgrade-formula-row .upgrade-desc{margin-top:6px;font-size:10px}
- .mini-upgrades #formulaModulePanel .upgrade-formula-row{display:flex;gap:7px;min-height:44px}
- .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-symbol{flex-basis:27px;width:27px;height:27px;font-size:12px}
- .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-desc{font-size:8px;line-height:1.25}
+ .mini-upgrades #formulaModulePanel .upgrade-formula-row{gap:7px;min-height:40px}
+ .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-top{flex-basis:27px;width:27px}
+ .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-symbol{width:27px;height:27px;font-size:12px}
  .mini-upgrades .automation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .mini-upgrades .automation-card{padding:8px}
  .mini-upgrades .automation-heading-row{gap:6px}
@@ -125,13 +114,3 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
  .mini-upgrades .automation-heading-copy .upgrade-title{font-size:8px}
  .mini-upgrades .automation-card p{font-size:7px}
 }
-
-/* Preserve the pre-QOL automation header arrangement when compact mode is off. */
-.automation-heading-row{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:32px auto;align-items:center;column-gap:0;row-gap:0;margin-bottom:12px}
-.automation-heading-row>.upgrade-symbol{grid-column:1;grid-row:1}
-.automation-heading-copy{display:contents}
-.automation-heading-copy .upgrade-title{grid-column:1/-1;grid-row:2}
-.automation-heading-copy .automation-state{grid-column:2;grid-row:1;justify-self:end;align-self:center}
-.mini-upgrades .automation-heading-row{display:flex}
-.mini-upgrades .automation-heading-copy{display:block}
-.mini-upgrades .automation-heading-copy .upgrade-title,.mini-upgrades .automation-heading-copy .automation-state{grid-column:auto;grid-row:auto;justify-self:auto}
