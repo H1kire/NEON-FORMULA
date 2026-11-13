@@ -114,3 +114,12 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
  .mini-upgrades .automation-heading-copy .upgrade-title{font-size:8px}
  .mini-upgrades .automation-card p{font-size:7px}
 }
+
+/* Preserve the existing QOL Research card sizing. */
+.mini-upgrades .research-grid{gap:8px}
+.mini-upgrades .research-card{padding:10.5px}
+.mini-upgrades .research-card .upgrade-desc{font-size:9.45px}
+@media(max-width:480px){
+ .mini-upgrades .research-card{padding:8.4px}
+ .mini-upgrades .research-card .upgrade-desc{font-size:8.4px}
+}
