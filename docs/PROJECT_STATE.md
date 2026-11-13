@@ -1,11 +1,13 @@
 # FORMULA ASCENT — Game overview
 
-FORMULA ASCENT is a browser-based mathematical idle game. Players build Score through six connected formula modules, improve the core modules with upgrades, unlock F through the Upgrade Tree, and progress through two prestige systems.
+FORMULA ASCENT is a browser-based mathematical idle game. Players build Score through eight connected formula modules, improve the modules with upgrades, unlock F–H through the Upgrade Tree, and progress through two prestige systems.
 
 ## Available gameplay
 
-- Six connected formula modules: A, B, C, D, E and F.
-- Letter F unlocks through NODE #0004 for 5 GP, must be purchased for 1 Qa Score, and activates after 5 seconds of run time. Each subsequent upgrade raises p by 0.0001 up to 0.85 using the shared letter price curve.
+- Eight connected formula modules: A, B, C, D, E, F, G and H.
+- Letter F unlocks through NODE #0004 for 5 GP and costs 1 Qa Score.
+- Letter G unlocks through NODE #1987 for 25 GP and starts at 1 Qi Score. Each level raises its maximum A–E bonus by 5 percentage points; its time saturation uses K = 5.
+- Letter H unlocks through NODE #1988 for 50 GP and starts at 1 Sx Score. It uses W₀(t/10) raised to max(1, log_B(ABCD)), where B = max(100, 250 − 0.005 × H level).
 - Score production and individual module upgrades.
 - Research Division upgrades purchased with Ascension Points.
 - Ascension, which resets the current run while preserving long-term AP progression.
@@ -20,7 +22,7 @@ FORMULA ASCENT is a browser-based mathematical idle game. Players build Score th
 
 ## Current Upgrade Tree content
 
-The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray reserves NODE #1987 for G, #1988 for H, #1989 for I and #1990 for J. These are named future gates only; their formulas, costs and module mechanics are not implemented. NODE #1987 (G) also anchors a vertical branch with four square innovation slots above and four below. These eight squares are reserved for future non-letter gameplay innovations and currently have no effects. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
+The tree contains four node categories, represented by different shapes. NODE #0001 is available for 1 GP, and NODE #0004 is available for 5 GP to unlock Letter F. The horizontal ray assigns NODE #1987 to G, #1988 to H, #1989 to I and #1990 to J. G and H are purchasable sequential gates; I and J remain future gates. NODE #1987 (G) also anchors a vertical branch with four square innovation slots above and four below. These eight squares are reserved for future non-letter gameplay innovations and currently have no effects. The developer-only GP refund clears all purchased tree nodes, disables their effects and returns the full amount spent.
 
 ## Progress and accounts
 

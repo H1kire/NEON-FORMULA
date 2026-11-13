@@ -85,7 +85,7 @@
     const tree = parse(TREE_KEY);
     const finiteNonNegative = value => Number.isFinite(Number(value)) && Number(value) >= 0;
     if (!game || typeof game !== "object" || Array.isArray(game) ||
-        !["t", "value", "aLevel", "bLevel", "cLevel", "dLevel", "eLevel", "formulaSteps", "formulaAccumulator", "lastTime"].every(key => finiteNonNegative(game[key])) || (game.fLevel !== undefined && !finiteNonNegative(game.fLevel)) ||
+        !["t", "value", "aLevel", "bLevel", "cLevel", "dLevel", "eLevel", "formulaSteps", "formulaAccumulator", "lastTime"].every(key => finiteNonNegative(game[key])) || (game.fLevel !== undefined && !finiteNonNegative(game.fLevel)) || (game.gLevel !== undefined && !finiteNonNegative(game.gLevel)) || (game.hLevel !== undefined && !finiteNonNegative(game.hLevel)) ||
         !game.formulaState || typeof game.formulaState !== "object" ||
         !["a", "b", "c", "d", "e"].every(key => Number.isFinite(Number(game.formulaState[key])) && Number(game.formulaState[key]) >= 1)) {
       throw new Error("Invalid game state");

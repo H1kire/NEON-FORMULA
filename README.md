@@ -1,13 +1,13 @@
 # FORMULA ASCENT
 
-**FORMULA ASCENT** is a browser-based mathematical idle game. Build up your Score, improve six connected formula modules, perform Ascensions, unlock permanent upgrades and expand your Upgrade Tree.
+**FORMULA ASCENT** is a browser-based mathematical idle game. Build up your Score, improve eight connected formula modules, perform Ascensions, unlock permanent upgrades and expand your Upgrade Tree.
 
 The game is available in English and Russian.
 
 ## How to play
 
 1. Start a run and let your formula generate Score over time.
-2. Spend Score on upgrades for A, B, C, D and E. Unlock Letter F through NODE #0004, then purchase it for 1 Qa Score and improve it like the other letters.
+2. Spend Score on upgrades for A–E. Unlock F through NODE #0004, G through NODE #1987 and H through NODE #1988, then purchase each module with Score.
 3. Unlock Research Division upgrades to improve your progression and automation.
 4. Earn Ascension Points (AP) and perform an **Ascension** to reset the current run while keeping long-term progress.
 5. Save up 1,000 AP to unlock the **Genesis Gate**. This opens the Upgrade Tree and Genesis Prestige.
@@ -15,14 +15,16 @@ The game is available in English and Russian.
 
 ## The formula
 
-The game has six connected formula modules. A–E form the core recursive system; F is unlocked separately through NODE #0004. Their multipliers contribute to production together:
+The game has eight connected formula modules. A–E form the core recursive system; F, G and H are unlocked separately through the Upgrade Tree. Their multipliers contribute to production together:
 
 - **A — Power Foundation:** grows with time and receives feedback from C.
 - **B — Root Amplifier:** is influenced by A.
 - **C — Logarithmic Recursion:** uses A, B and its previous value.
 - **D — Nonlinear Coupling:** combines A, B and C.
 - **E — Logarithmic Resonance:** combines B and D.
-- **F — Integral Exponential:** combines elapsed time with an integral whose upper limit is the product of A and E. It requires NODE #0004, a separate 1 Qa Score purchase, and activates at 5 seconds. Each subsequent upgrade raises p by 0.0001 up to 0.85 using the shared letter price curve.
+- **F — Integral Exponential:** combines elapsed time with an integral whose upper limit is the product of A and E. It requires NODE #0004 and a separate 1 Qa Score purchase.
+- **G — Time Saturation:** increases A–E by a time-dependent bonus that approaches 5 percentage points per G level. Its saturation constant is K = 5.
+- **H — Lambert W:** uses the principal Lambert W function, W₀(t/10), raised to max(1, log_B(ABCD)). Its logarithm base starts at 250 and decreases by 0.005 per H level, down to 100.
 
 The current module equations are:
 
