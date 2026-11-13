@@ -4,9 +4,9 @@
   padding:2px 5px 3px;text-align:center;white-space:nowrap;
   scrollbar-width:thin;scrollbar-color:var(--line,rgba(130,147,142,.35)) transparent;
 }
-.upgrade-desc.math-formula .katex{color:inherit;font-size:16pt;white-space:nowrap}
+.upgrade-desc.math-formula .katex{color:inherit;font-size: 16pt;white-space:nowrap}
 .formula.math-formula{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;text-align:center;white-space:nowrap}
-#formulaText.math-formula .katex{color:inherit;font-size:25pt;white-space:nowrap}
+#formulaText.math-formula .katex{color:inherit;font-size: 25pt;white-space:nowrap}
 /* Miniaturization: formula is exactly 4 px smaller than the letter symbol. */
 .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula{
   min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:2px 3px;
