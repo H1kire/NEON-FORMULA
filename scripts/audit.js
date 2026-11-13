@@ -265,7 +265,7 @@ try{
   for(const other of net.nodes){
    if(!other.active||other.type==="square"||other.id===square.id)continue;
    const p=net.gridCoords[other.id],dx=p.col-c.col,dy=p.row-c.row;
-   const centerDx=p.col-31,centerDy=p.row-net.CENTER_ROW;
+   const centerDx=p.col-net.gridCoords[0].col,centerDy=p.row-net.CENTER_ROW;
    if(dx*dx+dy*dy<=4&&p.row!==net.CENTER_ROW&&centerDx*centerDx+centerDy*centerDy>4)throw new Error("A non-path non-square node is inside a square's two-step exclusion radius");
   }
  }
