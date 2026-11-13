@@ -213,6 +213,8 @@ function resetSave(){
  FA_META.automation={unlocked:[false,false,false,false,false],enabled:[true,true,true,true,true],paused:false};
  FA_META.treeUnlocked=false;
  FA_META.treePassPurchased=false;
+ FA_META.settings.miniUpgrades=false;
+ document.body.classList.remove("mini-upgrades");
  FA_META.stats={totalPlayTime:0,lifetimeValue:0,ascensions:0,genesisPrestiges:0,purchases:0};
  lastFrame=Date.now();
  const removed=FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"]);
