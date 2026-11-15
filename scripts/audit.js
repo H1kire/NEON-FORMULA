@@ -134,8 +134,8 @@ const treeStructureChecks=[
  ['if(id===3)return "square"','NODE #0004 is a square content node'],
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
- ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10','G/H gates and Miniaturization cost 25/50/10 GP'],
- ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
+ ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000','G/H gates and Miniaturization cost 25/50/10 GP'],
+ ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
  ['nodes[a].links.push(b);nodes[b].links.push(a)','bidirectional multi-link adjacency'],
@@ -518,9 +518,15 @@ if(!uiSource.includes('automationLetters=["A","B","C","D","E","F","G","H"]')||!u
 if(!sources["assets/js/script.js"].includes("window.isLetterFUnlocked?.()&&fLevel<LETTER_F_MAX_LEVEL")||!sources["assets/js/script.js"].includes("window.isLetterGUnlocked?.()")||!sources["assets/js/script.js"].includes("window.isLetterHUnlocked?.()&&hLevel<LETTER_H_MAX_LEVEL"))fail("F–H automation must respect module unlock gates and level caps");
 if(!css.includes(".mini-upgrades .automation-grid")||!css.includes(".mini-upgrades .automation-heading-row")||!css.includes(".mini-upgrades .automation-card p"))fail("Automation compact layout must be scoped to the Miniaturization QOL class");
 if(!css.includes(".mini-upgrades .research-card{padding:10.5px}")||!css.includes(".mini-upgrades .research-grid{gap:8px}")||!css.includes(".mini-upgrades .research-card .upgrade-desc{font-size:9.45px}"))fail("Compact Research cards must return to baseline and increase by about 5%");
-if(!sources["assets/js/script.js"].includes('const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer");
+if(!sources["assets/js/script.js"].includes('if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer and must not advance ordinary t during Time Dilation");
 if(!sources["assets/js/script.js"].includes("if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey)"))fail("Legacy saves must be migrated using the current in-memory run state");
 if(!sources["assets/js/script.js"].includes('$("manualSaveBtn")'))fail("Manual save button must use its explicit ID");
+if(!html.includes('id="timeDilationTab"')||!html.includes('id="timeDilationModulePanel"')||!html.includes('id="dilationModeToggle"')||!html.includes('id="dilationIntegrateBtn"')||!html.includes('id="dilationResearchTab"')||!html.includes('id="dilationResearchGrid"'))fail("Time Dilation UI or Dilation Upg research page is incomplete");
+if(!sources["assets/js/script.js"].includes("function calculateDilationReward")||!sources["assets/js/script.js"].includes("dilationTime<60")||!sources["assets/js/script.js"].includes("Date.now()-dilationOperationStartedAt>=5000")||!sources["assets/js/script.js"].includes("if(dilationMode&&dilationUnlocked)"))fail("Time Dilation must freeze ordinary t, require 60 t_dl and complete integration after five real seconds");
+if(!sources["assets/js/tree.js"].includes("window.isTimeDilationUnlocked=()=>nodes[2049].level>0")||!sources["assets/js/tree.js"].includes("n.id===2049?1000"))fail("NODE #2050 must unlock Time Dilation for 1,000 GP");
+if(!sources["assets/js/app-ui.js"].includes('["i","i","dilationIntensityTitle"')||!sources["assets/js/app-ui.js"].includes('["k","k","dilationExponentTitle"')||!sources["assets/js/app-ui.js"].includes('["v","v","dilationVelocityTitle"')||!sources["assets/js/script.js"].includes("1000*Math.pow(2,level)"))fail("Dilation Upg must contain the three parameter upgrades and exponential prices");
+if(!css.includes(".research-subpage.active")||!css.includes("#page-research .research-card")||!css.includes(".dilation-operation-card"))fail("Research and Time Dilation card redesign styles are missing");
+
 
 if(errors.length){process.stderr.write("\nAUDIT FAILED: "+errors.length+" issue(s)\n");for(const e of errors)process.stderr.write("  FAIL "+e+"\n");process.exitCode=1}else{process.stdout.write("\nAUDIT PASSED");if(warnings.length)process.stdout.write(" with warnings");process.stdout.write(".\n")}
 for(const w of warnings)process.stdout.write("  WARN "+w+"\n");

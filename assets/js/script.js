@@ -1,6 +1,7 @@
 // FORMULA ASCENT — core idle simulation and universal letter mathematics
 const TICK=10, AUTOSAVE_INTERVAL=5000;
 let lastFrame=Date.now(),t=0,value=0;
+let dilationMode=false,dilationTime=0,dilationCurrency=0,dilationILevel=0,dilationKLevel=0,dilationVLevel=0,dilationIntegrating=false,dilationOperationStartedAt=0,dilationOperationReward=0;
 let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0,fLevel=0,gLevel=0,hLevel=0;
 const SAVE_KEY="formula_ascent_save_v2",LEGACY_SAVE_KEY="formula_ascent_save_v1",OLD_SAVE_KEY="neon_formula_idle_v4_5";
 const $=id=>document.getElementById(id);
@@ -30,6 +31,24 @@ function safePow(base,power){
  return Math.exp(exponent);
 }
 function safeLogProduct(...values){return Math.log1p(safeProduct(...values))}
+function getDilationLevels(){return {i:dilationILevel,k:dilationKLevel,v:dilationVLevel}}
+function getDilationParameters(){return {i:1+dilationILevel,k:1+dilationKLevel,v:1+dilationVLevel}}
+function getDilationUpgradeCost(key){const level=({i:dilationILevel,k:dilationKLevel,v:dilationVLevel})[key];if(level===undefined)return Number.MAX_SAFE_INTEGER;const cost=1000*Math.pow(2,level);return Number.isFinite(cost)?Math.min(Number.MAX_SAFE_INTEGER,Math.ceil(cost)):Number.MAX_SAFE_INTEGER}
+function calculateDilationReward(upper=dilationTime){const {i,k,v}=getDilationParameters(),power=safePow(1+safeProduct(v,Math.max(0,upper)),k+1),difference=Math.max(0,power-1),factor=i/(v*(k+1));return Math.min(Number.MAX_VALUE,safeProduct(factor,difference))}
+function completeDilationIntegration(){if(!dilationIntegrating)return;dilationCurrency=Math.min(Number.MAX_VALUE,dilationCurrency+dilationOperationReward);dilationTime=0;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch()}
+function updateTimeDilationUI(){const unlocked=typeof window.isTimeDilationUnlocked==="function"&&window.isTimeDilationUnlocked(),timeTab=$("timeDilationTab"),modeToggle=$("dilationModeToggle"),timeDisplay=$("dilationTimeDisplay"),currencyDisplay=$("dilationCurrencyDisplay"),researchCurrency=$("dilationResearchCurrency"),integrate=$("dilationIntegrateBtn"),progressTrack=$("dilationProgressTrack"),progressFill=$("dilationProgressFill"),status=$("dilationOperationStatus"),threshold=$("dilationThresholdText");if(timeTab)timeTab.style.display=unlocked?"":"none";if(timeDisplay)timeDisplay.textContent=formatPrecise(dilationTime,2);if(currencyDisplay)currencyDisplay.textContent=format(dilationCurrency);if(researchCurrency)researchCurrency.textContent=format(dilationCurrency);if(modeToggle){modeToggle.checked=dilationMode;modeToggle.disabled=!unlocked||dilationIntegrating}if(threshold)threshold.textContent=tr("dilationThreshold").replace("{time}",format(60));if(integrate){integrate.disabled=!unlocked||!dilationMode||dilationIntegrating||dilationTime<60;integrate.textContent=dilationIntegrating?tr("dilationRunning"):tr("dilationIntegrate")}if(progressTrack)progressTrack.hidden=!dilationIntegrating;if(progressFill&&dilationIntegrating){const progress=Math.max(0,Math.min(1,(Date.now()-dilationOperationStartedAt)/5000));progressFill.style.width=(progress*100).toFixed(1)+"%"}if(status)status.textContent=dilationIntegrating?Math.max(0,5-(Date.now()-dilationOperationStartedAt)/1000).toFixed(1)+" s":dilationMode?tr("dilationModeActive"):tr("dilationModePaused")}
+window.updateTimeDilationUI=updateTimeDilationUI;
+window.TimeDilation={
+ getState:()=>({unlocked:!!window.isTimeDilationUnlocked?.(),mode:dilationMode,time:dilationTime,currency:dilationCurrency,integrating:dilationIntegrating,levels:getDilationLevels(),parameters:getDilationParameters()}),
+ getUpgradeCost:getDilationUpgradeCost,
+ buyUpgrade:key=>{if(!window.isTimeDilationUnlocked?.()||!["i","k","v"].includes(key))return false;const cost=getDilationUpgradeCost(key);if(dilationCurrency<cost)return false;dilationCurrency-=cost;if(key==="i")dilationILevel++;else if(key==="k")dilationKLevel++;else dilationVLevel++;saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch();return true},
+ setMode:enabled=>{if(dilationIntegrating)return false;if(enabled&&!window.isTimeDilationUnlocked?.())return false;dilationMode=!!enabled;lastFrame=performance.now();saveGame(true);updateUI();return true},
+ startIntegration:()=>{if(!window.isTimeDilationUnlocked?.()||!dilationMode||dilationIntegrating||dilationTime<60)return false;dilationOperationReward=calculateDilationReward(dilationTime);dilationIntegrating=true;dilationOperationStartedAt=Date.now();saveGame(true);updateUI();return true},
+ forceDisable:()=>{dilationMode=false;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;saveGame(true);updateUI()}
+};
+window.toggleDilationMode=enabled=>window.TimeDilation.setMode(enabled);
+window.setDilationMode=enabled=>window.TimeDilation.setMode(enabled);
+window.startDilationIntegration=()=>window.TimeDilation.startIntegration();
 function getEffectiveLetterLevel(level){
  const efficiency=Math.max(1,metaBonus("efficiency"));
  return Math.max(0,level)*efficiency;
@@ -158,7 +177,7 @@ window.FAMathSystem={
 function saveGame(force=false){
  if(window.FA_CLOUD_RESTORING)return false;
  if(!force&&FA_META.settings.autosave===false)return false;
- const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,fLevel,gLevel,hLevel,formulaState,formulaSteps,formulaAccumulator,lastTime:Date.now()};
+ const data={t,value,aLevel,bLevel,cLevel,dLevel,eLevel,fLevel,gLevel,hLevel,formulaState,formulaSteps,formulaAccumulator,dilationMode,dilationTime,dilationCurrency,dilationILevel,dilationKLevel,dilationVLevel,dilationIntegrating,dilationOperationStartedAt,dilationOperationReward,lastTime:Date.now()};
  return FAStorage.setJSON(SAVE_KEY,data);
 }
 function loadGame(){
@@ -169,6 +188,7 @@ function loadGame(){
  try{
   t=Math.max(0,Number(d.t)||0);value=Math.min(Number.MAX_VALUE,Math.max(0,Number(d.value)||0));
   aLevel=Math.max(0,Math.floor(Number(d.aLevel)||0));bLevel=Math.max(0,Math.floor(Number(d.bLevel)||0));cLevel=Math.max(0,Math.floor(Number(d.cLevel)||0));dLevel=Math.max(0,Math.floor(Number(d.dLevel)||0));eLevel=Math.max(0,Math.floor(Number(d.eLevel)||0));fLevel=Math.max(0,Math.min(LETTER_F_MAX_LEVEL,Math.floor(Number(d.fLevel)||0)));gLevel=Math.max(0,Math.floor(Number(d.gLevel)||0));hLevel=Math.max(0,Math.min(LETTER_H_MAX_LEVEL,Math.floor(Number(d.hLevel)||0)));
+  dilationMode=d.dilationMode===true;dilationTime=Math.max(0,Number(d.dilationTime)||0);dilationCurrency=Math.max(0,Number(d.dilationCurrency)||0);dilationILevel=Math.max(0,Math.floor(Number(d.dilationILevel)||0));dilationKLevel=Math.max(0,Math.floor(Number(d.dilationKLevel)||0));dilationVLevel=Math.max(0,Math.floor(Number(d.dilationVLevel)||0));dilationIntegrating=d.dilationIntegrating===true;dilationOperationStartedAt=Math.max(0,Number(d.dilationOperationStartedAt)||0);dilationOperationReward=Math.max(0,Number(d.dilationOperationReward)||0);if(dilationIntegrating&&!dilationOperationStartedAt){dilationIntegrating=false;dilationOperationReward=0}
   const savedState=d.formulaState;
   if(savedState&&["a","b","c","d","e"].every(k=>Number.isFinite(Number(savedState[k]))&&Number(savedState[k])>=1)){
    formulaState={a:Number(savedState.a),b:Number(savedState.b),c:Number(savedState.c),d:Number(savedState.d),e:Number(savedState.e)};
@@ -181,7 +201,7 @@ function loadGame(){
    for(let i=1;i<=rebuild;i++){formulaSteps++;updateFormulaState(formulaSteps)}
   }
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
-  if(FA_META.settings.offline!==false&&elapsed>2){const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
+  if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
   if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey);
  }catch(err){console.error("Save data could not be loaded",err)}
 }
@@ -204,7 +224,7 @@ function resetSave(){
   ?"Полностью начать игру заново? Будут удалены ВСЕ локальные игровые достижения и улучшения: Score, время, A–H, AP, GP, Research, автоматизация, престижные улучшения, Врата Генезиса и все узлы древа. Настройки и вход в Google сохранятся. Облачное сохранение Firebase НЕ будет затронуто."
   :"Start the game completely from scratch? ALL local game progress will be erased: Score, time, A–H, AP, GP, Research, automation, prestige upgrades, Genesis Gate and every tree node. Settings and Google sign-in will remain. Your Firebase cloud save will NOT be touched.";
  if(!confirm(message))return;
- resetRun();
+ resetRun();dilationMode=false;dilationTime=0;dilationCurrency=0;dilationILevel=0;dilationKLevel=0;dilationVLevel=0;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;
  p=0;gp=0;prestigeUnlocked=false;
  prestigeUpgrades={simpleBoost:0,globalSum:0};
  window.prestigeUpgrades=prestigeUpgrades;
@@ -347,7 +367,7 @@ function updateUI(){
    if(w0Display)w0Display.textContent="1";
    if(wiDisplay)wiDisplay.textContent=formatPrecise(getGlobalSumAdditionalWeight(),2);
   }
-  updateFormulaText();if(window.refreshTree)window.refreshTree();
+  updateFormulaText();updateTimeDilationUI();if(window.refreshDilationAccess)window.refreshDilationAccess();if(window.refreshTree)window.refreshTree();
 }
 window.getDeveloperValues=()=>({t,ap:p,gp});
 window.applyDeveloperValues=(next)=>{
@@ -404,7 +424,9 @@ function loop(){
  if(window.FA_CLOUD_RESTORING)return;
  const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;
  const rateBefore=getGain();
- t+=delta;advanceFormulaClock(delta);
+ const dilationUnlocked=typeof window.isTimeDilationUnlocked==="function"&&window.isTimeDilationUnlocked();
+ if(dilationMode&&dilationUnlocked){if(!dilationIntegrating)dilationTime=Math.min(Number.MAX_VALUE,dilationTime+delta)}else{t+=delta;advanceFormulaClock(delta)}
+ if(dilationIntegrating&&Date.now()-dilationOperationStartedAt>=5000)completeDilationIntegration();
  const rateAfter=getGain();
  // Trapezoidal integration reduces per-tick accumulation error while retaining the 10 ms loop.
  const averageRate=rateBefore+(rateAfter-rateBefore)*0.5;
