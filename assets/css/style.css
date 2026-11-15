@@ -218,3 +218,52 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .buy-button,.buy-button:hover:not(:disabled),.buy-button:focus-visible{animation:none!important;transform:none!important;transition:none!important}
 .buy-button.good,.buy-button.good:hover:not(:disabled){border-color:rgba(184,243,107,.78)!important;color:#d7ffad!important;background:rgba(184,243,107,.13)!important;box-shadow:0 0 12px rgba(184,243,107,.12),inset 0 0 10px rgba(184,243,107,.035)}
 .upgrade:hover,.research-card:hover,#page-research .research-card:hover{transform:none}
+
+
+/* Time Dilation typography: improve readability without changing the integral size. */
+.dilation-page>.section-heading h2{font-size:26.25px}
+.dilation-page>.automation-description{font-size:13.75px;line-height:1.75}
+.dilation-page .dilation-stat-card{gap:11px;padding:20px}
+.dilation-page .dilation-stat-card span{font-size:10px;letter-spacing:1.05px}
+.dilation-page .dilation-stat-card strong{font-size:clamp(22.5px,3vw,31.25px)}
+.dilation-page .dilation-mode-copy strong{font-size:15px}
+.dilation-page .dilation-mode-copy small{font-size:12.5px;line-height:1.65}
+.dilation-page .dilation-operation-meta{font-size:10px;letter-spacing:.75px}
+.dilation-page .dilation-integrate-button{font-size:11.25px;padding:12.5px 14px}
+.dilation-page .dilation-operation-hint{font-size:11.25px;line-height:1.7}
+.dilation-page .dilation-equation{font-size:16px}
+.dilation-page .dilation-equation .katex{font-size:1.25em}
+@media(max-width:700px){
+ .dilation-page .dilation-stat-card{padding:16px}
+ .dilation-page .dilation-stat-card span{font-size:10px}
+ .dilation-page .dilation-stat-card strong{font-size:clamp(22px,5vw,28px)}
+ .dilation-page .dilation-mode-copy strong{font-size:14px}
+ .dilation-page .dilation-mode-copy small{font-size:12px}
+ .dilation-page .dilation-operation-meta{font-size:9px}
+ .dilation-page .dilation-operation-hint{font-size:10.5px}
+}
+@media(max-width:480px){
+ .dilation-page>.section-heading h2{font-size:23px}
+ .dilation-page>.automation-description{font-size:12.5px}
+ .dilation-page .dilation-stat-card strong{font-size:25px}
+ .dilation-page .dilation-equation{font-size:16px;overflow-x:auto}
+}
+
+/* Upgrade cards and purchase buttons keep a steady hover highlight; no pulsing, blinking or movement. */
+.upgrade,.research-card,.automation-card,
+.upgrade:hover,.research-card:hover,.automation-card:hover,
+#page-research .research-card:hover{
+ animation:none!important;
+ transform:none!important;
+ transition:none!important;
+}
+.upgrade:hover,.research-card:hover,.automation-card:hover,
+#page-research .research-card:hover{border-color:rgba(184,243,107,.38)}
+.buy-button,.buy-button:hover:not(:disabled),.buy-button:focus-visible{
+ animation:none!important;transform:none!important;transition:none!important;
+}
+.buy-button.good,.buy-button.good:hover:not(:disabled){
+ border-color:rgba(184,243,107,.78)!important;color:#d7ffad!important;
+ background:rgba(184,243,107,.13)!important;
+ box-shadow:0 0 12px rgba(184,243,107,.12),inset 0 0 10px rgba(184,243,107,.035);
+}
