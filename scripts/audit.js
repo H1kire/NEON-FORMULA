@@ -454,7 +454,7 @@ const resetRequirements=[
  'FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"])',
  "saveGame(true)","savePrestige()","saveMeta()"
 ,
- "dilationKValue=1"];
+ "dilationTauLevel=0"];
 const missingReset=resetRequirements.filter(part=>!resetSource.includes(part));
 if(missingReset.length)fail("Full RESET is missing local progression resets: "+missingReset.join(", "));
 else pass("Full RESET clears run, AP/GP, prestige upgrades, Research, automation, Genesis Gate, tree and statistics");
@@ -519,7 +519,7 @@ if(!uiSource.includes('automationLetters=["A","B","C","D","E","F","G","H"]')||!u
 if(!sources["assets/js/script.js"].includes("window.isLetterFUnlocked?.()&&fLevel<LETTER_F_MAX_LEVEL")||!sources["assets/js/script.js"].includes("window.isLetterGUnlocked?.()")||!sources["assets/js/script.js"].includes("window.isLetterHUnlocked?.()&&hLevel<LETTER_H_MAX_LEVEL"))fail("F–H automation must respect module unlock gates and level caps");
 if(!css.includes(".mini-upgrades .automation-grid")||!css.includes(".mini-upgrades .automation-heading-row")||!css.includes(".mini-upgrades .automation-card p"))fail("Automation compact layout must be scoped to the Miniaturization QOL class");
 if(!css.includes(".mini-upgrades .research-card{padding:10.5px}")||!css.includes(".mini-upgrades .research-grid{gap:8px}")||!css.includes(".mini-upgrades .research-card .upgrade-desc{font-size:9.45px}"))fail("Compact Research cards must return to baseline and increase by about 5%");
-if(!sources["assets/js/script.js"].includes('if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer and must not advance ordinary t during Time Dilation");
+if(!sources["assets/js/script.js"].includes('if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35*getDilationTimeSpeed();value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must apply the global t-speed bonus without advancing ordinary t during Time Dilation");
 if(!sources["assets/js/script.js"].includes("if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey)"))fail("Legacy saves must be migrated using the current in-memory run state");
 if(!sources["assets/js/script.js"].includes('$("manualSaveBtn")'))fail("Manual save button must use its explicit ID");
 if(!html.includes('id="timeDilationTab"')||!html.includes('id="timeDilationModulePanel"')||!html.includes('id="dilationModeToggle"')||!html.includes('id="dilationIntegrateBtn"')||!html.includes('id="dilationResearchTab"')||!html.includes('id="dilationResearchGrid"'))fail("Time Dilation UI or Dilation Upg research page is incomplete");
