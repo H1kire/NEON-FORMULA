@@ -259,7 +259,7 @@
  window.refreshTreeLanguage=updateInspector;
  window.buyTreeNode=()=>{
   const n=nodes[selected];if(!n||!canBuy(n))return;
-  gp-=nodeCost(n);savePrestige();n.level++;if(n.id===1925&&window.refreshQolSettings)window.refreshQolSettings();if(n.id===2049&&window.refreshDilationAccess)window.refreshDilationAccess();rebuildRevealed();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
+  gp-=nodeCost(n);savePrestige();n.level++;if(n.id===1925&&window.refreshQolSettings)window.refreshQolSettings();rebuildRevealed();if(n.id===2049&&window.refreshDilationAccess)window.refreshDilationAccess();FA_META.stats.purchases++;recalc();persist();saveMeta();updateInspector();updateProgress();draw();updateUI();refreshStats();
  };
  window.refundUpgradeTree=()=>{
   if(!window.FAAuth||!window.FAAuth.isDeveloper())return false;
