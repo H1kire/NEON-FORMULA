@@ -7,7 +7,7 @@
 .upgrade-desc.math-formula .katex{color:inherit;font-size: 16pt;white-space:nowrap}
 .formula.math-formula{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;text-align:center;white-space:nowrap}
 #formulaText.math-formula .katex{color:inherit;font-size: 25pt;white-space:nowrap}
-/* Miniaturization: formula is exactly 4 px smaller than the letter symbol. */
+/* Miniaturization: formulas are centered and twice their previous size. */
 .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula{
   min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:2px 3px;
   text-align:left;white-space:nowrap;scrollbar-width:thin;
