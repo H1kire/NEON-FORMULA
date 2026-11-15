@@ -280,3 +280,81 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .research-points .math-formula,.research-resource-strip strong.math-formula{display:inline-block;white-space:nowrap}
 .upgrade-stats .math-formula{display:inline-block;vertical-align:middle;white-space:nowrap}
 .dilation-stat-card strong.math-formula .katex{font-size:1em}
+
+
+/* Dedicated visual systems for gameplay pages. The Menu page intentionally keeps its original design. */
+#page-formula .hero-panel{
+ border-color:rgba(105,222,194,.25);
+ background:radial-gradient(ellipse at 88% 5%,rgba(105,222,194,.13),transparent 34%),linear-gradient(145deg,rgba(13,34,36,.98),rgba(10,20,27,.99) 72%);
+ box-shadow:inset 0 1px rgba(220,255,245,.035),0 18px 48px rgba(0,0,0,.16)
+}
+#page-formula .hero-panel:after{border-color:rgba(105,222,194,.09);box-shadow:0 0 0 35px rgba(105,222,194,.025),0 0 0 70px rgba(105,222,194,.014)}
+#page-formula .formula-display{border-color:rgba(105,222,194,.3);border-left-color:#69dec2;background:linear-gradient(120deg,rgba(4,17,21,.78),rgba(13,37,39,.5))}
+#page-formula .formula{color:#8cebd4;text-shadow:0 0 25px rgba(105,222,194,.2)}
+#page-formula .metric-card{border-color:rgba(105,222,194,.18);background:linear-gradient(145deg,rgba(17,39,40,.9),rgba(10,22,28,.96));box-shadow:inset 0 1px rgba(220,255,245,.025)}
+#page-formula .metric-card.metric-primary{border-color:rgba(140,235,212,.42);background:linear-gradient(145deg,rgba(24,61,57,.85),rgba(11,28,31,.98))}
+#page-formula .metric-card strong{color:#b0f2df}
+#page-formula .upgrades-section{margin-top:18px;padding:17px;border:1px solid rgba(105,222,194,.16);background:linear-gradient(145deg,rgba(10,23,28,.88),rgba(8,16,23,.94));box-shadow:0 14px 38px rgba(0,0,0,.12)}
+#page-formula .module-tabs{border-bottom-color:rgba(105,222,194,.2)}
+#page-formula .module-tabs .menu-tab{border:1px solid transparent;border-bottom:2px solid transparent;border-radius:5px 5px 0 0}
+#page-formula .module-tabs .menu-tab.active{border-color:rgba(105,222,194,.22);border-bottom-color:#69dec2;background:rgba(105,222,194,.075);color:#9debd8}
+#page-formula .upgrade{border-color:rgba(105,222,194,.17);border-radius:7px;background:linear-gradient(145deg,rgba(19,39,42,.97),rgba(10,22,29,.99));box-shadow:inset 0 1px rgba(220,255,245,.025),0 8px 20px rgba(0,0,0,.12)}
+#page-formula .upgrade:hover{border-color:rgba(105,222,194,.38);transform:translateY(-1px)}
+#page-formula .upgrade .upgrade-symbol{border-radius:6px}
+#page-formula .upgrade .upgrade-stats{border-top-color:rgba(105,222,194,.14)}
+#page-formula #automationModulePanel{padding:19px;border:1px solid rgba(103,190,235,.22);border-radius:8px;background:radial-gradient(ellipse at 95% 0,rgba(103,190,235,.1),transparent 40%),linear-gradient(145deg,rgba(12,28,40,.98),rgba(8,17,27,.99));box-shadow:0 16px 40px rgba(0,0,0,.16)}
+#page-formula #automationModulePanel .section-kicker .kicker-line{background:#73c9f1}
+#page-formula #automationModulePanel .section-heading h2{color:#d5efff}
+#page-formula #automationModulePanel .automation-description{color:#9ab5c4}
+#page-formula .automation-card{border-color:rgba(103,190,235,.2);border-radius:7px;background:linear-gradient(145deg,rgba(18,42,57,.96),rgba(10,22,33,.99));box-shadow:inset 0 1px rgba(220,245,255,.025)}
+#page-formula .automation-card.unlocked{border-color:rgba(103,190,235,.48)}
+#page-formula .automation-card .upgrade-symbol{color:#86d6fa;border-color:rgba(103,190,235,.34);background:rgba(103,190,235,.08);border-radius:6px}
+#page-formula .automation-card .automation-state{color:#82c9e9}
+#page-formula #automationPauseBtn{border-color:rgba(103,190,235,.35);color:#9adcf8;background:rgba(103,190,235,.06)}
+#page-research .page-heading{padding:18px 20px 24px;border:1px solid rgba(235,178,105,.2);border-radius:8px;background:radial-gradient(ellipse at 92% 0,rgba(235,178,105,.12),transparent 38%),linear-gradient(145deg,rgba(40,29,24,.94),rgba(17,21,26,.98));box-shadow:0 15px 38px rgba(0,0,0,.14)}
+#page-research .page-heading .section-kicker .kicker-line{background:#eab477}
+#page-research .page-heading h1{color:#f1e6d8}
+#page-research .page-heading>p{color:#b5a294}
+#page-research .research-points{color:#f0bd82}
+#page-research .research-tabs{margin-top:15px;border-bottom-color:rgba(235,178,105,.2)}
+#page-research .research-tabs .menu-tab{border:1px solid transparent;border-bottom:2px solid transparent;border-radius:5px 5px 0 0}
+#page-research .research-tabs .menu-tab.active{border-color:rgba(235,178,105,.23);border-bottom-color:#eab477;background:rgba(235,178,105,.075);color:#f2c895}
+#page-research #researchBasePanel{padding:17px;border:1px solid rgba(235,178,105,.16);border-radius:8px;background:linear-gradient(145deg,rgba(29,27,27,.94),rgba(14,20,26,.98))}
+#page-research #researchBasePanel .section-kicker .kicker-line{background:#eab477}
+#page-research #researchBasePanel .research-card{border-color:rgba(235,178,105,.19);border-radius:7px;background:linear-gradient(145deg,rgba(43,35,31,.97),rgba(19,24,29,.99));box-shadow:inset 0 1px rgba(255,240,220,.025),0 8px 20px rgba(0,0,0,.13)}
+#page-research #researchBasePanel .research-card .upgrade-symbol{color:#f0bd82;border-color:rgba(235,178,105,.34);background:rgba(235,178,105,.07)}
+#page-research #researchBasePanel .research-card.unlocked{border-color:rgba(235,178,105,.48)}
+#page-research #researchBasePanel .research-card .upgrade-stats{border-top-color:rgba(235,178,105,.15)}
+#page-research #researchBasePanel .research-card .buy-button{border-color:rgba(235,178,105,.3);background:rgba(235,178,105,.06);color:#f0c28e}
+#page-research #prestigePanel{margin-top:20px;padding-top:17px;border-top:1px solid rgba(235,178,105,.17)}
+#page-research #dilationResearchPanel{padding:18px;border:1px solid rgba(148,190,240,.18);border-radius:8px;background:radial-gradient(ellipse at 92% 0,rgba(148,190,240,.09),transparent 38%),linear-gradient(145deg,rgba(17,29,43,.94),rgba(11,18,27,.99))}
+#page-research #dilationResearchPanel .section-kicker .kicker-line{background:#9bc6f3}
+#page-research #dilationResearchPanel h2{color:#e0efff}
+#page-research #dilationResearchPanel .dilation-research-description{color:#9bb0c8}
+#page-research #dilationResearchPanel .research-resource-strip{border-color:rgba(148,190,240,.25);background:rgba(148,190,240,.055)}
+#page-research #dilationResearchPanel .research-resource-strip strong{color:#b8d8ff}
+#page-research #dilationResearchPanel .dilation-research-card{border-color:rgba(148,190,240,.2);border-radius:7px;background:linear-gradient(145deg,rgba(23,42,61,.97),rgba(11,21,33,.99))}
+#page-research #dilationResearchPanel .dilation-research-card.unlocked{border-color:rgba(148,190,240,.48)}
+#page-research #dilationResearchPanel .dilation-research-card .upgrade-symbol{color:#b8d8ff;border-color:rgba(148,190,240,.36);background:rgba(148,190,240,.08)}
+#page-research #dilationResearchPanel .dilation-parameter-value{border-color:rgba(148,190,240,.17);background:rgba(148,190,240,.045)}
+#page-research #dilationResearchPanel .dilation-parameter-value strong{color:#c4e0ff}
+#page-research #dilationResearchPanel .dilation-research-card .buy-button{border-color:rgba(148,190,240,.32);background:rgba(148,190,240,.06);color:#c4e0ff}
+#page-tree .page-heading{padding:18px 20px 22px;border:1px solid rgba(177,153,255,.22);border-radius:8px;background:radial-gradient(ellipse at 92% 0,rgba(177,153,255,.14),transparent 38%),linear-gradient(145deg,rgba(31,27,49,.96),rgba(13,17,29,.99));box-shadow:0 15px 38px rgba(0,0,0,.16)}
+#page-tree .page-heading .section-kicker .kicker-line{background:#b6a1f7}
+#page-tree .page-heading h1{color:#e8e0ff}
+#page-tree .page-heading>p{color:#aaa0c7}
+#page-tree .tree-progress strong{color:#c9baff}
+#page-tree .tree-toolbar{border-color:rgba(177,153,255,.24);background:rgba(24,22,40,.97);color:#b1a8cf}
+#page-tree .tree-toolbar button{border-color:rgba(177,153,255,.24);background:rgba(177,153,255,.06);color:#e2d9ff;border-radius:4px}
+#page-tree .tree-layout{border-color:rgba(177,153,255,.23);border-radius:0 0 8px 8px;background:radial-gradient(ellipse at 25% 35%,rgba(91,75,148,.12),transparent 55%),rgba(8,12,22,.98);box-shadow:0 16px 40px rgba(0,0,0,.17)}
+#page-tree .tree-inspector{border-left-color:rgba(177,153,255,.2);background:linear-gradient(155deg,rgba(28,25,46,.97),rgba(13,17,29,.99))}
+#page-tree .inspector-id{color:#c2b2ff}
+#page-tree .tree-inspector h3{color:#e5ddff}
+#page-tree .tree-inspector p{color:#aaa6c3}
+#page-tree .inspector-level,#page-tree .inspector-cost{border-top-color:rgba(177,153,255,.16);color:#a59cbd}
+#page-tree .tree-inspector .buy-button{border-color:rgba(177,153,255,.35);background:rgba(177,153,255,.07);color:#d1c4ff}
+@media(max-width:700px){
+ #page-formula .upgrades-section,#page-formula #automationModulePanel,#page-research #researchBasePanel,#page-research #dilationResearchPanel{padding:12px}
+ #page-research .page-heading,#page-tree .page-heading{padding:15px}
+ #page-tree .tree-inspector{border-top-color:rgba(177,153,255,.2)}
+}
