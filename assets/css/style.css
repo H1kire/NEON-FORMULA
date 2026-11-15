@@ -358,3 +358,7 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
  #page-research .page-heading,#page-tree .page-heading{padding:15px}
  #page-tree .tree-inspector{border-top-color:rgba(177,153,255,.2)}
 }
+
+/* Keep live parameter typography above the broader Time Dilation card typography. */
+.dilation-page .dilation-stat-card .dilation-live-parameters>div span{font-size:17px!important}
+.dilation-page .dilation-stat-card .dilation-live-parameters>div strong{font-size:13px!important}
