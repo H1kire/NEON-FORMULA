@@ -267,3 +267,11 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
  background:rgba(184,243,107,.13)!important;
  box-shadow:0 0 12px rgba(184,243,107,.12),inset 0 0 10px rgba(184,243,107,.035);
 }
+
+
+/* KaTeX currency notation: keep mathematical symbols aligned with numeric balances. */
+.math-formula .katex{font-size:1em;color:inherit;white-space:nowrap}
+.prestige-currency strong.math-formula,.tree-progress strong.math-formula,
+.research-points .math-formula,.research-resource-strip strong.math-formula{display:inline-block;white-space:nowrap}
+.upgrade-stats .math-formula{display:inline-block;vertical-align:middle;white-space:nowrap}
+.dilation-stat-card strong.math-formula .katex{font-size:1em}
