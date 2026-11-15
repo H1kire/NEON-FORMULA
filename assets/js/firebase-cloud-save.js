@@ -90,7 +90,7 @@
         !["a", "b", "c", "d", "e"].every(key => Number.isFinite(Number(game.formulaState[key])) && Number(game.formulaState[key]) >= 1)) {
       throw new Error("Invalid game state");
     }
-    const dilationNumberKeys=["dilationTime","dilationCurrency","dilationILevel","dilationKLevel","dilationVLevel","dilationOperationStartedAt","dilationOperationReward"];
+    const dilationNumberKeys=["dilationTime","dilationCurrency","dilationILevel","dilationKLevel","dilationKValue","dilationVLevel","dilationOperationStartedAt","dilationOperationReward"];
     if(dilationNumberKeys.some(key=>game[key]!==undefined&&!finiteNonNegative(game[key]))||(game.dilationMode!==undefined&&typeof game.dilationMode!=="boolean")||(game.dilationIntegrating!==undefined&&typeof game.dilationIntegrating!=="boolean"))throw new Error("Invalid Time Dilation state");
     if (!prestige || typeof prestige !== "object" || Array.isArray(prestige) ||
         !finiteNonNegative(prestige.p) || !finiteNonNegative(prestige.gp) ||
