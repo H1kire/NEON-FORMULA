@@ -23,5 +23,13 @@
       output: "htmlAndMathml"
     });
   }
-  window.FAFormula = Object.freeze({ render });
+  function renderText(id, value) {
+    const text = String(value ?? "");
+    const escaped = text.replace(/\\/g, "\\backslash ")
+      .replace(/([{}#$%&_])/g, "\\$1")
+      .replace(/~/g, "\\textasciitilde{}")
+      .replace(/\^/g, "\\textasciicircum{}");
+    render(id, "\\text{" + escaped + "}");
+  }
+  window.FAFormula = Object.freeze({ render, renderText });
 })();
