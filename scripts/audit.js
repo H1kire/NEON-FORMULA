@@ -29,7 +29,7 @@ if(!sources["assets/js/firebase-cloud-save.js"].includes('"users/" + checkedUser
 if(!sources["assets/js/firebase-cloud-save.js"].includes("FAStorage.getRaw")||!sources["assets/js/firebase-cloud-save.js"].includes("FAStorage.setRaw"))fail("Cloud save must use guarded raw storage helpers");
 if(!sources["assets/js/firebase-cloud-save.js"].includes('const SNAPSHOT_KEYS = [GAME_KEY, PRESTIGE_KEY, META_KEY, TREE_KEY]'))fail("Cloud snapshots must include run, prestige, meta/research and upgrade-tree data");
 if(!sources["assets/js/firebase-cloud-save.js"].includes("(game.gLevel !== undefined && !finiteNonNegative(game.gLevel))")||!sources["assets/js/firebase-cloud-save.js"].includes("(game.hLevel !== undefined && !finiteNonNegative(game.hLevel))"))fail("Cloud restore must validate optional G/H levels");
-if(!sources["assets/js/firebase-cloud-save.js"].includes("meta.research.every(value => Number.isInteger(value) && value >= 0)")||!sources["assets/js/firebase-cloud-save.js"].includes("meta.automation.unlocked.length !== 5"))fail("Cloud snapshot must validate all Research levels and automation purchases");
+if(!sources["assets/js/firebase-cloud-save.js"].includes("meta.research.every(value => Number.isInteger(value) && value >= 0)")||!sources["assets/js/firebase-cloud-save.js"].includes("![5, 8].includes(meta.automation.unlocked.length)"))fail("Cloud snapshot must validate all Research levels and automation purchases");
 if(!sources["assets/js/firebase-cloud-save.js"].includes("for (const key of SNAPSHOT_KEYS) {")||!sources["assets/js/firebase-cloud-save.js"].includes("window.FAStorage.setRaw(key, data[key])"))fail("Cloud restore must replace every saved progression section");
 if(!sources["assets/js/script.js"].includes("savePrestige(),saveTreeProgress()"))fail("Manual local save must include upgrade-tree purchases");
 if(html.includes('id="fExponent"')||html.includes("letterFPower")||html.includes("letterFActivation"))fail("Letter F card must show only LEVEL and COST stats");
@@ -48,7 +48,7 @@ try {
  };
  vm.runInNewContext(parser+";globalThis.__parse=parseSnapshotData;",context);
  const parsed=context.__parse(snapshot);
- if(parsed.meta.research[7]!==1||parsed.meta.research[9]!==10||parsed.meta.automation.unlocked[0]!==true||parsed.tree.length!==2||parsed.prestige.p!==123||parsed.game.fLevel!==1||parsed.game.gLevel!==2||parsed.game.hLevel!==3)throw new Error("A saved progression section or letter purchase was lost during snapshot parsing");
+ if(parsed.meta.research[7]!==1||parsed.meta.research[9]!==10||parsed.meta.automation.unlocked.length!==8||parsed.meta.automation.unlocked[0]!==true||parsed.meta.automation.unlocked[5]!==false||parsed.meta.automation.enabled.length!==8||parsed.tree.length!==2||parsed.prestige.p!==123||parsed.game.fLevel!==1||parsed.game.gLevel!==2||parsed.game.hLevel!==3)throw new Error("A saved progression section or letter purchase was lost during snapshot parsing");
  const bad=JSON.parse(snapshot.faMeta);bad.research[3]=-1;
  snapshot.faMeta=JSON.stringify(bad);
  let rejected=false;try{context.__parse(snapshot)}catch(error){rejected=true}
@@ -448,7 +448,7 @@ const resetRequirements=[
  "resetRun()","p=0;gp=0;prestigeUnlocked=false",
  "prestigeUpgrades={simpleBoost:0,globalSum:0}",
  "FA_META.research=Array(10).fill(0)",
- "FA_META.automation={unlocked:[false,false,false,false,false],enabled:[true,true,true,true,true],paused:false}",
+ "FA_META.automation={unlocked:Array(8).fill(false),enabled:Array(8).fill(true),paused:false}",
  "FA_META.treeUnlocked=false","FA_META.treePassPurchased=false","FA_META.settings.miniUpgrades=false",
  "FA_META.stats={totalPlayTime:0,lifetimeValue:0,ascensions:0,genesisPrestiges:0,purchases:0}",
  'FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"])',
@@ -514,6 +514,8 @@ if((html.match(/class="upgrade-title" data-i18n="(?:rootFunctionTitle|powerCurve
 if(!css.includes("#formulaModulePanel .upgrade-formula-row{display:block;min-width:0")||!css.includes("#formulaModulePanel .upgrade-formula-row .upgrade-desc{text-align:center}")||!css.includes(".mini-upgrades #formulaModulePanel .upgrade-formula-row{display:flex")||!css.includes(".mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-title{display:none}"))fail("Original vertical formula cards must remain centered outside QOL; compact flex layout must be QOL-only");
 if(!mathCss.includes(".mini-upgrades #formulaModulePanel .upgrade-desc.math-formula")||!mathCss.includes("overflow-x:auto")||!mathCss.includes("font-size:20px")||!mathCss.includes("font-size:16px")||!css.includes("justify-content:safe center")||!css.includes("align-items:center")||!css.includes("min-height:56px;height:56px;max-height:none")||!css.includes("overflow-y:visible"))fail("QOL KaTeX formulas must be centered, doubled in size and scroll horizontally when needed");
 if(!uiSource.includes("automation-heading-row")||!uiSource.includes("automation-heading-copy"))fail("Automation cards must use the shared symbol-and-title heading structure");
+if(!uiSource.includes('automationLetters=["A","B","C","D","E","F","G","H"]')||!uiSource.includes("automationCosts=[10,100,1000,10000,100000,1000000,10000000,100000000]")||!uiSource.includes("for(let i=0;i<8;i++)"))fail("Automation must provide A–H cards with a 10x AP cost progression");
+if(!sources["assets/js/script.js"].includes("window.isLetterFUnlocked?.()&&fLevel<LETTER_F_MAX_LEVEL")||!sources["assets/js/script.js"].includes("window.isLetterGUnlocked?.()")||!sources["assets/js/script.js"].includes("window.isLetterHUnlocked?.()&&hLevel<LETTER_H_MAX_LEVEL"))fail("F–H automation must respect module unlock gates and level caps");
 if(!css.includes(".mini-upgrades .automation-grid")||!css.includes(".mini-upgrades .automation-heading-row")||!css.includes(".mini-upgrades .automation-card p"))fail("Automation compact layout must be scoped to the Miniaturization QOL class");
 if(!css.includes(".mini-upgrades .research-card{padding:10.5px}")||!css.includes(".mini-upgrades .research-grid{gap:8px}")||!css.includes(".mini-upgrades .research-card .upgrade-desc{font-size:9.45px}"))fail("Compact Research cards must return to baseline and increase by about 5%");
 if(!sources["assets/js/script.js"].includes('const away=Math.min(elapsed,28800)*.35;value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;'))fail("Offline integration must calculate before advancing the run timer");
