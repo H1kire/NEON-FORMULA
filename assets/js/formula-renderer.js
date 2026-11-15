@@ -23,13 +23,18 @@
       output: "htmlAndMathml"
     });
   }
-  function renderText(id, value) {
-    const text = String(value ?? "");
-    const escaped = text.replace(/\\/g, "\\backslash ")
+  function escapeText(value) {
+    return String(value ?? "").replace(/\\/g, "\\backslash ")
       .replace(/([{}#$%&_])/g, "\\$1")
       .replace(/~/g, "\\textasciitilde{}")
       .replace(/\^/g, "\\textasciicircum{}");
-    render(id, "\\text{" + escaped + "}");
   }
-  window.FAFormula = Object.freeze({ render, renderText });
+  function renderText(id, value) {
+    render(id, "\\text{" + escapeText(value) + "}");
+  }
+  function renderCurrency(id, value, symbol) {
+    if (typeof symbol !== "string" || !symbol.trim()) return renderText(id, value);
+    render(id, "\\text{" + escapeText(value) + "}\\, " + symbol);
+  }
+  window.FAFormula = Object.freeze({ render, renderText, renderCurrency });
 })();
