@@ -82,7 +82,7 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-top{flex:0 0 30px;width:30px;margin:0}
 .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-symbol{width:30px;height:30px;font-size:14px}
 .mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-title{display:none}
-.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-desc{display:block;flex:1 1 0;min-width:0;width:0;max-width:100%;margin:0;padding:2px 3px;overflow-x:auto;overflow-y:hidden;text-align:left;white-space:nowrap;overflow-wrap:normal;word-break:normal;scrollbar-width:thin}
+.mini-upgrades #formulaModulePanel .upgrade-formula-row .upgrade-desc{display:flex;flex:1 1 0;align-items:center;justify-content:safe center;min-width:0;width:0;max-width:100%;height:100%;margin:0;padding:2px 3px;overflow-x:auto;overflow-y:hidden;text-align:center;white-space:nowrap;overflow-wrap:normal;word-break:normal;scrollbar-width:thin}
 
 /* Automation compact cards are also strictly scoped to the QOL setting. */
 .automation-heading-row{display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:32px auto;align-items:center;column-gap:0;row-gap:0;margin-bottom:12px}
