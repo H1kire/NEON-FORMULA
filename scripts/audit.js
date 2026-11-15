@@ -530,6 +530,12 @@ if(!sources["assets/js/formula-renderer.js"].includes("function renderText")||!s
 if(!sources["assets/js/script.js"].includes("FAFormula.renderText(\"dilationCurrencyDisplay\"")||!sources["assets/js/script.js"].includes("FAFormula.render(\"dilationFormula\""))fail("Time Dilation values and integral must use the shared KaTeX renderer");
 if(!sources["assets/js/app-ui.js"].includes("dilationUpgradeCost_")||!sources["assets/js/app-ui.js"].includes("dilationParameterValue_"))fail("Dilation upgrade parameter and currency values must use KaTeX");
 if(!html.includes("dilation-whitehole-art")||!html.includes("data-i18n=\"researchKicker\""))fail("White-hole art or localized Research heading is missing");
+if(html.includes("NODE #2050"))fail("Time Dilation panel must not display its internal node number");
+if(!css.includes(".dilation-page .dilation-stat-card strong{font-size:clamp(22.5px,3vw,31.25px)}")||!css.includes(".dilation-page .dilation-operation-meta{font-size:10px"))fail("Time Dilation labels and balances must use the enlarged typography");
+if(!css.includes(".dilation-page .dilation-equation{font-size:16px}")||!css.includes(".dilation-page .dilation-equation .katex{font-size:1.25em}"))fail("Time Dilation integral typography must remain at its original size");
+if(!css.includes(".upgrade:hover,.research-card:hover,.automation-card:hover")||!css.includes("transition:none!important"))fail("Upgrade and research card hover states must remain static without flicker or movement");
+if(!css.includes(".buy-button.good,.buy-button.good:hover:not(:disabled)")||!css.includes("box-shadow:0 0 12px rgba(184,243,107,.12)"))fail("Affordable purchase buttons must retain a steady green highlight");
+
 
 
 if(errors.length){process.stderr.write("\nAUDIT FAILED: "+errors.length+" issue(s)\n");for(const e of errors)process.stderr.write("  FAIL "+e+"\n");process.exitCode=1}else{process.stdout.write("\nAUDIT PASSED");if(warnings.length)process.stdout.write(" with warnings");process.stdout.write(".\n")}
