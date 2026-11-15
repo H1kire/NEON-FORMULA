@@ -453,7 +453,8 @@ const resetRequirements=[
  "FA_META.stats={totalPlayTime:0,lifetimeValue:0,ascensions:0,genesisPrestiges:0,purchases:0}",
  'FAStorage.removeMany([LEGACY_SAVE_KEY,OLD_SAVE_KEY,"faTree"])',
  "saveGame(true)","savePrestige()","saveMeta()"
-];
+,
+ "dilationKValue=1"];
 const missingReset=resetRequirements.filter(part=>!resetSource.includes(part));
 if(missingReset.length)fail("Full RESET is missing local progression resets: "+missingReset.join(", "));
 else pass("Full RESET clears run, AP/GP, prestige upgrades, Research, automation, Genesis Gate, tree and statistics");
@@ -525,6 +526,7 @@ if(!html.includes('id="timeDilationTab"')||!html.includes('id="timeDilationModul
 if(!sources["assets/js/script.js"].includes("function calculateDilationReward")||!sources["assets/js/script.js"].includes("dilationTime<60")||!sources["assets/js/script.js"].includes("Date.now()-dilationOperationStartedAt>=5000")||!sources["assets/js/script.js"].includes("if(dilationMode&&dilationUnlocked)"))fail("Time Dilation must freeze ordinary t, require 60 t_dl and complete integration after five real seconds");
 if(!sources["assets/js/tree.js"].includes("window.isTimeDilationUnlocked=()=>nodes[2049].level>0")||!sources["assets/js/tree.js"].includes("n.id===2049?1000"))fail("NODE #2050 must unlock Time Dilation for 1,000 GP");
 if(!sources["assets/js/app-ui.js"].includes('["i","i","dilationIntensityTitle"')||!sources["assets/js/app-ui.js"].includes('["k","k","dilationExponentTitle"')||!sources["assets/js/app-ui.js"].includes('["v","v","dilationVelocityTitle"')||!sources["assets/js/script.js"].includes("1000*Math.pow(2,level)"))fail("Dilation Upg must contain the three parameter upgrades and exponential prices");
+if(!sources["assets/js/script.js"].includes("dilationKValue+0.1")||!sources["assets/js/script.js"].includes("k:dilationKValue")||!sources["assets/js/script.js"].includes("d.dilationKValue!==undefined")||!sources["assets/js/firebase-cloud-save.js"].includes('"dilationKValue"'))fail("Dilation k purchases must add 0.1, preserve legacy k values and validate cloud saves");
 if(!css.includes(".research-subpage.active")||!css.includes("#page-research .research-card")||!css.includes(".dilation-operation-card")||!css.includes(".dilation-whitehole-art")||!css.includes(".buy-button.good:hover:not(:disabled)")||!css.includes("transform:none!important"))fail("Research, white-hole Time Dilation and steady purchase-button styles are missing");
 if(!sources["assets/js/formula-renderer.js"].includes("function renderText")||!sources["assets/js/formula-renderer.js"].includes("render, renderText, renderCurrency });")||!sources["assets/js/formula-renderer.js"].includes("function renderCurrency"))fail("KaTeX text/currency rendering helpers are missing");
 if(!sources["assets/js/script.js"].includes('renderText("value"')||!sources["assets/js/script.js"].includes('renderText("growth"')||!sources["assets/js/script.js"].includes('["aCost",getACost()]')||!sources["assets/js/script.js"].includes('renderCurrency("dilationTimeDisplay"')||sources["assets/js/script.js"].includes('\\\\mathrm{Score}'))fail("HUD and letter costs must omit Score while Time Dilation currencies retain mathematical notation");
@@ -536,6 +538,7 @@ if(!sources["assets/js/tree.js"].includes('renderCurrency("nodeCost"')||!sources
 if(!sources["assets/js/app-ui.js"].includes('renderCurrency(researchCostValue.id')||!sources["assets/js/app-ui.js"].includes('\\Delta t_{dl}'))fail("Research and Dilation upgrade costs must use mathematical currency notation");
 
 if(!sources["assets/js/script.js"].includes('renderCurrency("dilationCurrencyDisplay"')||!sources["assets/js/script.js"].includes('FAFormula.render("dilationFormula"'))fail("Time Dilation values and integral must use the shared KaTeX renderer");
+if(!css.includes(".dilation-live-parameters>div span{color:#b8d2e8;font:italic 17px var(--mono)}")||!css.includes(".dilation-live-parameters>div strong{color:#e3f4ff;font:13px var(--mono);overflow-wrap:anywhere}"))fail("Live Time Dilation parameter symbols must be slightly larger than their reduced numeric values");
 if(!html.includes('id="dilationParameterValue_i"')||!html.includes('id="dilationParameterValue_v"')||!html.includes('id="dilationParameterValue_k"')||!css.includes(".dilation-live-parameters"))fail("Time Dilation must display live i, v and k parameters beside its balances");
 if(!sources["assets/js/script.js"].includes('label.dataset.mathReady="1"')||!sources["assets/js/script.js"].includes('if(display.textContent!==value)display.textContent=value')||sources["assets/js/script.js"].includes('FAFormula.renderText("dilationParameterValue_"'))fail("Live Time Dilation parameter values must update only when their displayed value changes");
 if(!sources["assets/js/app-ui.js"].includes("dilationUpgradeParameterValue_"))fail("Dilation Upg card parameter IDs must not collide with live status parameter IDs");
