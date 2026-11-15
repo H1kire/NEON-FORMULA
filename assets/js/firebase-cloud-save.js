@@ -102,9 +102,9 @@
         !meta.research.every(value => Number.isInteger(value) && value >= 0) ||
         !meta.settings || typeof meta.settings !== "object" || Array.isArray(meta.settings) ||
         !meta.automation || typeof meta.automation !== "object" || Array.isArray(meta.automation) ||
-        !Array.isArray(meta.automation.unlocked) || meta.automation.unlocked.length !== 5 ||
+        !Array.isArray(meta.automation.unlocked) || ![5, 8].includes(meta.automation.unlocked.length) ||
         !meta.automation.unlocked.every(value => typeof value === "boolean") ||
-        !Array.isArray(meta.automation.enabled) || meta.automation.enabled.length !== 5 ||
+        !Array.isArray(meta.automation.enabled) || meta.automation.enabled.length !== meta.automation.unlocked.length ||
         !meta.automation.enabled.every(value => typeof value === "boolean") ||
         typeof meta.automation.paused !== "boolean" ||
         !meta.stats || typeof meta.stats !== "object" || Array.isArray(meta.stats) ||
@@ -113,6 +113,8 @@
         (meta.treePassPurchased !== undefined && typeof meta.treePassPurchased !== "boolean")) {
       throw new Error("Invalid meta state");
     }
+    meta.automation.unlocked = Array.from({ length: 8 }, (_, i) => !!meta.automation.unlocked[i]);
+    meta.automation.enabled = Array.from({ length: 8 }, (_, i) => meta.automation.enabled[i] !== false);
     if (!Array.isArray(tree) || tree.some(node => !node || !Number.isInteger(node.id) || node.id < 0 || node.id >= 3886 ||
         !Number.isInteger(node.level) || node.level < 1) ||
         new Set(tree.map(node => node.id)).size !== tree.length) {
