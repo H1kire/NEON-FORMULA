@@ -13,8 +13,8 @@
   text-align:left;white-space:nowrap;scrollbar-width:thin;
 }
 .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{
-  display:inline-block;max-width:none;font-size:10px;white-space:nowrap;
+  display:inline-block;max-width:none;font-size:20px;white-space:nowrap;
 }
 @media(max-width:480px){
-  .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{font-size:8px}
+  .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{font-size:16px}
 }
