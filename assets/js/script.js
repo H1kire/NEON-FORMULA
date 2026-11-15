@@ -210,7 +210,7 @@ function resetSave(){
  window.prestigeUpgrades=prestigeUpgrades;
  FA_META.research=Array(10).fill(0);
  FA_META.researchVersion=2;
- FA_META.automation={unlocked:[false,false,false,false,false],enabled:[true,true,true,true,true],paused:false};
+ FA_META.automation={unlocked:Array(8).fill(false),enabled:Array(8).fill(true),paused:false};
  FA_META.treeUnlocked=false;
  FA_META.treePassPurchased=false;
  FA_META.settings.miniUpgrades=false;
@@ -394,8 +394,11 @@ function applyDeveloperTreeRefund(){
 $("developerTreeRefundBtn")?.addEventListener("click",applyDeveloperTreeRefund);
 function autoBuy(){
  const a=FA_META.automation;if(!a||a.paused||FA_META.research[7]<1)return;
- const efficiency=metaBonus("auto"),costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost()].map(cost=>cost/efficiency),actions=[()=>aLevel++,()=>bLevel++,()=>cLevel++,()=>dLevel++,()=>eLevel++];
+ const efficiency=metaBonus("auto"),costs=[getACost(),getBCost(),getCCost(),getDCost(),getECost(),getFCost(),getGCost(),getHCost()].map(cost=>cost/efficiency),actions=[()=>aLevel++,()=>bLevel++,()=>cLevel++,()=>dLevel++,()=>eLevel++,()=>fLevel++,()=>gLevel++,()=>hLevel++];
  for(let i=0;i<5;i++)if(a.unlocked[i]&&a.enabled[i]&&value>=costs[i])purchase(costs[i],actions[i]);
+ if(a.unlocked[5]&&a.enabled[5]&&window.isLetterFUnlocked?.()&&fLevel<LETTER_F_MAX_LEVEL&&value>=costs[5])purchase(costs[5],actions[5]);
+ if(a.unlocked[6]&&a.enabled[6]&&window.isLetterGUnlocked?.()&&value>=costs[6])purchase(costs[6],actions[6]);
+ if(a.unlocked[7]&&a.enabled[7]&&window.isLetterHUnlocked?.()&&hLevel<LETTER_H_MAX_LEVEL&&value>=costs[7])purchase(costs[7],actions[7]);
 }
 function loop(){
  if(window.FA_CLOUD_RESTORING)return;
