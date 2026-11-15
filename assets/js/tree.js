@@ -253,7 +253,7 @@
   title.textContent=n.id===0?tr("nodeRootTitle"):n.id===3?tr("nodeLetterFTitle"):letterGate?tr("nodeLetter"+letterGate+"Title"):miniaturizationNode?tr("miniaturizationTitle"):timeDilationNode?tr("timeDilationNodeTitle"):innovationNode?tr("nodeInnovationTitle"):n.type==="square"?tr("nodeContentTitle"):typeName+" "+tr("nodeUpgrade");
   desc.textContent=n.id===0?(FA_META.language==="ru"?"Навсегда добавляет интеграл в формулу производства. Верхний предел интеграла — текущий множитель e. Эффект сохраняется после престижа.":"Permanently adds an integral to the production formula. Its upper limit is the current e multiplier. The effect survives prestige resets."):n.id===3?tr("nodeLetterFDesc"):letterGate?tr("nodeLetter"+letterGate+"Desc"):miniaturizationNode?tr("miniaturizationNodeDesc"):timeDilationNode?tr("timeDilationNodeDesc"):innovationNode?tr("nodeInnovationDesc"):n.type==="square"?tr("nodeContentDesc"):tr("nodeFutureDesc")+" "+tr("nodeLimit")+" "+shapeLimit+".";
   level.textContent=n.level+" / "+n.maxLevel;
-  cost.textContent=(letterGate==="I"||letterGate==="J")?"—":(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
+  if(letterGate==="I"||letterGate==="J")cost.textContent="—";else if(window.FAFormula)FAFormula.renderCurrency("nodeCost",typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)),"\\mathrm{GP}");else cost.textContent=(typeof format==="function"?format(nodeCost(n)):String(nodeCost(n)))+" GP";
   btn.disabled=!canBuy(n);btn.textContent=n.level>=n.maxLevel?tr("maxed"):!available(n)?tr("lockedText"):gp<nodeCost(n)?tr("notEnough"):tr("buy");
  }
  window.refreshTreeLanguage=updateInspector;
@@ -281,7 +281,7 @@
   updateInspector();updateProgress();draw();updateUI();updatePrestigeUI();refreshStats();
   return {refunded,saved:savedTree&&savedPrestige};
  };
- function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+ACTIVE_TOTAL;if(balance)balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}
+ function updateProgress(){const el=document.getElementById("treeProgress"),balance=document.getElementById("treeGpBalance");if(el)el.textContent=purchasedCount()+" / "+ACTIVE_TOTAL;if(balance){if(window.FAFormula)FAFormula.renderCurrency("treeGpBalance",typeof format==="function"?format(gp):String(gp),"\\mathrm{GP}");else balance.textContent=(typeof format==="function"?format(gp):String(gp))+" GP"}}
  function centerRoot(){if(!canvas)return;scale=.28;offsetX=canvas.clientWidth/2;offsetY=canvas.clientHeight/2;draw()}
  window.initUpgradeTree=()=>{
   if(initialized){canvasSize();draw();return}
