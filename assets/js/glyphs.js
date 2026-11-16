@@ -2,6 +2,8 @@
 (() => {
   const tabs = ["converter", "inventory", "upgrades", "synthesis"];
   const CONVERSION_DURATION = 5000;
+  const MIN_GP_CONVERSION = 1000;
+  const MIN_GS_CONVERSION = 1000;
   const MIN_CONVERSION = 1000;
   const $ = id => document.getElementById(id);
   const formatValue = value => typeof format === "function"
@@ -10,26 +12,26 @@
   const formatConversionValue = value => {
     const formatted = formatValue(value);
     if (Number.isInteger(value)) {
-      return formatted.replace(/([.,]\\d)0+(?=[A-Za-z]|$)/, "$1").replace(/[.,]0(?=[A-Za-z]|$)/, "");
+      return formatted.replace(/([.,]\d)0+(?=[A-Za-z]|$)/, "$1").replace(/[.,]0(?=[A-Za-z]|$)/, "");
     }
     if (value < 1e6) {
       const locale = typeof FA_META !== "undefined" && FA_META.language === "ru" ? "ru-RU" : "en-US";
       return value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     }
-    return formatted.replace(/([.,]\\d)\\d+(?=[A-Za-z]|$)/, "$1");
+    return formatted.replace(/([.,]\d)\d+(?=[A-Za-z]|$)/, "$1");
   };
 
   const renderConversionFormula = () => {
     if (typeof FAFormula !== "object" || typeof FAFormula.render !== "function") return;
-    FAFormula.render("glyphConversionFormula", String.raw`\\mathrm{GS}=\\frac{1}{2}\\left[\\left(1+\\frac{\\mathrm{GP}}{1000}\\right)^2-1\\right]`);
-    FAFormula.render("glyphConversionParameters", String.raw`i=1\\quad\\cdot\\quad v=1\\quad\\cdot\\quad k=1`);
-    FAFormula.render("glyphFragmentConversionFormula", String.raw`\\mathrm{GF}=\\frac{1}{2}\\left[\\left(1+\\frac{\\mathrm{GS}}{1000}\\right)^2-1\\right]`);
-    FAFormula.render("glyphFragmentConversionParameters", String.raw`i=1\\quad\\cdot\\quad v=1\\quad\\cdot\\quad k=1`);
+    FAFormula.render("glyphConversionFormula", String.raw`\mathrm{GS}=\frac{1}{2}\left[\left(1+\frac{\mathrm{GP}}{1000}\right)^2-1\right]`);
+    FAFormula.render("glyphConversionParameters", String.raw`i=1\quad\cdot\quad v=1\quad\cdot\quad k=1`);
+    FAFormula.render("glyphFragmentConversionFormula", String.raw`\mathrm{GF}=\frac{1}{2}\left[\left(1+\frac{\mathrm{GS}}{1000}\right)^2-1\right]`);
+    FAFormula.render("glyphFragmentConversionParameters", String.raw`i=1\quad\cdot\quad v=1\quad\cdot\quad k=1`);
   };
 
   window.calculateGlyphShardReward = amount => {
     const input = Number(amount);
-    if (!Number.isFinite(input) || input < MIN_CONVERSION) return 0;
+    if (!Number.isFinite(input) || input < MIN_GP_CONVERSION) return 0;
     const x = input / 1000;
     const result = 0.5 * ((1 + x) ** 2 - 1);
     return Number.isFinite(result) ? result : Number.MAX_VALUE;
@@ -37,7 +39,7 @@
 
   window.calculateGlyphFragmentReward = amount => {
     const input = Number(amount);
-    if (!Number.isFinite(input) || input < MIN_CONVERSION) return 0;
+    if (!Number.isFinite(input) || input < MIN_GS_CONVERSION) return 0;
     const x = input / 1000;
     const result = 0.5 * ((1 + x) ** 2 - 1);
     return Number.isFinite(result) ? result : Number.MAX_VALUE;

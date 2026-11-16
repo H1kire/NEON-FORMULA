@@ -155,7 +155,7 @@ if(!sources["assets/js/glyphs.js"].includes("window.calculateGlyphShardReward")|
 if(!sources["assets/js/glyphs.js"].includes("window.calculateGlyphFragmentReward")||!sources["assets/js/glyphs.js"].includes("glyphGsOperationStartedAt")||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphFragmentConversionFormula"')||!html.includes('id="glyphGsInput"')||!html.includes('id="glyphGsConvertButton"')||!html.includes('id="glyphGsProgressFill"')||!html.includes('id="glyphGfBalance"'))fail("GS → GF converter formula, KaTeX display, input, action, progress or balance is missing");
 try{
  const source=sources["assets/js/glyphs.js"];
- const match=source.match(/window\\.calculateGlyphFragmentReward = amount => \\{[\\s\\S]*?\\n  \\};/);
+ const match=source.match(/window\.calculateGlyphFragmentReward = amount => \{[\s\S]*?\n  \};/);
  if(!match)throw new Error("GS → GF reward function not found");
  const context={window:{}};
  vm.runInNewContext(match[0]+";globalThis.__reward=window.calculateGlyphFragmentReward;",context);
