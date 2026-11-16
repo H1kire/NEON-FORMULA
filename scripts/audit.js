@@ -135,9 +135,9 @@ const treeStructureChecks=[
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
  ['const maxLevel=id===1860||id===1922||id===1923||id===1924?25','NODE #1861 and NODE #1923 have 25 levels'],
- ['if(n.id===1860)return Math.ceil(Math.pow(2.425,level));if(n.id===1922)return Math.ceil(5*Math.pow(6.245,level))','NODE #1861 and NODE #1923 use C0=1/r=2.425 and C0=5/r=6.245'],
+ ['if(n.id===1860)return Math.ceil(Math.pow(6.7325,level));if(n.id===1922)return Math.ceil(5*Math.pow(12.6542,level))','NODE #1861 and NODE #1923 use C0=1/r=6.7325 and C0=5/r=12.6542'],
  ['n.id!==1860&&n.id!==1922&&n.id!==1923&&n.id!==1924','prestige multiplier nodes do not affect production'],
- ['function nodeLevelCost(n,level){if(n.id===1860)return Math.ceil(Math.pow(2.425,level));if(n.id===1922)return Math.ceil(5*Math.pow(6.245,level));if(n.id===1923)return Math.ceil(Math.pow(1.25,level));if(n.id===1924)return Math.ceil(2*Math.pow(1.27,level));return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000','G/H gates and Miniaturization cost 25/50/10 GP'],
+ ['function nodeLevelCost(n,level){if(n.id===1860)return Math.ceil(Math.pow(6.7325,level));if(n.id===1922)return Math.ceil(5*Math.pow(12.6542,level));if(n.id===1923)return Math.ceil(Math.pow(1.25,level));if(n.id===1924)return Math.ceil(2*Math.pow(1.27,level));return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000','G/H gates and Miniaturization cost 25/50/10 GP'],
  ['function available(n){return (n.id===0||n.id===3||(n.id===1923&&nodes[0].level>0)||(n.id===1924&&nodes[1923].level>0)||((n.id===1860||n.id===1922)&&nodes[1923].level>0)||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0)||(n.id===2112&&nodes[2049].level>0))&&n.level<n.maxLevel}','NODE #1924 unlocks AP/GP multipliers; F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
@@ -628,5 +628,37 @@ if(!css.includes(".buy-button.good,.buy-button.good:hover:not(:disabled)")||!css
 if(!sources["assets/js/prestige.js"].includes("glyphInventory,glyphEquippedId,glyphStorageSlots")||!sources["assets/js/prestige.js"].includes("glyphEquippedId=typeof data.glyphEquippedId")||!sources["assets/js/prestige.js"].includes(".slice(0,29)")||!sources["assets/js/prestige.js"].includes("glyphStorageSlots=Array(28).fill(null)"))fail("Glyph inventory, equipped state and independent storage slot positions must persist in prestigeSave");
 if(!sources["assets/js/glyphs.js"].includes("slots:7")||!sources["assets/js/glyphs.js"].includes("Apostle of Chronos")||!sources["assets/js/glyphs.js"].includes("letterCostDivisor"))fail("Aion glyph rarity and bonus model is incomplete");
 if(!sources["assets/js/script.js"].includes("getGlyphOrdinaryTimeMultiplier")||!sources["assets/js/script.js"].includes("getGlyphDilationTimeMultiplier")||!sources["assets/js/script.js"].includes("getGlyphCostDivisor"))fail("Glyph effects are not wired into the game loop and letter costs");
+
+// New Additional Upgrades, batch purchasing, Research caps and node price progression.
+const appUiSource=sources["assets/js/app-ui.js"],scriptCore=sources["assets/js/script.js"],prestigeCore=sources["assets/js/prestige.js"];
+if(!appUiSource.includes('caps=[0,990,0,0,0,100,100,10,100,20]'))fail("Research #6, #7 and #9 must have 100 levels");
+if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity)')||!appUiSource.includes('costGetter(count)')||!html.includes('id="buyQuantitySelectFormula"')||!html.includes('id="buyQuantitySelectResearch"'))fail("Shared 1 / 5 / 25 / MAX batch purchase controls are incomplete");
+if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset)'))fail("Additional upgrades #3 and #4 must use their configured C0 and growth ratios");
+if(!scriptCore.includes('1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)'))fail("Letter Amplification must increase combined letter output by 0.1% per level");
+if(!scriptCore.includes('Math.sqrt(1+x)(1+Lx)')&&!scriptCore.includes('sqrt(1+x)(1+Lx)'))fail("Integral display must include the (1 + Lx) coefficient");
+if(!scriptCore.includes('w_i(1+Lw_i)')||!scriptCore.includes('n*w*(1+level*w)'))fail("Global Sum must apply the coefficient to every term weight");
+if(!scriptCore.includes('const weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
+if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
+try{
+ const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity\)=>\{[\s\S]*?\n  \};/)?.[0];
+ if(!helper)throw new Error("batch quote helper missing");
+ const context={window:{},meta:{buyQuantityMode:"5"}};
+ vm.runInNewContext(helper+";globalThis.__quote=window.getUpgradeBatchQuote;",context);
+ const fixed=context.__quote(100,offset=>[1,10,100,1000,10000][offset]);
+ if(fixed.count!==5||fixed.total!==11111||fixed.affordable!==false)throw new Error("fixed batch quote must sum each successive price");
+ context.meta.buyQuantityMode="max";
+ const max=context.__quote(16,offset=>Math.pow(2,offset));
+ if(max.count!==4||max.total!==15||max.affordable!==true)throw new Error("MAX must buy exactly the affordable sequential levels");
+ pass("Batch quote sums sequential costs and calculates MAX affordability");
+ const sumFunctions=scriptCore.match(/function getGlobalSumAdditionalWeight\(\)[\s\S]*?\nfunction getIntegralMultiplier\(\)/)?.[0];
+ if(!sumFunctions)throw new Error("Global Sum and integral functions missing");
+ const mathContext={prestigeUpgrades:{globalSum:2,simpleBoost:0,integralSumCoefficient:1},window:{getGlyphGlobalSumPercent:()=>0},Number,Math};
+ vm.runInNewContext(sumFunctions+";globalThis.__sum=getGlobalSumMultiplier;globalThis.__integral=getIntegralMultiplier;",mathContext);
+ if(mathContext.__sum()!==6)throw new Error("L=1 must transform w0=1 and two additional w=1 terms to a total of 6");
+ mathContext.prestigeUpgrades.globalSum=0;
+ if(mathContext.__sum()!==1)throw new Error("Global Sum coefficient must remain inactive before Global Sum is purchased");
+ pass("Integral/Sum coefficient respects k=1+L and unlock conditions");
+}catch(error){fail("Batch / Additional Upgrade runtime test: "+error.message)}
+
 if(errors.length){process.stderr.write("\nAUDIT FAILED: "+errors.length+" issue(s)\n");for(const e of errors)process.stderr.write("  FAIL "+e+"\n");process.exitCode=1}else{process.stdout.write("\nAUDIT PASSED");if(warnings.length)process.stdout.write(" with warnings");process.stdout.write(".\n")}
 for(const w of warnings)process.stdout.write("  WARN "+w+"\n");
