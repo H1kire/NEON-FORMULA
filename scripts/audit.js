@@ -452,7 +452,7 @@ if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,b
 if(!timingSource.includes("function getIntegralMultiplier()")||!timingSource.includes("factors.push(getIntegralMultiplier())"))fail("NODE #0001 integral must multiply production after it is permanently unlocked");
 if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula must show Global Sum only after it is purchased");
 if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell"'))fail("Displayed formula must use compact product notation for A–E");
-if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}(1+Lx)"))fail("Displayed formula must place the complete multiplier product inside the integral");
+if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}")||!timingSource.includes('productTerm+"\\\\,dx"'))fail("Displayed formula must place the complete multiplier product inside the integral");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE,getF,getG,getH]"))fail("All current letter multipliers, including F–H, must be registered inside the global sum");
 if(!timingSource.includes("Math.log1p(t)")||!timingSource.includes("Math.log1p(upper)")||!timingSource.includes("Math.exp(powered)"))fail("Letter F must use the agreed integral-exponential formula");
 if(!timingSource.includes("if(aLevel>0)active.push(getA())")||!timingSource.includes("if(bLevel>0)active.push(getB())")||!timingSource.includes("if(cLevel>0)active.push(getC())")||!timingSource.includes("if(dLevel>0)active.push(getD())")||!timingSource.includes("if(eLevel>0)active.push(getE())"))fail("A–E multipliers must join the production product only after their first purchase");
@@ -635,8 +635,8 @@ if(!appUiSource.includes('caps=[0,990,0,0,0,100,100,10,100,20]'))fail("Research 
 if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity,constantCost=false)')||!appUiSource.includes('costGetter(count)')||!html.includes('id="buyQuantitySelectFormula"')||!html.includes('id="buyQuantitySelectResearch"'))fail("Shared 1 / 5 / 25 / MAX batch purchase controls are incomplete");
 if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset)'))fail("Additional upgrades #3 and #4 must use their configured C0 and growth ratios");
 if(!scriptCore.includes('function getLetterValueMultiplier(){return 1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)}')||!scriptCore.includes('getGFactor(),getLetterValueMultiplier()')||!scriptCore.includes('getLetterValueMultiplier())'))fail("Letter Amplification must increase each active letter value by 0.1% per level");
-if(!scriptCore.includes('sqrt{1+x}(1+Lx)'))fail("Integral display must include the (1 + Lx) coefficient");
-if(!scriptCore.includes('w_i(1+Lw_i)')||!scriptCore.includes('n*w*(1+level*w)'))fail("Global Sum must apply the coefficient to every term weight");
+if(!scriptCore.includes('sqrt{1+x}')||!scriptCore.includes('coefficientPurchased?"k":""')||!scriptCore.includes('\\\\quad k=1+L'))fail("Integral display must use k only after the coefficient upgrade is purchased");
+if(!scriptCore.includes('w_i"+(coefficientPurchased?"k":"")')||!scriptCore.includes('n*w*(1+level*w)'))fail("Global Sum must display k conditionally and preserve the coefficient on every term weight");
 if(!scriptCore.includes('weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
 if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
 try{
