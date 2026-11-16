@@ -127,6 +127,9 @@ for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fai
 if(!sources["assets/js/storage.js"].includes("function getRaw(")||!sources["assets/js/storage.js"].includes("function setRaw("))fail("Guarded raw storage helpers are missing");
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 const treeSource=sources["assets/js/tree.js"];
+const prestigeSource=sources["assets/js/prestige.js"];
+if(!prestigeSource.includes('window.getTreeNodeLevel(1861):0;return Math.floor(calculatedGain*Math.pow(2,nodeLevel))'))fail("NODE #1861 must multiply the final AP gain by 2 per level");else pass("NODE #1861 AP final-gain multiplier");
+if(!prestigeSource.includes('window.getTreeNodeLevel(1923):0;return Math.floor(earned*Math.pow(2,nodeLevel))'))fail("NODE #1923 must multiply the final GP gain by 2 per level");else pass("NODE #1923 GP final-gain multiplier");
 const treeStructureChecks=[
  ['const TOTAL=3886','fixed 3,886-node network'],
  ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5','node type level limits'],
@@ -134,6 +137,9 @@ const treeStructureChecks=[
  ['if(id===3)return "square"','NODE #0004 is a square content node'],
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
+ ['const maxLevel=id===1860||id===1922||id===1923||id===1924?25','NODE #1861 and NODE #1923 have 25 levels'],
+ ['if(n.id===1860)return Math.ceil(Math.pow(1.89,level));if(n.id===1922)return Math.ceil(5*Math.pow(3.35,level))','NODE #1861 and NODE #1923 use C0=1/r=1.89 and C0=5/r=3.35'],
+ ['n.id!==1860&&n.id!==1922&&n.id!==1923&&n.id!==1924','prestige multiplier nodes do not affect production'],
  ['function nodeLevelCost(n,level){if(n.id===1923)return Math.ceil(Math.pow(1.25,level));if(n.id===1924)return Math.ceil(2*Math.pow(1.27,level));return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000','G/H gates and Miniaturization cost 25/50/10 GP'],
  ['function available(n){return (n.id===0||n.id===3||(n.id===1923&&nodes[0].level>0)||(n.id===1924&&nodes[1923].level>0)||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0)||(n.id===2112&&nodes[2049].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
