@@ -362,3 +362,8 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 /* Keep live parameter typography above the broader Time Dilation card typography. */
 .dilation-page .dilation-stat-card .dilation-live-parameters>div span{font-size:17px!important}
 .dilation-page .dilation-stat-card .dilation-live-parameters>div strong{font-size:13px!important}
+
+.buy-quantity-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin:0 0 12px;padding:8px 11px;border:1px solid var(--line);background:rgba(14,23,29,.72);color:var(--muted);font:10px var(--mono);letter-spacing:.7px}
+.buy-quantity-toolbar select{min-width:78px;padding:7px 9px;border:1px solid rgba(107,216,207,.28);background:#101b22;color:var(--text);font:11px var(--mono);outline:none}
+#page-research .buy-quantity-toolbar{margin:0 0 14px}
+@media(max-width:480px){.buy-quantity-toolbar{justify-content:space-between}}
