@@ -538,17 +538,22 @@ else{
   const countSource=thresholdMatch[0].split("\nfunction getPrestigeGain")[0],context={};
   try{
     vm.runInNewContext(countSource+";globalThis.__count=countThresholds;",context);
-    for(const [scale,base,divisor] of [[1e15,1.05,1],[1000,1.1,2.5]]){
+    for(const [scale,base,divisor] of [[1e15,1.05,1],[1000,1.1,2.5],[1e15,1.05,1.25],[1000,1.1,3.125]]){
       for(const x of [2,3,4]){
         const threshold=scale*Math.pow(base,x/divisor);
         if(context.__count(threshold,scale,base,divisor)!==x-1)fail("Prestige threshold exact-boundary error at x="+x);
         if(context.__count(threshold*(1-1e-12),scale,base,divisor)!==x-2)fail("Prestige threshold below-boundary error at x="+x);
       }
     }
-    pass("AP and GP threshold boundary tests");
+    if(context.__count(1e18,1e15,1.05,1.25)!==175)fail("NODE #1924 maximum-level AP gain must be 175 at 1e18 Score");
+     if(context.__count(10000,1000,1.1,3.125)!==74)fail("NODE #1925 maximum-level GP gain must be 74 at 10,000 AP");
+     pass("AP and GP threshold boundaries, including NODE #1924 and #1925");
   }catch(error){fail("Prestige threshold runtime test: "+error.message)}
 }
 try{
+  const treeSource=sources["assets/js/tree.js"];
+  if(!treeSource.includes("id===1923||id===1924?25")||!treeSource.includes("n.id===1923&&nodes[0].level>0")||!treeSource.includes("n.id===1924&&nodes[1923].level>0")||!treeSource.includes("addEdge(0,1923);addEdge(1923,1924)"))fail("Prestige threshold nodes must have 25 levels and the strict NODE #0001 → #1924 → #1925 path");
+  if(!prestigeSource.includes("getTreeNodeLevel(1924)")||!prestigeSource.includes("getTreeNodeLevel(1925)"))fail("AP and GP prestige calculations must use their corresponding tree-node levels");
   const memory=new Map(),mockWindow={localStorage:{getItem:key=>memory.has(key)?memory.get(key):null,setItem:(key,value)=>memory.set(key,String(value)),removeItem:key=>memory.delete(key)}};
   vm.runInNewContext(sources["assets/js/storage.js"],{window:mockWindow,console:{warn:()=>{}}});
   const api=mockWindow.FAStorage;
