@@ -14,12 +14,15 @@
     ? format(value)
     : Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 });
   const formatConversionValue = value => {
-    if (Number.isInteger(value)) return formatValue(value);
+    const formatted = formatValue(value);
+    if (Number.isInteger(value)) {
+      return formatted.replace(/([.,]\d)0+(?=[A-Za-z]|$)/, "$1").replace(/[.,]0(?=[A-Za-z]|$)/, "");
+    }
     if (value < 1e6) {
       const locale = typeof FA_META !== "undefined" && FA_META.language === "ru" ? "ru-RU" : "en-US";
       return value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     }
-    return formatValue(value).replace(/([.,]\d)\d+(?=[A-Za-z]|$)/, "$1");
+    return formatted.replace(/([.,]\d)\d+(?=[A-Za-z]|$)/, "$1");
   };
   const renderConversionFormula = () => {
     if (typeof FAFormula !== "object" || typeof FAFormula.render !== "function") return;
