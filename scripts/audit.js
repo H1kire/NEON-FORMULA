@@ -140,7 +140,7 @@ const treeStructureChecks=[
  ['const maxLevel=id===1860||id===1922||id===1923||id===1924?25','NODE #1861 and NODE #1923 have 25 levels'],
  ['if(n.id===1860)return Math.ceil(Math.pow(1.89,level));if(n.id===1922)return Math.ceil(5*Math.pow(3.35,level))','NODE #1861 and NODE #1923 use C0=1/r=1.89 and C0=5/r=3.35'],
  ['n.id!==1860&&n.id!==1922&&n.id!==1923&&n.id!==1924','prestige multiplier nodes do not affect production'],
- ['function nodeLevelCost(n,level){if(n.id===1923)return Math.ceil(Math.pow(1.25,level));if(n.id===1924)return Math.ceil(2*Math.pow(1.27,level));return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000','G/H gates and Miniaturization cost 25/50/10 GP'],
+ ['function nodeLevelCost(n,level){if(n.id===1860)return Math.ceil(Math.pow(1.89,level));if(n.id===1922)return Math.ceil(5*Math.pow(3.35,level));if(n.id===1923)return Math.ceil(Math.pow(1.25,level));if(n.id===1924)return Math.ceil(2*Math.pow(1.27,level));return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000','G/H gates and Miniaturization cost 25/50/10 GP'],
  ['function available(n){return (n.id===0||n.id===3||(n.id===1923&&nodes[0].level>0)||(n.id===1924&&nodes[1923].level>0)||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0)||(n.id===2112&&nodes[2049].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
@@ -554,11 +554,19 @@ else{
     if(context.__count(1e18,1e15,1.05,2.25)!==317)fail("NODE #1924 maximum-level AP gain must be 317 at 1e18 Score");
      if(context.__count(10000,1000,1.1,5.625)!==134)fail("NODE #1925 maximum-level GP gain must be 134 at 10,000 AP");
      pass("AP and GP threshold boundaries, including NODE #1924 and #1925");
+    const apGainSource=prestigeSource.match(/function getPrestigeGain\(\)[\\s\\S]*?\\nfunction getGenesisGain/);
+    const gpGainSource=prestigeSource.match(/function getGenesisGain\(\)[\\s\\S]*?\\nfunction resetRun/);
+    if(!apGainSource||!gpGainSource)throw new Error("Prestige gain functions not found");
+    const gainContext={value:1e18,p:10000,window:{FA_META:{treePassPurchased:true},getTreeNodeLevel:id=>id===1924?25:id===1925?25:id===1861?3:id===1923?2:0},getMetaBonus:()=>1};
+    vm.runInNewContext(countSource+";"+apGainSource[0].replace(/\\nfunction getGenesisGain$/,"")+";"+gpGainSource[0].replace(/\\nfunction resetRun$/,"")+";globalThis.__ap=getPrestigeGain;globalThis.__gp=getGenesisGain;",gainContext);
+    if(gainContext.__ap()!==317*8)throw new Error("NODE #1861 must multiply calculated AP by 2^level after the normal calculation");
+    if(gainContext.__gp()!==134*4)throw new Error("NODE #1923 must multiply calculated GP by 2^level after the normal calculation");
+    pass("NODE #1861 and #1923 runtime multiplier checks (AP ×8, GP ×4)");
   }catch(error){fail("Prestige threshold runtime test: "+error.message)}
 }
 try{
   const treeSource=sources["assets/js/tree.js"];
-  if(!treeSource.includes("id===1923||id===1924?25")||!treeSource.includes("n.id===1923&&nodes[0].level>0")||!treeSource.includes("n.id===1924&&nodes[1923].level>0")||!treeSource.includes("addEdge(0,1923);addEdge(1923,1924)"))fail("Prestige threshold nodes must have 25 levels and the strict NODE #0001 → #1924 → #1925 path");
+  if(!treeSource.includes("id===1860||id===1922||id===1923||id===1924?25")||!treeSource.includes("n.id===1923&&nodes[0].level>0")||!treeSource.includes("n.id===1924&&nodes[1923].level>0")||!treeSource.includes("addEdge(0,1923);addEdge(1923,1924)"))fail("Prestige threshold nodes must have 25 levels and the strict NODE #0001 → #1924 → #1925 path");
   if(!prestigeSource.includes("getTreeNodeLevel(1924)")||!prestigeSource.includes("getTreeNodeLevel(1925)"))fail("AP and GP prestige calculations must use their corresponding tree-node levels");
   const memory=new Map(),mockWindow={localStorage:{getItem:key=>memory.has(key)?memory.get(key):null,setItem:(key,value)=>memory.set(key,String(value)),removeItem:key=>memory.delete(key)}};
   vm.runInNewContext(sources["assets/js/storage.js"],{window:mockWindow,console:{warn:()=>{}}});
