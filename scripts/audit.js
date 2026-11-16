@@ -554,11 +554,11 @@ else{
     if(context.__count(1e18,1e15,1.05,2.25)!==317)fail("NODE #1924 maximum-level AP gain must be 317 at 1e18 Score");
      if(context.__count(10000,1000,1.1,5.625)!==134)fail("NODE #1925 maximum-level GP gain must be 134 at 10,000 AP");
      pass("AP and GP threshold boundaries, including NODE #1924 and #1925");
-    const apGainSource=prestigeSource.match(/function getPrestigeGain\(\)[\\s\\S]*?\\nfunction getGenesisGain/);
-    const gpGainSource=prestigeSource.match(/function getGenesisGain\(\)[\\s\\S]*?\\nfunction resetRun/);
+    const apGainSource=prestigeSource.match(/function getPrestigeGain\(\)[\s\S]*?\nfunction getGenesisGain/);
+    const gpGainSource=prestigeSource.match(/function getGenesisGain\(\)[\s\S]*?\nfunction resetRun/);
     if(!apGainSource||!gpGainSource)throw new Error("Prestige gain functions not found");
     const gainContext={value:1e18,p:10000,window:{FA_META:{treePassPurchased:true},getTreeNodeLevel:id=>id===1924?25:id===1925?25:id===1861?3:id===1923?2:0},getMetaBonus:()=>1};
-    vm.runInNewContext(countSource+";"+apGainSource[0].replace(/\\nfunction getGenesisGain$/,"")+";"+gpGainSource[0].replace(/\\nfunction resetRun$/,"")+";globalThis.__ap=getPrestigeGain;globalThis.__gp=getGenesisGain;",gainContext);
+    vm.runInNewContext(countSource+";"+apGainSource[0].replace(/\nfunction getGenesisGain$/,"")+";"+gpGainSource[0].replace(/\nfunction resetRun$/,"")+";globalThis.__ap=getPrestigeGain;globalThis.__gp=getGenesisGain;",gainContext);
     if(gainContext.__ap()!==317*8)throw new Error("NODE #1861 must multiply calculated AP by 2^level after the normal calculation");
     if(gainContext.__gp()!==134*4)throw new Error("NODE #1923 must multiply calculated GP by 2^level after the normal calculation");
     pass("NODE #1861 and #1923 runtime multiplier checks (AP ×8, GP ×4)");
