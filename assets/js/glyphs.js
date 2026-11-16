@@ -290,16 +290,18 @@
   const buildBonus=(d,r)=>{const raw=d.kind==="multiplier"?rng(d.min,rng(d.inner,d.max)):(rng(d.min,d.max)/100);return{id:d.id,baseValue:raw,value:d.kind==="multiplier"?1+(Math.max(1,raw)-1)*r.multiplier:raw*r.multiplier}};
   const effects=()=>{
     const out={ordinaryTime:1,letterCostDivisor:1,formulaTime:0,globalSum:0,dilationTime:1,letterValues:0,gsGain:1,entries:[]};
-    const glyph=glyphInventory.find(x=>x.id===glyphEquippedId);if(!glyph)return out;
-    const totals=new Map();
-    for(const b of glyph.bonuses||[]){const d=AION.find(x=>x.id===b.id);if(!d)continue;const v=b.value;
-      if(b.id==="ordinaryTime")out.ordinaryTime*=v;
-      if(b.id==="letterCost"){const pct=v*100;out.letterCostDivisor*=pct<=99?1/Math.max(.01,1-pct/100):100*(1+(pct-99)/99)}
+    const equipped=glyphInventory.filter(x=>x.id===glyphEquippedId||x.equipped===true);
+    if(!equipped.length)return out;
+    const totals=new Map();let letterCostPercent=0;
+    for(const glyph of equipped)for(const b of glyph.bonuses||[]){const d=AION.find(x=>x.id===b.id);if(!d)continue;const v=b.value;
+      if(b.id==="ordinaryTime")out.ordinaryTime+=Math.max(0,v-1);
+      if(b.id==="letterCost")letterCostPercent+=v*100;
       if(b.id==="formulaTime")out.formulaTime+=v;if(b.id==="globalSum")out.globalSum+=v;
-      if(b.id==="dilationTime")out.dilationTime*=v;if(b.id==="letterValues")out.letterValues+=v;if(b.id==="gsGain")out.gsGain*=v;
+      if(b.id==="dilationTime")out.dilationTime+=Math.max(0,v-1);if(b.id==="letterValues")out.letterValues+=v;if(b.id==="gsGain")out.gsGain+=Math.max(0,v-1);
       const total=totals.get(b.id)||{name:d[lang()],id:b.id,kind:d.kind,value:0};
       total.value+=d.kind==="multiplier"?Math.max(0,v-1):v;totals.set(b.id,total);
     }
+    out.letterCostDivisor=letterCostPercent<=99?1/Math.max(.01,1-letterCostPercent/100):100*(1+(letterCostPercent-99)/99);
     for(const total of totals.values()){
       const v=total.kind==="multiplier"?1+total.value:total.value;
       total.value=total.kind==="multiplier"?"×"+v.toFixed(3):total.id==="letterCost"?(v*100<=99?"−"+(v*100).toFixed(2)+"%":"÷"+(100*(1+(v*100-99)/99)).toFixed(2)):"+"+(v*100).toFixed(2)+"%";
