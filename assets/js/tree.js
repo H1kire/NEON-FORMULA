@@ -179,7 +179,7 @@
  window.treePurchasedCount=purchasedCount;window.treeActiveCount=()=>ACTIVE_TOTAL;window.treeProductionMultiplier=()=>cachedMultiplier;window.isIntegralNodePurchased=()=>nodes[0].level>0;window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;window.isMiniaturizationUnlocked=()=>nodes[1925].level>0;window.isTimeDilationUnlocked=()=>nodes[2049].level>0;window.isGlyphsUnlocked=()=>nodes[2112].level>0;
  function persist(){if(window.FA_CLOUD_RESTORING)return false;return FAStorage.setJSON("faTree",nodes.filter(n=>n.active&&n.level>0).map(n=>({id:n.id,level:n.level})))}
  window.saveTreeProgress=persist;
- function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:Math.ceil(n.cost*Math.pow(1.55,n.level))}
+ function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000:Math.ceil(n.cost*Math.pow(1.55,n.level))}
  // Letter gates unlock in sequence: F, then G, then H.
  function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0)||(n.id===2112&&nodes[2049].level>0))&&n.level<n.maxLevel}
  function canBuy(n){return available(n)&&gp>=nodeCost(n)}
@@ -267,7 +267,7 @@
   for(const n of nodes){
    if(!n.active||n.level<=0)continue;
    for(let level=0;level<n.level;level++){
-    const cost=n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:Math.ceil(n.cost*Math.pow(1.55,level));
+    const cost=n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000:Math.ceil(n.cost*Math.pow(1.55,level));
     refunded=Math.min(Number.MAX_VALUE,refunded+cost);
    }
   }
