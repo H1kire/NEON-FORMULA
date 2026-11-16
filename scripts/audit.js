@@ -488,7 +488,7 @@ try{
   if(gainContext.__gain!==100)fail("Ascension Legacy must not alter production when Global Sum is zero");
   pass("Production tests: base, NODE #0001 integral, Global Sum, aggregate weight display and Ascension Legacy scaling");
   const letterProductSource=timingSource.slice(timingSource.indexOf("function getLetterProduct()"),timingSource.indexOf("window.FAMathSystem"));
-  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,fLevel:0,gLevel:0,hLevel:0,window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>false,isLetterHUnlocked:()=>false},getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,getF:()=>1,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11,()=>letterContext.getF()],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
+  const letterContext={aLevel:0,bLevel:0,cLevel:0,dLevel:0,eLevel:0,fLevel:0,gLevel:0,hLevel:0,prestigeUpgrades:{letterValueBoost:0},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>false,isLetterHUnlocked:()=>false},getA:()=>2,getB:()=>3,getC:()=>5,getD:()=>7,getE:()=>11,getF:()=>1,formulaLetterGetters:[()=>2,()=>3,()=>5,()=>7,()=>11,()=>letterContext.getF()],safeProduct:(...values)=>values.reduce((a,b)=>a*b,1)};
   vm.runInNewContext(letterProductSource+";globalThis.__letterProduct=getLetterProduct;",letterContext);
   if(letterContext.__letterProduct()!==1)fail("Unpurchased A–E letters must not affect production");
   letterContext.aLevel=1;if(letterContext.__letterProduct()!==2)fail("First A purchase must activate A exactly once");
