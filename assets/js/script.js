@@ -10,6 +10,7 @@ const aLevelDisplay=$("aLevel"),bLevelDisplay=$("bLevel"),cLevelDisplay=$("cLeve
 const btnA=$("btnA"),btnB=$("btnB"),btnC=$("btnC"),btnD=$("btnD"),btnE=$("btnE");
 const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dCostDisplay=$("dCost"),eCostDisplay=$("eCost");
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
+function getLetterValueMultiplier(){return 1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)}
 let formulaState={a:1,b:1,c:1,d:1,e:1},formulaSteps=0,formulaAccumulator=0;
 const LETTER_BASE_COSTS={a:1000,b:100000,c:10000000,d:1000000000,e:1000000000000,f:1000000000000000,g:1e18,h:1e21};
 const LETTER_BASE_PARAMETERS={a:1.81,b:0.652,c:1.66,d:11.7,e:2.057};
@@ -114,7 +115,7 @@ function advanceFormulaClock(delta){
  }
 }
 function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;formulaAccumulator=0}
-function getA(){return safeProduct(formulaState.a,getGFactor())}function getB(){return safeProduct(formulaState.b,getGFactor())}function getC(){return safeProduct(formulaState.c,getGFactor())}function getD(){return safeProduct(formulaState.d,getGFactor())}function getE(){return safeProduct(formulaState.e,getGFactor())}
+function getA(){return safeProduct(formulaState.a,getGFactor(),getLetterValueMultiplier())}function getB(){return safeProduct(formulaState.b,getGFactor(),getLetterValueMultiplier())}function getC(){return safeProduct(formulaState.c,getGFactor(),getLetterValueMultiplier())}function getD(){return safeProduct(formulaState.d,getGFactor(),getLetterValueMultiplier())}function getE(){return safeProduct(formulaState.e,getGFactor(),getLetterValueMultiplier())}
 const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501;
 function getFExponent(){return Math.min(LETTER_F_MAX_EXPONENT,LETTER_F_BASE_EXPONENT+Math.max(0,fLevel-1)*0.0001)}
 function getFCost(offset=0){return fLevel+offset>=LETTER_F_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.f,fLevel+offset)}
@@ -127,14 +128,14 @@ function getF(){
  const powered=safePow(x,getFExponent());
  if(powered>=Math.log(Number.MAX_VALUE))return Number.MAX_VALUE;
  const result=1+Math.exp(powered);
- return Number.isFinite(result)?Math.min(result,Number.MAX_VALUE):Number.MAX_VALUE;
+ return Number.isFinite(result)?safeProduct(Math.min(result,Number.MAX_VALUE),getLetterValueMultiplier()):Number.MAX_VALUE;
 }
 const LETTER_H_MAX_LEVEL=30000;
 function getG(){
  const unlocked=typeof window.isLetterGUnlocked==="function"&&window.isLetterGUnlocked();
  if(gLevel<=0||!unlocked)return 0;
  const x=Math.log1p(Math.max(0,t))/5,x2=x*x;
- return 0.05*gLevel*(x2/(1+x2));
+ return 0.05*gLevel*(x2/(1+x2))*getLetterValueMultiplier();
 }
 function getGFactor(){return 1+getG()}
 function lambertW0(z){
@@ -158,7 +159,7 @@ function getHExponent(){
 function getH(){
  const unlocked=typeof window.isLetterHUnlocked==="function"&&window.isLetterHUnlocked();
  if(hLevel<=0||!unlocked)return 1;
- return safePow(lambertW0(Math.max(0,t)/10),getHExponent());
+ return safeProduct(safePow(lambertW0(Math.max(0,t)/10),getHExponent()),getLetterValueMultiplier());
 }
 function getGCost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.g,gLevel+offset)}
 function getHCost(offset=0){return hLevel+offset>=LETTER_H_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.h,hLevel+offset)}
@@ -174,8 +175,8 @@ function getLetterProduct(){
  if(eLevel>0)active.push(getE());
  if(fLevel>0&&typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked())active.push(getF());
  if(hLevel>0&&typeof window.isLetterHUnlocked==="function"&&window.isLetterHUnlocked())active.push(getH());
- const extraLetters=formulaLetterGetters.slice(8).map(getter=>getter()),activeLetterCount=active.length+extraLetters.length,letterBoost=activeLetterCount?Math.pow(1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0),activeLetterCount):1;
- return safeProduct(...active,...extraLetters,letterBoost,typeof window.getGlyphLetterValueMultiplier==="function"?window.getGlyphLetterValueMultiplier():1);
+ const extraLetters=formulaLetterGetters.slice(8).map(getter=>getter());
+ return safeProduct(...active,...extraLetters,typeof window.getGlyphLetterValueMultiplier==="function"?window.getGlyphLetterValueMultiplier():1);
 }
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
