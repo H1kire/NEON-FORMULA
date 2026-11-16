@@ -212,15 +212,15 @@
     updateGsToGfConverter();
   }
 
-  function bindConverterInput(inputId, buttonId, maxButtonId, stateKey, getBalance, minAmount, start) {
+  function bindConverterInput(inputId, buttonId, maxButtonId, getSavedInput, setSavedInput, getBalance, minAmount, start) {
     const input = $(inputId);
     const button = $(buttonId);
     const maxButton = $(maxButtonId);
     if (!input || !button || input.dataset.glyphReady === "1") return;
     input.dataset.glyphReady = "1";
-    input.value = String(window[stateKey] || minAmount);
+    input.value = String(getSavedInput() || minAmount);
     input.addEventListener("input", () => {
-      window[stateKey] = Math.max(minAmount, Math.floor(Number(input.value) || minAmount));
+      setSavedInput(Math.max(minAmount, Math.floor(Number(input.value) || minAmount)));
       if (typeof savePrestige === "function") savePrestige();
       updateGpToGsConverter();
       updateGsToGfConverter();
@@ -229,7 +229,7 @@
       const amount = Math.floor(Number(input.value));
       if (Number.isFinite(amount) && amount >= minAmount) {
         input.value = String(amount);
-        window[stateKey] = amount;
+        setSavedInput(amount);
         if (typeof savePrestige === "function") savePrestige();
       }
       updateGpToGsConverter();
@@ -238,7 +238,7 @@
     button.addEventListener("click", start);
     maxButton?.addEventListener("click", () => {
       input.value = String(Math.floor(Math.max(0, Number(getBalance()) || 0)));
-      window[stateKey] = Math.max(minAmount, Math.floor(Number(input.value) || minAmount));
+      setSavedInput(Math.max(minAmount, Math.floor(Number(input.value) || minAmount)));
       if (typeof savePrestige === "function") savePrestige();
       updateGpToGsConverter();
       updateGsToGfConverter();
@@ -254,8 +254,8 @@
   };
 
   window.refreshGlyphsAccess();
-  bindConverterInput("glyphGpInput", "glyphConvertButton", "glyphGpMax", "glyphGpInput", () => gp, MIN_CONVERSION, startGpToGsConversion);
-  bindConverterInput("glyphGsInput", "glyphGsConvertButton", "glyphGsMax", "glyphGsInput", () => glyphShards, MIN_CONVERSION, startGsToGfConversion);
+  bindConverterInput("glyphGpInput", "glyphConvertButton", "glyphGpMax", () => glyphGpInput, value => { glyphGpInput = value; }, () => gp, MIN_CONVERSION, startGpToGsConversion);
+  bindConverterInput("glyphGsInput", "glyphGsConvertButton", "glyphGsMax", () => glyphGsInput, value => { glyphGsInput = value; }, () => glyphShards, MIN_CONVERSION, startGsToGfConversion);
   window.refreshGlyphConverter();
   setInterval(window.refreshGlyphConverter, 50);
 })();
