@@ -448,7 +448,7 @@ try{
 }catch(error){fail("Letter F runtime test: "+error.message)}
 const timingSource=sources["assets/js/script.js"];
 if(!timingSource.includes("const TICK=10"))fail("The game loop interval must remain 10 ms");
-if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,boost)"))fail("Production must keep t squared outside the Global Sum and include all letter multipliers");
+if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0),boost)"))fail("Production must keep t squared outside the Global Sum and include all letter multipliers");
 if(!timingSource.includes("function getIntegralMultiplier()")||!timingSource.includes("factors.push(getIntegralMultiplier())"))fail("NODE #0001 integral must multiply production after it is permanently unlocked");
 if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula must show Global Sum only after it is purchased");
 if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell"'))fail("Displayed formula must use compact product notation for A–E");
@@ -457,7 +457,7 @@ if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE,
 if(!timingSource.includes("Math.log1p(t)")||!timingSource.includes("Math.log1p(upper)")||!timingSource.includes("Math.exp(powered)"))fail("Letter F must use the agreed integral-exponential formula");
 if(!timingSource.includes("if(aLevel>0)active.push(getA())")||!timingSource.includes("if(bLevel>0)active.push(getB())")||!timingSource.includes("if(cLevel>0)active.push(getC())")||!timingSource.includes("if(dLevel>0)active.push(getD())")||!timingSource.includes("if(eLevel>0)active.push(getE())"))fail("A–E multipliers must join the production product only after their first purchase");
 if(!timingSource.includes("window.registerFormulaLetter=getter=>"))fail("Future letter modules must be able to register inside the global sum");
-if(!timingSource.includes("function getGlobalSumAdditionalWeight()")||!timingSource.includes("return n*(1+0.25*legacy)"))fail("Global Sum must expose the combined contribution of all additional weights");
+if(!timingSource.includes("function getGlobalSumAdditionalWeight()")||!timingSource.includes("return Math.min(Number.MAX_VALUE,n*w*(1+level*w))"))fail("Global Sum must expose the combined contribution of all additional weights");
 if(!timingSource.includes("formatPrecise(getGlobalSumAdditionalWeight(),2)"))fail("Live Global Sum value must display the aggregate additional-weight contribution");
 if(timingSource.includes("BASE_PRODUCTION")||timingSource.includes("Math.pow(t+1,2),base,boost"))fail("Legacy production coefficient or time offset remains active");
 if(!timingSource.includes("setInterval(loop,TICK)"))fail("The 10 ms game loop scheduler is missing");
