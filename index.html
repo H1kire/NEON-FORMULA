@@ -100,11 +100,20 @@
     <div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="glyphsConverterKicker">RESOURCE TRANSMUTATION</span></div><h2 data-i18n="glyphsConverterTitle">Converter</h2></div><span class="section-count">02 CONVERSION PATHS</span></div>
     <p class="glyphs-description" data-i18n="glyphsConverterDesc">Transform Genesis resources into the materials required to create and develop glyphs.</p>
     <div class="glyph-card-grid">
-      <article class="glyph-card">
+      <article class="glyph-card glyph-converter-card">
         <div class="glyph-card-heading"><span class="glyph-card-icon">✧</span><div><h3 data-i18n="glyphsGpToGs">Genesis → Glyph Shards</h3><small>GP → GS</small></div></div>
         <div class="glyph-flow"><div class="glyph-flow-token gp"><div><strong>GP</strong><br><small>GENESIS</small></div></div><div class="glyph-flow-arrow">⟶</div><div class="glyph-flow-token gs"><div><strong>GS</strong><br><small>SHARDS</small></div></div></div>
-        <div class="glyph-card-meta"><div><small data-i18n="glyphsConversionRate">CONVERSION RATE</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong>—</strong></div></div>
-        <div class="glyph-pending" data-i18n="glyphsConversionPending">Conversion formula not configured</div>
+        <div class="glyph-formula-display"><span data-i18n="glyphsFormulaLabel">CONVERSION FUNCTION</span><code>GS = ½ × [(1 + GP / 1000)² − 1]</code><small>i = 1&nbsp; · &nbsp;v = 1&nbsp; · &nbsp;k = 1</small></div>
+        <label class="glyph-input-label" for="glyphGpInput" data-i18n="glyphsInputAmount">GP TO CONVERT</label>
+        <div class="glyph-input-row"><input id="glyphGpInput" type="number" min="1000" step="1" value="1000" inputmode="numeric"><button id="glyphGpMax" type="button" class="glyph-max-button" data-i18n="glyphsMax">MAX</button></div>
+        <div class="glyph-preview-row"><span data-i18n="glyphsEstimatedOutput">ESTIMATED OUTPUT</span><strong id="glyphGsPreview">1.5 GS</strong></div>
+        <button id="glyphConvertButton" type="button" class="glyph-convert-button" disabled data-i18n="glyphsStartConversion">INITIATE CONVERSION</button>
+        <div class="glyph-progress-wrap" aria-live="polite">
+          <div class="glyph-progress-heading"><span data-i18n="glyphsConversionProgress">CONVERSION PROGRESS</span><strong id="glyphProgressPercent">0%</strong></div>
+          <div class="glyph-progress-track" role="progressbar" aria-label="GP to GS conversion progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="glyphProgressTrack"><div class="glyph-progress-fill" id="glyphProgressFill"></div><div class="glyph-progress-glow"></div></div>
+          <div class="glyph-progress-footer"><span id="glyphProgressStatus" data-i18n="glyphsReady">READY</span><span id="glyphProgressTime">5.0 s</span></div>
+        </div>
+        <div class="glyph-card-meta"><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong id="glyphGpBalance">— GP</strong></div><div><small data-i18n="glyphsGsBalanceLabel">SHARD BALANCE</small><strong id="glyphGsBalance">0 GS</strong></div></div>
       </article>
       <article class="glyph-card">
         <div class="glyph-card-heading"><span class="glyph-card-icon">◇</span><div><h3 data-i18n="glyphsGsToGf">Glyph Shards → Glyph Fragments</h3><small>GS → GF</small></div></div>
