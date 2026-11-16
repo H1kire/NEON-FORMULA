@@ -642,7 +642,7 @@ if(!scriptCore.includes('w_i"+(coefficientPurchased?"k":"")')||!scriptCore.inclu
 if(!scriptCore.includes('weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
 if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
 try{
- const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity,constantCost=false\)=>\{[\s\S]*?\n  \};/)?.[0];
+ const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity,constantCost=false,scope="research"\)=>\{[\s\S]*?\n  \};/)?.[0];
  if(!helper)throw new Error("batch quote helper missing");
  const context={window:{},meta:{buyQuantityFormula:"5",buyQuantityResearch:"1"}};
  vm.runInNewContext(helper+";globalThis.__quote=window.getUpgradeBatchQuote;",context);
