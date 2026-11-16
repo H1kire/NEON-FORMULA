@@ -20,15 +20,15 @@ function getIntegralSumCoefficientCost(offset=0){const cost=10000*Math.pow(3.754
 function getLetterValueBoostCost(offset=0){const cost=Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset);return Number.isFinite(cost)?Math.min(Number.MAX_VALUE,Math.ceil(cost)):Number.MAX_VALUE}
 function buyAdditionalUpgrade(key){
  const definitions={
-  simpleBoost:{cost:getSimpleBoostCost,max:Infinity,apply:()=>prestigeUpgrades.simpleBoost++},
-  globalSum:{cost:getGlobalSumCost,max:prestigeUpgrades.globalSum>=6?0:prestigeUpgrades.globalSum===0?5:6-prestigeUpgrades.globalSum,apply:()=>{prestigeUpgrades.globalSum=prestigeUpgrades.globalSum===0?2:prestigeUpgrades.globalSum+1}},
-  integralSumCoefficient:{cost:getIntegralSumCoefficientCost,max:Infinity,apply:()=>prestigeUpgrades.integralSumCoefficient++},
-  letterValueBoost:{cost:getLetterValueBoostCost,max:Infinity,apply:()=>prestigeUpgrades.letterValueBoost++}
+  simpleBoost:{cost:getSimpleBoostCost,max:Infinity,apply:count=>prestigeUpgrades.simpleBoost+=count},
+  globalSum:{cost:getGlobalSumCost,max:prestigeUpgrades.globalSum>=6?0:prestigeUpgrades.globalSum===0?5:6-prestigeUpgrades.globalSum,apply:count=>{prestigeUpgrades.globalSum=prestigeUpgrades.globalSum===0?count+1:prestigeUpgrades.globalSum+count}},
+  integralSumCoefficient:{cost:getIntegralSumCoefficientCost,max:Infinity,apply:count=>prestigeUpgrades.integralSumCoefficient+=count},
+  letterValueBoost:{cost:getLetterValueBoostCost,max:Infinity,apply:count=>prestigeUpgrades.letterValueBoost+=count}
  };
  const item=definitions[key];if(!item)return false;
  const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(p,item.cost,item.max):{count:1,total:item.cost(),affordable:p>=item.cost()};
  if(!quote.count||!quote.affordable)return false;
- p-=quote.total;for(let i=0;i<quote.count;i++)item.apply();
+ p-=quote.total;item.apply(quote.count);
  savePrestige();updatePrestigeUI();if(typeof updateUI==="function")updateUI();return true;
 }
 function buySimpleBoost(){return buyAdditionalUpgrade("simpleBoost")}
