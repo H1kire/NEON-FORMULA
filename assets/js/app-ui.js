@@ -23,7 +23,7 @@
   window.setBuyQuantityMode=mode=>{
     if(!["1","5","25","max"].includes(mode))return;meta.buyQuantityMode=mode;saveMeta();
     document.querySelectorAll("#buyQuantitySelectFormula,#buyQuantitySelectResearch").forEach(el=>el.value=mode);
-    renderResearch();if(typeof updatePrestigeUI==="function")updatePrestigeUI();if(typeof updateUI==="function")updateUI();
+    renderResearch();if(typeof updatePrestigeUI==="function")updatePrestigeUI();if(window.refreshLetterBatchUI)window.refreshLetterBatchUI();if(typeof updateUI==="function")updateUI();
   };
   window.refreshBuyQuantityControls=()=>document.querySelectorAll("#buyQuantitySelectFormula,#buyQuantitySelectResearch").forEach(el=>el.value=meta.buyQuantityMode);
   const automationLetters=["A","B","C","D","E","F","G","H"],automationCosts=[10,100,1000,10000,100000,1000000,10000000,100000000],automationNames={en:["Power Foundation","Root Amplifier","Logarithmic Recursion","Nonlinear Coupling","Logarithmic Resonance","Integral Exponential","Time Saturation","Lambert W"],ru:["Степенной фундамент","Корневой усилитель","Логарифмическая рекурсия","Нелинейная связь","Логарифмический резонанс","Интегральная экспонента","Временное насыщение","Функция Ламберта W"]};
