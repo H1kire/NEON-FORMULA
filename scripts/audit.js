@@ -127,7 +127,6 @@ for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fai
 if(!sources["assets/js/storage.js"].includes("function getRaw(")||!sources["assets/js/storage.js"].includes("function setRaw("))fail("Guarded raw storage helpers are missing");
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 const treeSource=sources["assets/js/tree.js"];
-const prestigeSource=sources["assets/js/prestige.js"];
 if(!prestigeSource.includes('window.getTreeNodeLevel(1861):0;return Math.floor(calculatedGain*Math.pow(2,nodeLevel))'))fail("NODE #1861 must multiply the final AP gain by 2 per level");else pass("NODE #1861 AP final-gain multiplier");
 if(!prestigeSource.includes('window.getTreeNodeLevel(1923):0;return Math.floor(earned*Math.pow(2,nodeLevel))'))fail("NODE #1923 must multiply the final GP gain by 2 per level");else pass("NODE #1923 GP final-gain multiplier");
 const treeStructureChecks=[
