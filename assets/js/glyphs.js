@@ -127,7 +127,8 @@
     const maxButton = $("glyphGpMax");
     if (!input || !button || input.dataset.glyphReady === "1") return;
     input.dataset.glyphReady = "1";
-    input.value = String(glyphGpInput || MIN_GP_CONVERSION);\n    input.addEventListener("input", () => { glyphGpInput = Math.max(MIN_GP_CONVERSION, Math.floor(Number(input.value) || MIN_GP_CONVERSION)); updateConverter(); });
+    input.value = String(glyphGpInput || MIN_GP_CONVERSION);
+    input.addEventListener("input", () => { glyphGpInput = Math.max(MIN_GP_CONVERSION, Math.floor(Number(input.value) || MIN_GP_CONVERSION)); updateConverter(); });
     input.addEventListener("change", () => {
       const amount = Math.floor(Number(input.value));
       if (Number.isFinite(amount) && amount >= MIN_GP_CONVERSION) { input.value = String(amount); glyphGpInput = amount; if (typeof savePrestige === "function") savePrestige(); }
