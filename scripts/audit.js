@@ -633,8 +633,8 @@ if(!sources["assets/js/script.js"].includes("getGlyphOrdinaryTimeMultiplier")||!
 const appUiSource=sources["assets/js/app-ui.js"],scriptCore=sources["assets/js/script.js"],prestigeCore=sources["assets/js/prestige.js"];
 if(!appUiSource.includes('caps=[0,990,0,0,0,100,100,10,100,20]'))fail("Research #6, #7 and #9 must have 100 levels");
 if(!scriptCore.includes('const label=firstKey&&level===0?tr(firstKey):tr(upgradeKey);')||scriptCore.includes('quote.count>1?tr(upgradeKey)'))fail("Letter purchase buttons must keep a stable label regardless of batch quantity");
-if(scriptCore.includes('setBtn(btnA,getACost())')||scriptCore.includes('setBtn(fBuyButton,getFCost())')||scriptCore.includes('setBtn(gBuyButton,getGCost())')||scriptCore.includes('setBtn(hBuyButton,getHCost())'))fail("Letter purchase button state must be controlled by the shared batch quote only");
-if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity,constantCost=false)')||!appUiSource.includes('costGetter(count)')||!html.includes('id="buyQuantitySelectFormula"')||!html.includes('id="buyQuantitySelectResearch"'))fail("Shared 1 / 5 / 25 / MAX batch purchase controls are incomplete");
+if(scriptCore.includes('setBtn(button,shownCost)')||!scriptCore.includes('button.dataset.batchVisualState!=="stable"')||!scriptCore.includes('button.classList.remove("good","bad")'))fail("Letter batch buttons must not toggle affordability colors during live refreshes");
+if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity,constantCost=false,scope="research")')||!appUiSource.includes('meta[scope==="formula"?"buyQuantityFormula":"buyQuantityResearch"]')||!appUiSource.includes('buyQuantityFormula')||!appUiSource.includes('buyQuantityResearch')||!html.includes('setBuyQuantityMode(\'formula\',this.value)')||!html.includes('setBuyQuantityMode(\'research\',this.value)'))fail("Formula and Research batch purchase selectors must keep independent saved modes");
 if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset)'))fail("Additional upgrades #3 and #4 must use their configured C0 and growth ratios");
 if(!scriptCore.includes('function getLetterValueMultiplier(){return 1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)}')||!scriptCore.includes('getGFactor(),getLetterValueMultiplier()')||!scriptCore.includes('getLetterValueMultiplier())'))fail("Letter Amplification must increase each active letter value by 0.1% per level");
 if(!scriptCore.includes('sqrt{1+x}')||!scriptCore.includes('coefficientPurchased?"k":""')||scriptCore.includes('k=1+L'))fail("Integral display must use k only after the coefficient upgrade is purchased, without an unnecessary definition");
@@ -644,14 +644,15 @@ if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.po
 try{
  const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity,constantCost=false\)=>\{[\s\S]*?\n  \};/)?.[0];
  if(!helper)throw new Error("batch quote helper missing");
- const context={window:{},meta:{buyQuantityMode:"5"}};
+ const context={window:{},meta:{buyQuantityFormula:"5",buyQuantityResearch:"1"}};
  vm.runInNewContext(helper+";globalThis.__quote=window.getUpgradeBatchQuote;",context);
- const fixed=context.__quote(100,offset=>[1,10,100,1000,10000][offset]);
+ const fixed=context.__quote(100,offset=>[1,10,100,1000,10000][offset],Infinity,false,"formula");
  if(fixed.count!==5||fixed.total!==11111||fixed.affordable!==false)throw new Error("fixed batch quote must sum each successive price");
- context.meta.buyQuantityMode="max";
- const max=context.__quote(16,offset=>Math.pow(2,offset));
+ context.meta.buyQuantityFormula="max";
+ const max=context.__quote(16,offset=>Math.pow(2,offset),Infinity,false,"formula");
  if(max.count!==4||max.total!==15||max.affordable!==true)throw new Error("MAX must buy exactly the affordable sequential levels");
- const flat=context.__quote(100,()=>3,Infinity,true);
+ const independent=context.__quote(16,offset=>Math.pow(2,offset),Infinity,false,"research");if(independent.count!==1||independent.total!==1)throw new Error("Research quantity must remain independent from Formula MAX selection");
+ const flat=context.__quote(100,()=>3,Infinity,true,"formula");
  if(flat.count!==33||flat.total!==99||flat.affordable!==true)throw new Error("MAX must calculate flat-price purchases without an arbitrary iteration cap");
  pass("Batch quote sums sequential costs and calculates MAX affordability");
  const sumStart=scriptCore.indexOf("function getGlobalSumAdditionalWeight()"),sumEnd=scriptCore.indexOf("function getIntegralMultiplier()",sumStart),sumFunctions=sumStart>=0&&sumEnd>sumStart?scriptCore.slice(sumStart,sumEnd):null;
