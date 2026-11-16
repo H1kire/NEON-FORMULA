@@ -226,7 +226,7 @@ function resetSave(){
   :"Start the game completely from scratch? ALL local game progress will be erased: Score, time, A–H, AP, GP, Research, automation, prestige upgrades, Genesis Gate and every tree node. Settings and Google sign-in will remain. Your Firebase cloud save will NOT be touched.";
  if(!confirm(message))return;
  resetRun();dilationMode=false;dilationTime=0;dilationCurrency=0;dilationILevel=0;dilationKLevel=0;dilationVLevel=0;dilationTauLevel=0;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;
- p=0;gp=0;prestigeUnlocked=false;
+ p=0;gp=0;prestigeUnlocked=false;glyphShards=0;glyphGpInput=1000;glyphOperationStartedAt=0;glyphOperationAmount=0;glyphOperationReward=0;
  prestigeUpgrades={simpleBoost:0,globalSum:0};
  window.prestigeUpgrades=prestigeUpgrades;
  FA_META.research=Array(10).fill(0);
