@@ -422,7 +422,7 @@ else{
 }
 const fFormulaSource=sources["assets/js/script.js"].slice(sources["assets/js/script.js"].indexOf("const LETTER_F_BASE_EXPONENT"),sources["assets/js/script.js"].indexOf("const formulaLetterGetters"));
 try{
- const fContext={fLevel:0,gLevel:0,hLevel:0,t:10,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>false,isLetterHUnlocked:()=>false},getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
+ const fContext={fLevel:0,gLevel:0,hLevel:0,t:10,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>false,isLetterHUnlocked:()=>false},getLetterValueMultiplier:()=>1,getA:()=>2,getE:()=>3,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>Math.pow(base,power),getLetterPrice:(base,level)=>base*Math.pow(8,level)};
  vm.runInNewContext(fFormulaSource+";globalThis.__f={getF,getFExponent,getFCost};",fContext);
  if(fContext.__f.getF()!==1)throw new Error("Unpurchased F must remain neutral");
  if(fContext.__f.getFCost()!==1e15)throw new Error("First F purchase must cost exactly 1 Qa");
@@ -432,7 +432,7 @@ try{
  fContext.fLevel=2;if(Math.abs(fContext.__f.getFExponent()-0.4001)>1e-12)throw new Error("Each F upgrade must increase p by 0.0001");
  fContext.fLevel=4501;if(fContext.__f.getFExponent()!==0.85)throw new Error("F exponent must cap at 0.85");
  pass("Letter F runtime tests: purchase gating, activation threshold, 1 Qa base price, shared price growth and p progression");
- const ghContext={fLevel:0,gLevel:0,hLevel:0,t:3600,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>true,isLetterHUnlocked:()=>true},getA:()=>10,getB:()=>10,getC:()=>10,getD:()=>10,getE:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>base>0?Math.pow(base,power):0,getLetterPrice:(base,level)=>base*Math.pow(8,level)};
+ const ghContext={fLevel:0,gLevel:0,hLevel:0,t:3600,LETTER_BASE_COSTS:{f:1e15,g:1e18,h:1e21},window:{isLetterFUnlocked:()=>true,isLetterGUnlocked:()=>true,isLetterHUnlocked:()=>true},getLetterValueMultiplier:()=>1,getA:()=>10,getB:()=>10,getC:()=>10,getD:()=>10,getE:()=>1,safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),safePow:(base,power)=>base>0?Math.pow(base,power):0,getLetterPrice:(base,level)=>base*Math.pow(8,level)};
  vm.runInNewContext(fFormulaSource+";globalThis.__gh={getG,getGCost,getH,getHBase,getHCost,getHExponent,lambertW0};",ghContext);
  if(ghContext.__gh.getG()!==0)throw new Error("Unpurchased G must provide no bonus");
  if(ghContext.__gh.getGCost()!==1e18)throw new Error("G first purchase must cost 1 Qi");
