@@ -45,8 +45,8 @@ function refreshAdditionalUpgradeCards(){
  for(const [key,levelId,costId,buttonId,costFn,remaining,level] of definitions){
   const levelEl=document.getElementById(levelId),costEl=document.getElementById(costId),button=document.getElementById(buttonId);
   const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(p,costFn,remaining):{count:1,total:costFn(),affordable:p>=costFn()};
-  if(levelEl)levelEl.textContent=key==="globalSum"?level+"/5":String(level);
-  if(costEl){if(key==="globalSum"&&remaining===0)costEl.textContent="MAX";else if(window.FAFormula)FAFormula.renderCurrency(costId,quote.total,"\\mathrm{AP}");else costEl.textContent=format(quote.total)}
+  if(levelEl)levelEl.textContent=String(level);
+  if(costEl){if(key==="globalSum"&&remaining===0)costEl.textContent="MAX";else if(window.FAFormula)FAFormula.renderText(costId,format(quote.total));else costEl.textContent=format(quote.total)}
   if(button){button.disabled=!quote.count||!quote.affordable;button.textContent=(window.tr?tr("buy"):"BUY")+(quote.count>1?" ×"+quote.count:"")+" ↗"}
  }
 }
