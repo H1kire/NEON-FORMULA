@@ -314,6 +314,15 @@ function formatPrecise(n,digits=2){
  return n.toFixed(digits);
 }
 function getGrowthPerSecond(){return getGain()}
+function renderLetterCost(id,value,maxed=false){
+ const el=$(id);if(!el)return;
+ const text=maxed?tr("maxed"):format(value);
+ if(el.dataset.costDisplayText===text)return;
+ el.dataset.costDisplayText=text;
+ if(maxed)el.textContent=text;
+ else if(window.FAFormula)FAFormula.renderText(id,text);
+ else el.textContent=text;
+}
 function setBtn(btn,cost){if(!btn)return;const good=value>=cost,bad=!good;if(btn.classList.contains("good")!==good)btn.classList.toggle("good",good);if(btn.classList.contains("bad")!==bad)btn.classList.toggle("bad",bad)}
 function purchase(cost,fn){if(value<cost)return false;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI();return true}
 function purchaseLetterBatch(costGetter,remaining,apply){
@@ -335,7 +344,7 @@ function refreshLetterBatchCards(force=false){
   const quote=window.getUpgradeBatchQuote(value,offset=>costGetter(offset),remaining,getLetterPriceGrowth()===1,"formula"),maxed=remaining===0;
   const display=$(key+"Cost");
   const shownCost=quote.count?quote.total:costGetter(0);
-  if(display){if(maxed)display.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText(key+"Cost",format(shownCost));else display.textContent=format(shownCost)}
+  renderLetterCost(key+"Cost",shownCost,maxed);
   if(button.dataset.batchVisualState!=="stable"){button.classList.remove("good","bad");button.dataset.batchVisualState="stable"}
   const disabled=maxed||!quote.count||!quote.affordable;if(button.disabled!==disabled)button.disabled=disabled;
   const level=({a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel})[key];
@@ -388,7 +397,7 @@ function updateUI(){
   $("gFormula").textContent="g(t) = 5L% × x² / (1 + x²), x = ln(1 + t) / 5";
   $("hFormula").textContent="h(t) = W₀(t / 10)^max(1, log"+getHBase().toFixed(3)+"(a·b·c·d))";
  }
- for(const [id,cost] of [["aCost",getACost()],["bCost",getBCost()],["cCost",getCCost()],["dCost",getDCost()],["eCost",getECost()]]){if(window.FAFormula)FAFormula.renderText(id,format(cost));else $(id).textContent=format(cost)}
+ for(const [id,cost] of [["aCost",getACost()],["bCost",getBCost()],["cCost",getCCost()],["dCost",getDCost()],["eCost",getECost()]])renderLetterCost(id,cost);
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
  const letterFUnlocked=typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked();
   const letterFCard=$("letterFUpgrade"),letterFRow=$("formulaValueFRow");
@@ -396,16 +405,16 @@ function updateUI(){
   if(letterFRow)letterFRow.hidden=!letterFUnlocked;
   const fLevelDisplay=$("fLevel"),fCostDisplay=$("fCost"),fBuyButton=$("btnF");
   if(fLevelDisplay)fLevelDisplay.textContent=fLevel;
-  if(fCostDisplay){if(fLevel>=LETTER_F_MAX_LEVEL)fCostDisplay.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText("fCost",format(getFCost()));else fCostDisplay.textContent=format(getFCost())}
+  renderLetterCost("fCost",getFCost(),fLevel>=LETTER_F_MAX_LEVEL);
   const letterGUnlocked=typeof window.isLetterGUnlocked==="function"&&window.isLetterGUnlocked();
   const letterHUnlocked=typeof window.isLetterHUnlocked==="function"&&window.isLetterHUnlocked();
   const gCard=$("letterGUpgrade"),hCard=$("letterHUpgrade"),gRow=$("formulaValueGRow"),hRow=$("formulaValueHRow");
   if(gCard)gCard.hidden=!letterGUnlocked;if(gRow)gRow.hidden=!letterGUnlocked;
   if(hCard)hCard.hidden=!letterHUnlocked;if(hRow)hRow.hidden=!letterHUnlocked;
   const gLevelDisplay=$("gLevel"),gCostDisplay=$("gCost"),gBuyButton=$("btnG");
-  if(gLevelDisplay)gLevelDisplay.textContent=gLevel;if(gCostDisplay){if(window.FAFormula)FAFormula.renderText("gCost",format(getGCost()));else gCostDisplay.textContent=format(getGCost())}
+  if(gLevelDisplay)gLevelDisplay.textContent=gLevel;renderLetterCost("gCost",getGCost());
   const hLevelDisplay=$("hLevel"),hCostDisplay=$("hCost"),hBuyButton=$("btnH");
-  if(hLevelDisplay)hLevelDisplay.textContent=hLevel;if(hCostDisplay){if(hLevel>=LETTER_H_MAX_LEVEL)hCostDisplay.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText("hCost",format(getHCost()));else hCostDisplay.textContent=format(getHCost())}
+  if(hLevelDisplay)hLevelDisplay.textContent=hLevel;renderLetterCost("hCost",getHCost(),hLevel>=LETTER_H_MAX_LEVEL);
   const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE(),f:getF(),g:getG()*100,h:getH()};
   for(const letter of ["a","b","c","d","e","f","g","h"]){
    const display=$("formulaValue"+letter.toUpperCase());
