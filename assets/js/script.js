@@ -266,14 +266,23 @@ function format(n){
 }
 function getGlobalSumAdditionalWeight(){
  const n=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
+ if(n<=0)return 0;
  const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
- return n*(1+0.25*legacy)*(1+(typeof window.getGlyphGlobalSumPercent==="function"?window.getGlyphGlobalSumPercent():0));
+ const glyph=1+(typeof window.getGlyphGlobalSumPercent==="function"?window.getGlyphGlobalSumPercent():0);
+ const w=(1+0.25*legacy)*glyph,level=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0);
+ return Math.min(Number.MAX_VALUE,n*w*(1+level*w));
 }
-function getGlobalSumMultiplier(){return 1+getGlobalSumAdditionalWeight()}
+function getGlobalSumMultiplier(){
+ const n=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
+ if(n<=0)return 1;
+ const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
+ const glyph=1+(typeof window.getGlyphGlobalSumPercent==="function"?window.getGlyphGlobalSumPercent():0);
+ const w=(1+0.25*legacy)*glyph,level=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0);
+ return Math.min(Number.MAX_VALUE,(1+level)+n*w*(1+level*w));
+}
 function getIntegralMultiplier(){
- const upper=Math.max(0,getE());
- const powered=safePow(1+upper,1.5);
- return safeProduct(2/3,Math.max(0,powered-1));
+ const upper=Math.max(0,getE()),level=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0),base=Math.max(0,safeProduct(2/3,Math.max(0,safePow(1+upper,1.5)-1))),weightedPart=Math.max(0,safeProduct(2/5,Math.max(0,safePow(1+upper,2.5)-1))-base);
+ return Math.min(Number.MAX_VALUE,base+safeProduct(level,weightedPart));
 }
 function getGain(){
  const letterProduct=getLetterProduct();
@@ -282,7 +291,7 @@ function getGain(){
  const formulaTime=typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1;
  const factors=[safeProduct(t,t,formulaTime,formulaTime)];
  if(integralUnlocked)factors.push(getIntegralMultiplier());
- factors.push(getGlobalSumMultiplier(),letterProduct,boost);
+ factors.push(getGlobalSumMultiplier(),letterProduct,1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0),boost);
  let result=safeProduct(...factors);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
@@ -294,24 +303,31 @@ function formatPrecise(n,digits=2){
 }
 function getGrowthPerSecond(){return getGain()}
 function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost);btn.classList.toggle("bad",value<cost)}
-function purchase(cost,fn){if(value<cost)return;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI()}
-function buyA(){purchase(getACost(),()=>aLevel++)}function buyB(){purchase(getBCost(),()=>bLevel++)}function buyC(){purchase(getCCost(),()=>cLevel++)}function buyD(){purchase(getDCost(),()=>dLevel++)}function buyE(){purchase(getECost(),()=>eLevel++)}
-function buyF(){if(fLevel>=LETTER_F_MAX_LEVEL)return;purchase(getFCost(),()=>fLevel++)}
-function buyG(){if(!window.isLetterGUnlocked?.())return;purchase(getGCost(),()=>gLevel++)}
-function buyH(){if(!window.isLetterHUnlocked?.()||hLevel>=LETTER_H_MAX_LEVEL)return;purchase(getHCost(),()=>hLevel++)}
+function purchase(cost,fn){if(value<cost)return false;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI();return true}
+function purchaseLetterBatch(costGetter,remaining,apply){
+ const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(value,costGetter,remaining):{count:1,total:costGetter(),affordable:value>=costGetter()};
+ if(!quote.count||!quote.affordable)return false;
+ value-=quote.total;
+ for(let i=0;i<quote.count;i++){apply();FA_META.stats.purchases++}
+ saveMeta();updateUI();return true;
+}
+function buyA(){purchaseLetterBatch(getACost,Infinity,()=>aLevel++)}function buyB(){purchaseLetterBatch(getBCost,Infinity,()=>bLevel++)}function buyC(){purchaseLetterBatch(getCCost,Infinity,()=>cLevel++)}function buyD(){purchaseLetterBatch(getDCost,Infinity,()=>dLevel++)}function buyE(){purchaseLetterBatch(getECost,Infinity,()=>eLevel++)}
+function buyF(){purchaseLetterBatch(getFCost,Math.max(0,LETTER_F_MAX_LEVEL-fLevel),()=>fLevel++)}
+function buyG(){if(!window.isLetterGUnlocked?.())return;purchaseLetterBatch(getGCost,Infinity,()=>gLevel++)}
+function buyH(){if(!window.isLetterHUnlocked?.())return;purchaseLetterBatch(getHCost,Math.max(0,LETTER_H_MAX_LEVEL-hLevel),()=>hLevel++)}
 function updateFormulaText(){
  const sumLevel=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
  const integralUnlocked=typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
- const sumTerm=sumLevel>0?"\\left(\\sum_{i=0}^{"+sumLevel+"}w_i\\right)\\cdot":"";
+ const sumTerm=sumLevel>0?"\\left(\\sum_{i=0}^{"+sumLevel+"}w_i(1+Lw_i)\\right)\\cdot":"";
  const productTerm="\\prod_{\\ell\\in\\mathcal{L}}\\ell";
  let latex;
  if(integralUnlocked){
-  latex="\\begin{aligned}f(t)&=t^{2}\\cdot\\int_{0}^{e}\\sqrt{1+x}\\cdot"+sumTerm+productTerm+"\\,dx";
+  latex="\\begin{aligned}f(t)&=t^{2}\\cdot\\int_{0}^{e}\\sqrt{1+x}(1+Lx)\\cdot"+sumTerm+productTerm+"\\,dx";
  }else{
   latex="\\begin{aligned}f(t)&=t^{2}\\cdot"+sumTerm+productTerm;
  }
  latex+="\\end{aligned}";
- const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ × ":"")+"Π(all letter modules)";
+ const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x)(1+Lx) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ(1+Lwᵢ) × ":"")+"Π(all letter modules)";
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
