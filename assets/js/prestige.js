@@ -46,7 +46,7 @@ function refreshAdditionalUpgradeCards(){
   const levelEl=document.getElementById(levelId),costEl=document.getElementById(costId),button=document.getElementById(buttonId);
   const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(p,costFn,remaining):{count:1,total:costFn(),affordable:p>=costFn()};
   if(levelEl)levelEl.textContent=String(level);
-  if(costEl){if(key==="globalSum"&&remaining===0)costEl.textContent="MAX";else if(window.FAFormula)FAFormula.renderText(costId,format(quote.total));else costEl.textContent=format(quote.total)}
+  if(costEl){if(key==="globalSum"&&remaining===0)costEl.textContent="MAX";else if(window.FAFormula)FAFormula.renderText(costId,format(quote.count?quote.total:costFn()));else costEl.textContent=format(quote.count?quote.total:costFn())}
   if(button){button.disabled=!quote.count||!quote.affordable;button.textContent=(window.tr?tr("buy"):"BUY")+(quote.count>1?" ×"+quote.count:"")+" ↗"}
  }
 }
