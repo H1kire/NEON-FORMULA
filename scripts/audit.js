@@ -127,8 +127,6 @@ for(const file of jsFiles.slice(1))if(/\blocalStorage\b/.test(sources[file]))fai
 if(!sources["assets/js/storage.js"].includes("function getRaw(")||!sources["assets/js/storage.js"].includes("function setRaw("))fail("Guarded raw storage helpers are missing");
 if(!sources["assets/js/tree.js"].includes("const TOTAL=3886"))fail("Upgrade tree count changed");
 const treeSource=sources["assets/js/tree.js"];
-if(!prestigeSource.includes('window.getTreeNodeLevel(1861):0;return Math.floor(calculatedGain*Math.pow(2,nodeLevel))'))fail("NODE #1861 must multiply the final AP gain by 2 per level");else pass("NODE #1861 AP final-gain multiplier");
-if(!prestigeSource.includes('window.getTreeNodeLevel(1923):0;return Math.floor(earned*Math.pow(2,nodeLevel))'))fail("NODE #1923 must multiply the final GP gain by 2 per level");else pass("NODE #1923 GP final-gain multiplier");
 const treeStructureChecks=[
  ['const TOTAL=3886','fixed 3,886-node network'],
  ['type==="square"?1:type==="triangle"?10:type==="pentagon"?5','node type level limits'],
@@ -500,6 +498,8 @@ try{
 
 }catch(error){fail("Production rate runtime test: "+error.message)}
 const prestigeSource= sources["assets/js/prestige.js"];
+if(!prestigeSource.includes('window.getTreeNodeLevel(1861):0;return Math.floor(calculatedGain*Math.pow(2,nodeLevel))'))fail("NODE #1861 must multiply the final AP gain by 2 per level");else pass("NODE #1861 AP final-gain multiplier");
+if(!prestigeSource.includes('window.getTreeNodeLevel(1923):0;return Math.floor(earned*Math.pow(2,nodeLevel))'))fail("NODE #1923 must multiply the final GP gain by 2 per level");else pass("NODE #1923 GP final-gain multiplier");
 if(!prestigeSource.includes("fLevel=0")||!prestigeSource.includes("gLevel=0")||!prestigeSource.includes("hLevel=0"))fail("Letter F–H levels must reset with the other run upgrades on prestige");else pass("Letter F–H prestige reset");
 const resetSource=sources["assets/js/script.js"].match(/function resetSave\(\)[\s\S]*?\n\}/)?.[0]||"";
 const resetRequirements=[
