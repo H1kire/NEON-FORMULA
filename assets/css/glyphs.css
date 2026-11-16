@@ -188,7 +188,7 @@
 .glyph-discard-panel{display:grid;grid-template-columns:minmax(0,1fr) 62px;align-items:center;gap:5px 10px;border-color:rgba(218,133,145,.16);background:linear-gradient(145deg,rgba(38,22,34,.38),rgba(10,15,25,.95))}
 .glyph-discard-panel .glyph-side-heading{grid-column:1;grid-row:1;color:#c59aa5}
 .glyph-discard-panel p{grid-column:1;grid-row:2;margin:0;color:#8f8292;font-size:8px;line-height:1.5}
-.glyph-discard-cell{grid-column:2;grid-row:1 / span 2;width:62px;height:62px;max-width:none;justify-self:end;aspect-ratio:1;border-color:rgba(218,133,145,.28);background:linear-gradient(145deg,rgba(55,29,40,.58),rgba(16,17,29,.94))}
+.glyph-discard-cell{grid-column:2;grid-row:1 / span 2;width:76px;height:76px;max-width:none;justify-self:end;aspect-ratio:1;border-color:rgba(218,133,145,.28);background:linear-gradient(145deg,rgba(55,29,40,.58),rgba(16,17,29,.94))}
 .glyph-discard-cell:before{content:none}
 .glyph-discard-cell span{position:static;color:rgba(218,133,145,.62);font-size:18px}
 .glyph-rarity-legend{gap:5px;margin-top:12px;padding-top:10px}
@@ -196,4 +196,4 @@
 .glyph-rarity.immortal{padding:3px 5px}
 @media(max-width:900px){.glyph-inventory-layout{grid-template-columns:minmax(0,1fr) 238px}.glyph-storage-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:760px){.glyph-inventory-layout{grid-template-columns:1fr}.glyph-inventory-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.glyph-equip-hexagon{width:min(216px,100%)}}
-@media(max-width:560px){.glyph-creation-panel{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:12px}.glyph-creation-art{width:50px;height:50px}.glyph-creation-core{width:26px;height:26px;font-size:15px}.glyph-create-action{grid-column:1 / -1;justify-content:center;padding:10px}.glyph-inventory-side{grid-template-columns:1fr}.glyph-storage-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.glyph-storage-slot{max-width:64px}.glyph-equip-hexagon{max-width:216px}.glyph-discard-cell{width:62px;height:62px}}
+@media(max-width:560px){.glyph-creation-panel{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:12px}.glyph-creation-art{width:50px;height:50px}.glyph-creation-core{width:26px;height:26px;font-size:15px}.glyph-create-action{grid-column:1 / -1;justify-content:center;padding:10px}.glyph-inventory-side{grid-template-columns:1fr}.glyph-storage-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.glyph-storage-slot{max-width:64px}.glyph-equip-hexagon{max-width:216px}.glyph-discard-cell{width:64px;height:64px}}
