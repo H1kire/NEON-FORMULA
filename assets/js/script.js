@@ -352,9 +352,9 @@ function updateFormulaText(){
  }else{
   latex="\\begin{aligned}f(t)&=t^{2}\\cdot"+sumTerm+productTerm;
  }
- latex+="\\end{aligned}";
  const coefficientLevel=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0);
- if(integralUnlocked||sumLevel>0)latex+="\\\\quad L="+coefficientLevel;
+ if(integralUnlocked||sumLevel>0)latex+="\\quad L="+coefficientLevel;
+ latex+="\\end{aligned}";
  const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x)(1+Lx) × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ(1+Lwᵢ) × ":"")+"Π(all letter modules)"+(integralUnlocked||sumLevel>0?", L="+coefficientLevel:"");
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
