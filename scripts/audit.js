@@ -527,7 +527,7 @@ try{
  for(let i=0;i<levels.length;i++){costContext.prestigeUpgrades.globalSum=levels[i];if(costContext.__cost()!==costs[i])throw new Error("Wrong AP cost at Global Sum n="+levels[i]+": "+costContext.__cost())}
  costContext.prestigeUpgrades.globalSum=6;if(costContext.__cost()!==Number.MAX_SAFE_INTEGER)throw new Error("Completed Global Sum must report a capped cost");
  pass("Global Sum AP costs preserve 1 / 1K / 1M / 1B / 1T progression while n starts at 2");
- const legacyStart=prestigeSource.indexOf("function getSimpleBoostCost(offset=0)"),legacyEnd=prestigeSource.indexOf("\\nfunction getGlobalSumCost",legacyStart),legacyCostSource=legacyStart>=0&&legacyEnd>legacyStart?prestigeSource.slice(legacyStart,legacyEnd):null;
+ const legacyStart=prestigeSource.indexOf("function getSimpleBoostCost(offset=0)"),legacyEnd=prestigeSource.indexOf("function getGlobalSumCost",legacyStart),legacyCostSource=legacyStart>=0&&legacyEnd>legacyStart?prestigeSource.slice(legacyStart,legacyEnd):null;
  if(!legacyCostSource)throw new Error("Ascension Legacy cost function missing");
  const legacyContext={prestigeUpgrades:{simpleBoost:0}};
  vm.runInNewContext(legacyCostSource+";globalThis.__legacyCost=getSimpleBoostCost;",legacyContext);
