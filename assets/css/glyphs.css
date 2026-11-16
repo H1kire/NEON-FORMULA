@@ -99,3 +99,36 @@
 @media(hover:hover){.glyph-card:hover,.glyph-upgrade-card:hover,.glyph-workbench-card:hover{border-color:rgba(190,165,255,.3)}}
 @media(max-width:760px){.glyph-inventory-layout{grid-template-columns:1fr}.glyph-special-slots{display:grid;grid-template-columns:1fr 1fr}.glyph-workbench-grid{grid-template-columns:1fr}.glyph-upgrade-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.glyphs-heading{padding:16px}.glyphs-resource-strip{gap:6px}.glyph-resource{padding:9px 7px;gap:6px}.glyph-resource-symbol{width:28px;height:28px}.glyph-resource-copy small{font-size:7px}.glyph-resource-copy strong{font-size:12px}.glyphs-panel-shell{padding:12px}.glyph-card-grid{grid-template-columns:1fr}.glyph-storage-grid{gap:5px}.glyph-inventory-main{padding:10px}.glyph-storage-slot span{font-size:6px}.glyph-upgrade-grid{grid-template-columns:1fr}.glyphs-tabs{overflow-x:auto}.glyphs-tabs .menu-tab{white-space:nowrap;padding:11px 12px}.glyph-pentagram-stage{height:250px}.glyph-socket{width:54px;height:54px}.glyph-socket.top{left:calc(50% - 27px)}.glyph-result-socket{left:calc(50% - 34px);top:calc(50% - 34px);width:68px;height:68px}.glyph-retention-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.glyph-inventory-toolbar{align-items:flex-start;flex-direction:column}}
+
+/* GP → GS converter */
+.glyph-converter-card{position:relative;overflow:hidden;border-color:rgba(131,217,210,.24);background:radial-gradient(ellipse at 50% 0,rgba(131,217,210,.09),transparent 55%),linear-gradient(145deg,rgba(25,31,47,.98),rgba(10,17,28,.99))}
+.glyph-converter-card:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 20%,rgba(190,220,255,.025) 50%,transparent 80%);opacity:.8}
+.glyph-formula-display{display:flex;flex-direction:column;align-items:center;gap:8px;margin:15px 0;padding:13px 10px;border:1px solid rgba(131,217,210,.18);background:linear-gradient(135deg,rgba(10,25,33,.72),rgba(17,20,37,.78));text-align:center}
+.glyph-formula-display>span,.glyph-input-label{color:#8cabb2;font:8px var(--mono);letter-spacing:1.1px}
+.glyph-formula-display code{color:#c4f4e9;font:12px var(--mono);white-space:normal}
+.glyph-formula-display small{color:#8298a5;font:8px var(--mono);letter-spacing:.7px}
+.glyph-input-label{display:block;margin:14px 0 7px}
+.glyph-input-row{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:7px}
+.glyph-input-row input{width:100%;min-width:0;height:39px;padding:0 11px;border:1px solid rgba(131,217,210,.27);outline:none;background:rgba(5,13,23,.78);color:#e3fff8;font:12px var(--mono);transition:border-color .18s,box-shadow .18s}
+.glyph-input-row input:focus{border-color:rgba(131,217,210,.7);box-shadow:0 0 0 3px rgba(131,217,210,.08)}
+.glyph-input-row input:disabled{opacity:.55}
+.glyph-max-button{border:1px solid rgba(190,165,255,.28);background:rgba(151,117,219,.1);color:#d7c9f4;font:9px var(--mono);letter-spacing:.7px;cursor:pointer}
+.glyph-max-button:disabled{opacity:.35;cursor:not-allowed}
+.glyph-preview-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0;padding:10px 11px;border:1px solid rgba(131,217,210,.13);background:rgba(7,17,26,.55)}
+.glyph-preview-row span{color:#8a9fa9;font:8px var(--mono);letter-spacing:.8px}
+.glyph-preview-row strong{color:#a8f0df;font:12px var(--mono);text-align:right;overflow-wrap:anywhere}
+.glyph-convert-button{width:100%;min-height:41px;border:1px solid rgba(131,217,210,.45);background:linear-gradient(110deg,rgba(62,135,133,.25),rgba(106,94,164,.23));color:#d8fff5;font:9px var(--mono);letter-spacing:1.1px;cursor:pointer;transition:background .2s,border-color .2s,box-shadow .2s}
+.glyph-convert-button:not(:disabled):hover{border-color:rgba(153,244,222,.8);background:linear-gradient(110deg,rgba(62,155,143,.35),rgba(106,94,164,.3));box-shadow:0 0 20px rgba(107,222,198,.12)}
+.glyph-convert-button:disabled{opacity:.38;cursor:not-allowed}
+.glyph-progress-wrap{margin-top:16px;padding:12px;border:1px solid rgba(131,217,210,.17);background:rgba(4,12,22,.68)}
+.glyph-progress-heading,.glyph-progress-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.glyph-progress-heading span{color:#8da5ad;font:8px var(--mono);letter-spacing:1px}
+.glyph-progress-heading strong{color:#c7fff0;font:11px var(--mono);font-variant-numeric:tabular-nums}
+.glyph-progress-track{position:relative;height:12px;margin:10px 0 8px;overflow:hidden;border:1px solid rgba(131,217,210,.22);border-radius:2px;background:linear-gradient(90deg,rgba(9,19,30,.95),rgba(17,26,40,.95));box-shadow:inset 0 1px 5px rgba(0,0,0,.45)}
+.glyph-progress-fill{position:relative;z-index:1;width:0;height:100%;background:linear-gradient(90deg,#477f91 0%,#70c9bd 55%,#d0f9d9 100%);box-shadow:0 0 13px rgba(131,217,210,.45);transition:width .08s linear}
+.glyph-progress-fill:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.18) 0 5px,transparent 5px 11px);opacity:.55}
+.glyph-progress-glow{position:absolute;z-index:2;top:-5px;bottom:-5px;left:0;width:22px;background:radial-gradient(ellipse,rgba(209,255,243,.45),transparent 70%);pointer-events:none}
+.glyph-progress-footer{color:#778f99;font:8px var(--mono);letter-spacing:.65px}
+.glyph-progress-footer #glyphProgressStatus{color:#a7d8cc}
+.glyph-progress-footer #glyphProgressTime{font-variant-numeric:tabular-nums}
+@media(max-width:560px){.glyph-formula-display code{font-size:10px}.glyph-preview-row{align-items:flex-start;flex-direction:column;gap:6px}}
