@@ -115,14 +115,23 @@
         </div>
         <div class="glyph-card-meta"><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong id="glyphGpBalance">— GP</strong></div><div><small data-i18n="glyphsGsBalanceLabel">SHARD BALANCE</small><strong id="glyphGsBalance">0 GS</strong></div></div>
       </article>
-      <article class="glyph-card">
+      <article class="glyph-card glyph-converter-card">
         <div class="glyph-card-heading"><span class="glyph-card-icon">◇</span><div><h3 data-i18n="glyphsGsToGf">Glyph Shards → Glyph Fragments</h3><small>GS → GF</small></div></div>
         <div class="glyph-flow"><div class="glyph-flow-token gs"><div><strong>GS</strong><br><small>SHARDS</small></div></div><div class="glyph-flow-arrow">⟶</div><div class="glyph-flow-token gf"><div><strong>GF</strong><br><small>FRAGMENTS</small></div></div></div>
-        <div class="glyph-card-meta"><div><small data-i18n="glyphsConversionRate">CONVERSION RATE</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong>—</strong></div></div>
-        <div class="glyph-pending" data-i18n="glyphsConversionPending">Conversion formula not configured</div>
+        <div class="glyph-formula-display"><span data-i18n="glyphsFormulaLabel">CONVERSION FUNCTION</span><div id="glyphFragmentConversionFormula" class="glyph-conversion-equation" aria-label="Glyph Fragments conversion formula">GF = ½ × [(1 + GS / 1000)² − 1]</div><small id="glyphFragmentConversionParameters">i = 1&nbsp; · &nbsp;v = 1&nbsp; · &nbsp;k = 1</small></div>
+        <label class="glyph-input-label" for="glyphGsInput" data-i18n="glyphsGsInputAmount">GS TO CONVERT</label>
+        <div class="glyph-input-row"><input id="glyphGsInput" type="number" min="1000" step="1" value="1000" inputmode="numeric"><button id="glyphGsMax" type="button" class="glyph-max-button" data-i18n="glyphsMax">MAX</button></div>
+        <div class="glyph-preview-row"><span data-i18n="glyphsEstimatedOutput">ESTIMATED OUTPUT</span><strong id="glyphGfPreview">1.5 GF</strong></div>
+        <button id="glyphGsConvertButton" type="button" class="glyph-convert-button" disabled data-i18n="glyphsStartConversion">INITIATE CONVERSION</button>
+        <div class="glyph-progress-wrap" aria-live="polite">
+          <div class="glyph-progress-heading"><span data-i18n="glyphsConversionProgress">CONVERSION PROGRESS</span><strong id="glyphGsProgressPercent">0%</strong></div>
+          <div class="glyph-progress-track" role="progressbar" aria-label="GS to GF conversion progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="glyphGsProgressTrack"><div class="glyph-progress-fill" id="glyphGsProgressFill"></div><div class="glyph-progress-glow"></div></div>
+          <div class="glyph-progress-footer"><span id="glyphGsProgressStatus" data-i18n="glyphsReady">READY</span><span id="glyphGsProgressTime">5.0 s</span></div>
+        </div>
+        <div class="glyph-card-meta"><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong id="glyphGsAvailableBalance">0 GS</strong></div><div><small data-i18n="glyphsGfBalanceLabel">FRAGMENT BALANCE</small><strong id="glyphGfBalance">0 GF</strong></div></div>
       </article>
     </div>
-    <div class="glyph-stage-note" data-i18n="glyphsStageNote">The converter is a visual framework for now. Resource balances, exchange rates and conversion actions will be connected in a later implementation stage.</div>
+    <div class="glyph-stage-note" data-i18n="glyphsStageNote">Both conversion paths use independent five-second operations. The second conversion consumes Glyph Shards and produces Glyph Fragments.</div>
   </div>
 </section>
 

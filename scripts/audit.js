@@ -152,6 +152,22 @@ if(!sources["assets/js/glyphs.js"].includes("window.showGlyphTab")||!sources["as
 if(!read("assets/css/glyphs.css").includes(".glyphs-page")||!read("assets/css/glyphs.css").includes(".glyph-pentagram-stage")||!read("assets/css/glyphs.css").includes(".glyph-storage-grid")||!read("assets/css/glyphs.css").includes(".glyph-rarity.immortal"))fail("GLYPH visual styles are incomplete");
 if(!html.includes('id="glyphGpInput"')||!html.includes('id="glyphConvertButton"')||!html.includes('id="glyphProgressFill"')||!html.includes('id="glyphGsBalance"'))fail("GP → GS converter input, action, progress bar or GS balance is missing");
 if(!sources["assets/js/glyphs.js"].includes("window.calculateGlyphShardReward")||!sources["assets/js/glyphs.js"].includes("MIN_GP_CONVERSION = 1000")||!sources["assets/js/glyphs.js"].includes("CONVERSION_DURATION = 5000"))fail("GP → GS converter formula, minimum amount or operation duration is missing");
+if(!sources["assets/js/glyphs.js"].includes("window.calculateGlyphFragmentReward")||!sources["assets/js/glyphs.js"].includes("glyphGsOperationStartedAt")||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphFragmentConversionFormula"')||!html.includes('id="glyphGsInput"')||!html.includes('id="glyphGsConvertButton"')||!html.includes('id="glyphGsProgressFill"')||!html.includes('id="glyphGfBalance"'))fail("GS → GF converter formula, KaTeX display, input, action, progress or balance is missing");
+try{
+ const source=sources["assets/js/glyphs.js"];
+ const match=source.match(/window\\.calculateGlyphFragmentReward = amount => \\{[\\s\\S]*?\\n  \\};/);
+ if(!match)throw new Error("GS → GF reward function not found");
+ const context={window:{}};
+ vm.runInNewContext(match[0]+";globalThis.__reward=window.calculateGlyphFragmentReward;",context);
+ const cases=[[1000,1.5],[2000,4],[5000,17],[10000,60.5],[100000,5050]];
+ for(const [input,expected] of cases){const actual=context.__reward(input);if(Math.abs(actual-expected)>1e-9)throw new Error(input+" GS expected "+expected+" GF, got "+actual)}
+ if(context.__reward(999)!==0)throw new Error("Minimum conversion must reject 999 GS");
+ pass("GS → GF conversion formula runtime values (1,000 / 2,000 / 5,000 / 10,000 / 100,000 GS)");
+}catch(error){fail("GS → GF conversion runtime test: "+error.message)}
+if(!sources["assets/js/prestige.js"].includes("glyphFragments,glyphGsInput,glyphGsOperationStartedAt,glyphGsOperationAmount,glyphGsOperationReward"))fail("GF balance and active GS → GF operation must persist in the prestige save");
+if(!sources["assets/js/script.js"].includes("glyphFragments=0;glyphGsInput=1000;glyphGsOperationStartedAt=0"))fail("Full RESET must clear GF conversion progression");
+if(!html.includes('id="glyphFragmentConversionFormula"')||!html.includes('id="glyphFragmentConversionParameters"')||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphFragmentConversionParameters"'))fail("GS → GF formula and parameters must render through the shared KaTeX adapter");
+if(!sources["assets/js/app-ui.js"].includes('glyphsGsInputAmount:"КОЛИЧЕСТВО GS ДЛЯ ОБМЕНА"')||!sources["assets/js/app-ui.js"].includes('glyphsNeedMoreGs:"НУЖНО НЕ МЕНЬШЕ 1 000 GS"'))fail("GS → GF converter Russian localization is missing");
 if(!html.includes('id="glyphConversionFormula"')||!html.includes('id="glyphConversionParameters"')||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphConversionFormula"')||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphConversionParameters"'))fail("GP → GS formula and parameters must render through the shared KaTeX adapter");
 else pass("GP → GS formula and parameters use KaTeX");
 try{
@@ -168,6 +184,7 @@ try{
 }catch(error){fail("GP → GS conversion runtime test: "+error.message)}
 if(!sources["assets/js/glyphs.js"].includes("formatConversionValue")||!sources["assets/js/glyphs.js"].includes("minimumFractionDigits: 1, maximumFractionDigits: 1")||!sources["assets/js/glyphs.js"].includes('formatConversionValue(reward) + " GS"'))fail("Fractional estimated GS output must show exactly one decimal place");
 if(!sources["assets/js/prestige.js"].includes("glyphShards,glyphGpInput,glyphOperationStartedAt,glyphOperationAmount,glyphOperationReward"))fail("GLYPH shard balance and active conversion must persist in the prestige save");
+if(!sources["assets/js/prestige.js"].includes("glyphFragments,glyphGsInput,glyphGsOperationStartedAt,glyphGsOperationAmount,glyphGsOperationReward"))fail("GLYPH fragment balance and second active conversion must persist in the prestige save");
 if(!sources["assets/js/script.js"].includes("glyphShards=0;glyphGpInput=1000;glyphOperationStartedAt=0"))fail("Full RESET must clear GLYPH conversion progression");
 if(!read("assets/css/glyphs.css").includes(".glyph-progress-track")||!read("assets/css/glyphs.css").includes(".glyph-progress-fill"))fail("GLYPH converter progress bar styles are missing");
 
