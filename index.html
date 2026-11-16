@@ -141,13 +141,13 @@
     <p class="glyphs-description" data-i18n="glyphsInventoryDesc">Store discovered glyphs, choose one active relic and keep unwanted finds separate.</p>
     <section class="glyph-creation-panel" aria-label="Glyph creation">
       <div class="glyph-creation-art" aria-hidden="true"><span class="glyph-creation-orbit orbit-one"></span><span class="glyph-creation-orbit orbit-two"></span><span class="glyph-creation-core">✧</span></div>
-      <div class="glyph-creation-copy"><span class="glyph-creation-kicker" data-i18n="glyphsCreationKicker">GLYPH FORGE</span><h3 data-i18n="glyphsCreateGlyph">CREATE GLYPH</h3><p data-i18n="glyphsCreationDesc">Spend 100 GF to forge a new glyph. Creation will be enabled in a later stage.</p></div>
-      <button class="glyph-create-action" id="glyphCreateButton" type="button" disabled><span data-i18n="glyphsCreateGlyph">CREATE GLYPH</span><strong>100 GF</strong><span class="glyph-create-arrow">↗</span></button>
+      <div class="glyph-creation-copy"><span class="glyph-creation-kicker" data-i18n="glyphsCreationKicker">GLYPH FORGE</span><h3 data-i18n="glyphsCreateGlyph">CREATE GLYPH</h3><p data-i18n="glyphsCreationDesc">Spend 10 GF to forge a Chronos glyph and discover one of Aion’s seven temporal bonuses.</p></div>
+      <button class="glyph-create-action" id="glyphCreateButton" type="button"><span data-i18n="glyphsCreateGlyph">CREATE GLYPH</span><strong>10 GF</strong><span class="glyph-create-arrow">↗</span></button>
     </section>
     <div class="glyph-inventory-layout">
       <div class="glyph-inventory-main">
         <div class="glyph-inventory-toolbar"><span data-i18n="glyphsStorage">GLYPH STORAGE · 25 / 25</span><span class="glyph-storage-capacity">25 <i>/</i> 25</span></div>
-        <div class="glyph-storage-grid" aria-label="25 empty glyph inventory slots">
+        <div class="glyph-storage-grid" id="glyphStorageGrid" aria-label="25 glyph inventory slots">
           <div class="glyph-storage-slot"><span>01</span></div><div class="glyph-storage-slot"><span>02</span></div><div class="glyph-storage-slot"><span>03</span></div><div class="glyph-storage-slot"><span>04</span></div><div class="glyph-storage-slot"><span>05</span></div>
           <div class="glyph-storage-slot"><span>06</span></div><div class="glyph-storage-slot"><span>07</span></div><div class="glyph-storage-slot"><span>08</span></div><div class="glyph-storage-slot"><span>09</span></div><div class="glyph-storage-slot"><span>10</span></div>
           <div class="glyph-storage-slot"><span>11</span></div><div class="glyph-storage-slot"><span>12</span></div><div class="glyph-storage-slot"><span>13</span></div><div class="glyph-storage-slot"><span>14</span></div><div class="glyph-storage-slot"><span>15</span></div>
@@ -161,7 +161,7 @@
       <aside class="glyph-inventory-side">
         <section class="glyph-equipped-panel">
           <div class="glyph-side-heading"><span data-i18n="glyphsActiveSlot">ACTIVE GLYPH</span><small>01 <i>/</i> 06</small></div>
-          <div class="glyph-equip-hexagon" aria-label="Six glyph equipment slots arranged in a hexagon; one unlocked">
+          <div class="glyph-equip-hexagon" id="glyphEquippedSlots" aria-label="Six glyph equipment slots arranged in a hexagon; one unlocked">
             <div class="glyph-hex-ring" aria-hidden="true"></div>
             <div class="glyph-hex-center" aria-hidden="true">✧</div>
             <div class="glyph-equip-slot unlocked" aria-label="Equipment slot 1, unlocked"><span>✧</span><small>01</small></div>
@@ -178,6 +178,8 @@
           <div class="glyph-storage-slot glyph-discard-cell" aria-label="Empty glyph discard slot"><span>⌫</span></div>
           <p data-i18n="glyphsDiscardHint">Place a glyph here to discard it</p>
         </section>
+      <section class="glyph-bonus-overview"><div class="glyph-detail-heading"><span class="glyph-detail-kicker">ACTIVE EFFECTS</span><h3>Equipped glyph bonuses</h3></div><div id="glyphAggregateBonuses" class="glyph-aggregate-list"><p class="glyph-empty-state">No glyph bonuses are active.</p></div></section>
+      <section class="glyph-detail-panel" id="glyphDetailPanel"><div class="glyph-detail-heading"><span class="glyph-detail-kicker">GLYPH ANALYSIS</span><h3>Glyph details</h3></div><div id="glyphDetailContent" class="glyph-detail-content"><div class="glyph-detail-empty"><span>⧖</span><p>Create or select a glyph to inspect its properties.</p></div></div></section>
       </aside>
     </div>
   </div>

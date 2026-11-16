@@ -197,3 +197,17 @@
 @media(max-width:900px){.glyph-inventory-layout{grid-template-columns:minmax(0,1fr) 238px}.glyph-storage-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:760px){.glyph-inventory-layout{grid-template-columns:1fr}.glyph-inventory-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.glyph-equip-hexagon{width:min(216px,100%)}}
 @media(max-width:560px){.glyph-creation-panel{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:12px}.glyph-creation-art{width:50px;height:50px}.glyph-creation-core{width:26px;height:26px;font-size:15px}.glyph-create-action{grid-column:1 / -1;justify-content:center;padding:10px}.glyph-inventory-side{grid-template-columns:1fr}.glyph-storage-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.glyph-storage-slot{max-width:64px}.glyph-equip-hexagon{max-width:216px}.glyph-discard-cell{width:64px;height:64px}}
+
+/* Aion glyph inventory and bonus panels */
+.glyph-create-action{opacity:1;cursor:pointer}.glyph-create-action:disabled{opacity:.42;cursor:not-allowed}
+.glyph-storage-slot.glyph-filled{display:grid;place-items:center;padding:0;border-color:var(--glyph-rarity-color);background:color-mix(in srgb,var(--glyph-rarity-color) 30%,#101625);cursor:pointer}
+.glyph-storage-slot.glyph-filled:before{content:none}.glyph-storage-slot .glyph-cell-symbol{color:#7ee8df;font-size:27px;text-shadow:0 0 12px rgba(126,232,223,.45)}
+.glyph-storage-slot .glyph-cell-level{position:absolute;right:5px;bottom:4px;color:#f4f6ff;font:7px var(--mono)}
+.glyph-bonus-overview,.glyph-detail-panel{margin-top:13px;padding:15px;border:1px solid rgba(131,217,210,.17);background:linear-gradient(145deg,rgba(17,27,39,.94),rgba(9,14,25,.96))}
+.glyph-detail-heading{margin-bottom:12px}.glyph-detail-heading h3{margin:0;color:#e5e9f6;font-size:14px}.glyph-detail-kicker{color:#82d9d2;font:8px var(--mono);letter-spacing:1.4px}
+.glyph-aggregate-source,.glyph-empty-state{color:#929db2;font-size:9px}.glyph-aggregate-row,.glyph-detail-bonus{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(170,183,211,.09);font-size:9px}
+.glyph-aggregate-row span,.glyph-detail-bonus span{color:#aab4c8}.glyph-aggregate-row strong,.glyph-detail-bonus strong{color:#a5e8d9;font:10px var(--mono)}
+.glyph-detail-card{padding:13px;border:1px solid var(--glyph-rarity-color);background:linear-gradient(145deg,color-mix(in srgb,var(--glyph-rarity-color) 16%,#101625),rgba(8,14,24,.98))}
+.glyph-detail-card h4{margin:0 0 9px;color:#f0f3fb;font-size:13px}.glyph-detail-meta{display:flex;gap:8px;margin-bottom:10px}.glyph-detail-meta span{padding:5px 7px;border:1px solid color-mix(in srgb,var(--glyph-rarity-color) 48%,transparent);color:var(--glyph-rarity-color);font:8px var(--mono)}
+.glyph-equip-action{margin-top:12px;padding:9px 13px;border:1px solid rgba(126,232,223,.35);background:rgba(126,232,223,.08);color:#9de9df;font:9px var(--mono);cursor:pointer}
+.glyph-equip-slot.has-glyph{background:var(--glyph-rarity-color)}.glyph-equip-slot.has-glyph:before{background:color-mix(in srgb,var(--glyph-rarity-color) 30%,#101625)}.glyph-equip-slot.has-glyph span{color:#7ee8df;font-size:23px}

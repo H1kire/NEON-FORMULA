@@ -73,11 +73,13 @@ function getLetterParameters(){
  };
 }
 function getLetterPrice(base,level){
+ const glyphDivisor=typeof window.getGlyphCostDivisor==="function"?Math.max(1,window.getGlyphCostDivisor()):1;
  const exponent=Math.max(0.03,3*(1-Math.min(0.99,Math.max(0,metaBonus("letterExponentReduction")))));
  const baseFactor=Math.max(1,2*(1-Math.min(0.5,Math.max(0,metaBonus("letterBaseReduction")))));
  const growth=Math.pow(baseFactor,exponent);
  const raw=base*Math.pow(growth,Math.max(0,level));
- return Number.isFinite(raw)?Math.min(Number.MAX_VALUE,Math.ceil(raw)):Number.MAX_VALUE;
+ const adjusted=raw/glyphDivisor;
+ return Number.isFinite(adjusted)?Math.max(1,Math.min(Number.MAX_VALUE,Math.ceil(adjusted))):Number.MAX_VALUE;
 }
 function getACost(){return getLetterPrice(LETTER_BASE_COSTS.a,aLevel)}
 function getBCost(){return getLetterPrice(LETTER_BASE_COSTS.b,bLevel)}
@@ -86,8 +88,9 @@ function getDCost(){return getLetterPrice(LETTER_BASE_COSTS.d,dLevel)}
 function getECost(){return getLetterPrice(LETTER_BASE_COSTS.e,eLevel)}
 function updateFormulaState(timeSeconds){
  const old=formulaState,p=getLetterParameters(),coupling=Math.max(1,metaBonus("coupling"));
+ const formulaTime=timeSeconds*(typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1);
  const next={
-  a:safePow(1+Math.max(0,timeSeconds)/60,(1+Math.log(Math.max(1,old.c))*coupling)/Math.max(1e-12,p.a)),
+  a:safePow(1+Math.max(0,formulaTime)/60,(1+Math.log(Math.max(1,old.c))*coupling)/Math.max(1e-12,p.a)),
   b:1+Math.max(0,safePow(Math.max(1,old.a),p.b*coupling)-1)/1.055,
   c:1+safeLogProduct(old.a,old.b,old.c,coupling)/Math.max(1e-12,p.c),
   d:1+Math.sqrt(safeProduct(old.a,old.b,old.c,coupling))/Math.max(1e-12,p.d),
@@ -164,7 +167,7 @@ function getLetterProduct(){
  if(eLevel>0)active.push(getE());
  if(fLevel>0&&typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked())active.push(getF());
  if(hLevel>0&&typeof window.isLetterHUnlocked==="function"&&window.isLetterHUnlocked())active.push(getH());
- return safeProduct(...active,...formulaLetterGetters.slice(8).map(getter=>getter()));
+ return safeProduct(...active,...formulaLetterGetters.slice(8).map(getter=>getter()),typeof window.getGlyphLetterValueMultiplier==="function"?window.getGlyphLetterValueMultiplier():1);
 }
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
@@ -202,7 +205,7 @@ function loadGame(){
    for(let i=1;i<=rebuild;i++){formulaSteps++;updateFormulaState(formulaSteps)}
   }
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
-  if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35*getDilationTimeSpeed();value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
+  if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35*getDilationTimeSpeed()*(typeof window.getGlyphOrdinaryTimeMultiplier==="function"?window.getGlyphOrdinaryTimeMultiplier():1);value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
   if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey);
  }catch(err){console.error("Save data could not be loaded",err)}
 }
@@ -226,7 +229,7 @@ function resetSave(){
   :"Start the game completely from scratch? ALL local game progress will be erased: Score, time, A–H, AP, GP, Research, automation, prestige upgrades, Genesis Gate and every tree node. Settings and Google sign-in will remain. Your Firebase cloud save will NOT be touched.";
  if(!confirm(message))return;
  resetRun();dilationMode=false;dilationTime=0;dilationCurrency=0;dilationILevel=0;dilationKLevel=0;dilationVLevel=0;dilationTauLevel=0;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;
- p=0;gp=0;prestigeUnlocked=false;glyphShards=0;glyphGpInput=1000;glyphOperationStartedAt=0;glyphOperationAmount=0;glyphOperationReward=0;glyphFragments=0;glyphGsInput=1000;glyphGsOperationStartedAt=0;glyphGsOperationAmount=0;glyphGsOperationReward=0;
+ p=0;gp=0;prestigeUnlocked=false;glyphShards=0;glyphGpInput=1000;glyphOperationStartedAt=0;glyphOperationAmount=0;glyphOperationReward=0;glyphFragments=0;glyphGsInput=1000;glyphGsOperationStartedAt=0;glyphGsOperationAmount=0;glyphGsOperationReward=0;glyphInventory=[];glyphEquippedId=null;
  prestigeUpgrades={simpleBoost:0,globalSum:0};
  window.prestigeUpgrades=prestigeUpgrades;
  FA_META.research=Array(10).fill(0);
@@ -264,7 +267,7 @@ function format(n){
 function getGlobalSumAdditionalWeight(){
  const n=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
  const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
- return n*(1+0.25*legacy);
+ return n*(1+0.25*legacy)*(1+(typeof window.getGlyphGlobalSumPercent==="function"?window.getGlyphGlobalSumPercent():0));
 }
 function getGlobalSumMultiplier(){return 1+getGlobalSumAdditionalWeight()}
 function getIntegralMultiplier(){
@@ -276,7 +279,8 @@ function getGain(){
  const letterProduct=getLetterProduct();
  const boost=metaBonus("production")*metaBonus("time");
  const integralUnlocked=typeof window!=="undefined"&&typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
- const factors=[t*t];
+ const formulaTime=typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1;
+ const factors=[safeProduct(t,t,formulaTime,formulaTime)];
  if(integralUnlocked)factors.push(getIntegralMultiplier());
  factors.push(getGlobalSumMultiplier(),letterProduct,boost);
  let result=safeProduct(...factors);
@@ -426,7 +430,7 @@ function loop(){
  const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;
  const rateBefore=getGain();
  const dilationUnlocked=typeof window.isTimeDilationUnlocked==="function"&&window.isTimeDilationUnlocked();
- if(dilationMode&&dilationUnlocked){if(!dilationIntegrating)dilationTime=Math.min(Number.MAX_VALUE,dilationTime+delta)}else{const elapsedT=delta*getDilationTimeSpeed();t+=elapsedT;advanceFormulaClock(elapsedT)}
+ if(dilationMode&&dilationUnlocked){if(!dilationIntegrating)dilationTime=Math.min(Number.MAX_VALUE,dilationTime+delta*(typeof window.getGlyphDilationTimeMultiplier==="function"?window.getGlyphDilationTimeMultiplier():1))}else{const elapsedT=delta*getDilationTimeSpeed()*(typeof window.getGlyphOrdinaryTimeMultiplier==="function"?window.getGlyphOrdinaryTimeMultiplier():1);t+=elapsedT;advanceFormulaClock(elapsedT)}
  if(dilationIntegrating&&Date.now()-dilationOperationStartedAt>=5000)completeDilationIntegration();
  const rateAfter=getGain();
  // Trapezoidal integration reduces per-tick accumulation error while retaining the 10 ms loop.
@@ -437,6 +441,6 @@ function loop(){
  FA_META.stats.lifetimeValue=Math.min(Number.MAX_VALUE,FA_META.stats.lifetimeValue+gain);
  autoBuy();updateUI();
 }
-loadGame();updateUI();lastFrame=performance.now();
+loadGame();if(window.refreshGlyphInventory)window.refreshGlyphInventory();updateUI();lastFrame=performance.now();
 setInterval(loop,TICK);setInterval(saveGame,AUTOSAVE_INTERVAL);setInterval(saveMeta,10000);
 window.addEventListener("beforeunload",()=>{if(window.FA_CLOUD_RESTORING)return;saveGame();saveMeta()});
