@@ -42,7 +42,14 @@ window.updateTimeDilationUI=updateTimeDilationUI;
 window.TimeDilation={
  getState:()=>({unlocked:!!window.isTimeDilationUnlocked?.(),mode:dilationMode,time:dilationTime,currency:dilationCurrency,integrating:dilationIntegrating,levels:getDilationLevels(),parameters:getDilationParameters()}),
  getUpgradeCost:getDilationUpgradeCost,
- buyUpgrade:key=>{if(!window.isTimeDilationUnlocked?.()||!["i","k","v","tau"].includes(key))return false;const cost=getDilationUpgradeCost(key);if(dilationCurrency<cost)return false;dilationCurrency-=cost;if(key==="i")dilationILevel++;else if(key==="k")dilationKLevel++;else if(key==="v")dilationVLevel++;else dilationTauLevel++;saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch();return true},
+ buyUpgrade:key=>{
+  if(!window.isTimeDilationUnlocked?.()||!["i","k","v","tau"].includes(key))return false;
+  const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(dilationCurrency,()=>getDilationUpgradeCost(key)):{count:1,total:getDilationUpgradeCost(key),affordable:dilationCurrency>=getDilationUpgradeCost(key)};
+  if(!quote.count||!quote.affordable)return false;
+  dilationCurrency-=quote.total;
+  for(let i=0;i<quote.count;i++){if(key==="i")dilationILevel++;else if(key==="k")dilationKLevel++;else if(key==="v")dilationVLevel++;else dilationTauLevel++}
+  saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch();return true
+ },
  setMode:enabled=>{if(dilationIntegrating)return false;if(enabled&&!window.isTimeDilationUnlocked?.())return false;dilationMode=!!enabled;lastFrame=performance.now();saveGame(true);updateUI();return true},
  startIntegration:()=>{if(!window.isTimeDilationUnlocked?.()||!dilationMode||dilationIntegrating||dilationTime<60)return false;dilationOperationReward=calculateDilationReward(dilationTime);dilationIntegrating=true;dilationOperationStartedAt=Date.now();saveGame(true);updateUI();return true},
  forceDisable:()=>{dilationMode=false;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;saveGame(true);updateUI()}
@@ -230,7 +237,7 @@ function resetSave(){
  if(!confirm(message))return;
  resetRun();dilationMode=false;dilationTime=0;dilationCurrency=0;dilationILevel=0;dilationKLevel=0;dilationVLevel=0;dilationTauLevel=0;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;
  p=0;gp=0;prestigeUnlocked=false;glyphShards=0;glyphGpInput=1000;glyphOperationStartedAt=0;glyphOperationAmount=0;glyphOperationReward=0;glyphFragments=0;glyphGsInput=1000;glyphGsOperationStartedAt=0;glyphGsOperationAmount=0;glyphGsOperationReward=0;glyphInventory=[];glyphEquippedId=null;
- prestigeUpgrades={simpleBoost:0,globalSum:0};
+ prestigeUpgrades={simpleBoost:0,globalSum:0,integralSumCoefficient:0,letterValueBoost:0};
  window.prestigeUpgrades=prestigeUpgrades;
  FA_META.research=Array(10).fill(0);
  FA_META.researchVersion=2;
