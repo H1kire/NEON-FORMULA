@@ -332,11 +332,11 @@ function refreshLetterBatchCards(force=false){
  ];
  for(const [key,costGetter,remaining,button,upgradeKey,firstKey] of defs){
   if(!button)continue;
-  const quote=window.getUpgradeBatchQuote(value,offset=>costGetter(offset),remaining,getLetterPriceGrowth()===1),maxed=remaining===0;
+  const quote=window.getUpgradeBatchQuote(value,offset=>costGetter(offset),remaining,getLetterPriceGrowth()===1,"formula"),maxed=remaining===0;
   const display=$(key+"Cost");
   const shownCost=quote.count?quote.total:costGetter(0);
   if(display){if(maxed)display.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText(key+"Cost",format(shownCost));else display.textContent=format(shownCost)}
-  setBtn(button,shownCost);
+  if(button.dataset.batchVisualState!=="stable"){button.classList.remove("good","bad");button.dataset.batchVisualState="stable"}
   const disabled=maxed||!quote.count||!quote.affordable;if(button.disabled!==disabled)button.disabled=disabled;
   const level=({a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel})[key];
   const label=firstKey&&level===0?tr(firstKey):tr(upgradeKey);
