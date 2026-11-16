@@ -103,7 +103,7 @@
       <article class="glyph-card glyph-converter-card">
         <div class="glyph-card-heading"><span class="glyph-card-icon">✧</span><div><h3 data-i18n="glyphsGpToGs">Genesis → Glyph Shards</h3><small>GP → GS</small></div></div>
         <div class="glyph-flow"><div class="glyph-flow-token gp"><div><strong>GP</strong><br><small>GENESIS</small></div></div><div class="glyph-flow-arrow">⟶</div><div class="glyph-flow-token gs"><div><strong>GS</strong><br><small>SHARDS</small></div></div></div>
-        <div class="glyph-formula-display"><span data-i18n="glyphsFormulaLabel">CONVERSION FUNCTION</span><code>GS = ½ × [(1 + GP / 1000)² − 1]</code><small>i = 1&nbsp; · &nbsp;v = 1&nbsp; · &nbsp;k = 1</small></div>
+        <div class="glyph-formula-display"><span data-i18n="glyphsFormulaLabel">CONVERSION FUNCTION</span><div id="glyphConversionFormula" class="glyph-conversion-equation" aria-label="Glyph Shards conversion formula">GS = ½ × [(1 + GP / 1000)² − 1]</div><small id="glyphConversionParameters">i = 1&nbsp; · &nbsp;v = 1&nbsp; · &nbsp;k = 1</small></div>
         <label class="glyph-input-label" for="glyphGpInput" data-i18n="glyphsInputAmount">GP TO CONVERT</label>
         <div class="glyph-input-row"><input id="glyphGpInput" type="number" min="1000" step="1" value="1000" inputmode="numeric"><button id="glyphGpMax" type="button" class="glyph-max-button" data-i18n="glyphsMax">MAX</button></div>
         <div class="glyph-preview-row"><span data-i18n="glyphsEstimatedOutput">ESTIMATED OUTPUT</span><strong id="glyphGsPreview">1.5 GS</strong></div>
