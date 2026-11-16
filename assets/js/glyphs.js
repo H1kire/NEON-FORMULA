@@ -13,6 +13,19 @@
   const formatValue = value => typeof format === "function"
     ? format(value)
     : Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const formatConversionValue = value => {
+    if (Number.isInteger(value)) return formatValue(value);
+    if (value < 1e6) {
+      const locale = typeof FA_META !== "undefined" && FA_META.language === "ru" ? "ru-RU" : "en-US";
+      return value.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
+    return formatValue(value).replace(/([.,]\d)\d+(?=[A-Za-z]|$)/, "$1");
+  };
+  const renderConversionFormula = () => {
+    if (typeof FAFormula !== "object" || typeof FAFormula.render !== "function") return;
+    FAFormula.render("glyphConversionFormula", String.raw`\mathrm{GS}=\frac{1}{2}\left[\left(1+\frac{\mathrm{GP}}{1000}\right)^2-1\right]`);
+    FAFormula.render("glyphConversionParameters", String.raw`i=1\quad\cdot\quad v=1\quad\cdot\quad k=1`);
+  };
 
   window.calculateGlyphShardReward = amount => {
     const gpAmount = Number(amount);
@@ -68,7 +81,7 @@
     const requested = Math.floor(Number(input.value));
     const valid = Number.isFinite(requested) && requested >= MIN_GP_CONVERSION && requested <= balance;
     const reward = valid ? window.calculateGlyphShardReward(requested) : 0;
-    if (preview) preview.textContent = valid ? formatValue(reward) + " GS" : "— GS";
+    if (preview) preview.textContent = valid ? formatConversionValue(reward) + " GS" : "— GS";
     if (gpBalance) gpBalance.textContent = formatValue(balance) + " GP";
     if (gsBalance) gsBalance.textContent = formatValue(glyphShards) + " GS";
     input.max = String(Math.floor(balance));
@@ -150,6 +163,7 @@
   };
 
   window.refreshGlyphsAccess();
+  renderConversionFormula();
   initConverter();
   window.refreshGlyphConverter();
   setInterval(window.refreshGlyphConverter, 50);
