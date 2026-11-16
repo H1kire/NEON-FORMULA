@@ -158,7 +158,7 @@ try{
  const source=sources["assets/js/glyphs.js"];
  const match=source.match(/window\.calculateGlyphShardReward = amount => \{[\s\S]*?\n  \};/);
  if(!match)throw new Error("Conversion reward function not found");
- const context={window:{}};
+ const context={window:{},MIN_GP_CONVERSION:1000};
  vm.runInNewContext(match[0]+";globalThis.__reward=window.calculateGlyphShardReward;",context);
  for(const [gpAmount,expected] of [[1000,1.5],[2000,4],[5000,17],[10000,60.5]]){
    const actual=context.__reward(gpAmount);
