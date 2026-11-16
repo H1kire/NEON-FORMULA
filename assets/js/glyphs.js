@@ -33,7 +33,7 @@
     const input = Number(amount);
     if (!Number.isFinite(input) || input < MIN_GP_CONVERSION) return 0;
     const x = input / 1000;
-    const result = 0.5 * ((1 + x) ** 2 - 1);
+    const result = 0.5 * ((1 + x) ** 2 - 1) * (typeof window.getGlyphGsGainMultiplier === "function" ? window.getGlyphGsGainMultiplier() : 1);
     return Number.isFinite(result) ? result : Number.MAX_VALUE;
   };
 
