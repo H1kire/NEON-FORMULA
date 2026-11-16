@@ -152,6 +152,21 @@ if(!sources["assets/js/glyphs.js"].includes("window.showGlyphTab")||!sources["as
 if(!read("assets/css/glyphs.css").includes(".glyphs-page")||!read("assets/css/glyphs.css").includes(".glyph-pentagram-stage")||!read("assets/css/glyphs.css").includes(".glyph-storage-grid")||!read("assets/css/glyphs.css").includes(".glyph-rarity.immortal"))fail("GLYPH visual styles are incomplete");
 if(!html.includes('id="glyphGpInput"')||!html.includes('id="glyphConvertButton"')||!html.includes('id="glyphProgressFill"')||!html.includes('id="glyphGsBalance"'))fail("GP → GS converter input, action, progress bar or GS balance is missing");
 if(!sources["assets/js/glyphs.js"].includes("window.calculateGlyphShardReward")||!sources["assets/js/glyphs.js"].includes("MIN_GP_CONVERSION = 1000")||!sources["assets/js/glyphs.js"].includes("CONVERSION_DURATION = 5000"))fail("GP → GS converter formula, minimum amount or operation duration is missing");
+if(!html.includes('id="glyphConversionFormula"')||!html.includes('id="glyphConversionParameters"')||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphConversionFormula"')||!sources["assets/js/glyphs.js"].includes('FAFormula.render("glyphConversionParameters"'))fail("GP → GS formula and parameters must render through the shared KaTeX adapter");
+else pass("GP → GS formula and parameters use KaTeX");
+try{
+ const source=sources["assets/js/glyphs.js"];
+ const match=source.match(/window\.calculateGlyphShardReward = amount => \{[\s\S]*?\n  \};/);
+ if(!match)throw new Error("Conversion reward function not found");
+ const context={window:{}};
+ vm.runInNewContext(match[0]+";globalThis.__reward=window.calculateGlyphShardReward;",context);
+ for(const [gpAmount,expected] of [[1000,1.5],[2000,4],[5000,17],[10000,60.5]]){
+   const actual=context.__reward(gpAmount);
+   if(Math.abs(actual-expected)>1e-10)throw new Error("Incorrect output for "+gpAmount+" GP: "+actual);
+ }
+ pass("GP → GS conversion formula runtime values (1,000 / 2,000 / 5,000 / 10,000 GP)");
+}catch(error){fail("GP → GS conversion runtime test: "+error.message)}
+if(!sources["assets/js/glyphs.js"].includes("formatConversionValue")||!sources["assets/js/glyphs.js"].includes("minimumFractionDigits: 1, maximumFractionDigits: 1")||!sources["assets/js/glyphs.js"].includes('formatConversionValue(reward) + " GS"'))fail("Fractional estimated GS output must show exactly one decimal place");
 if(!sources["assets/js/prestige.js"].includes("glyphShards,glyphGpInput,glyphOperationStartedAt,glyphOperationAmount,glyphOperationReward"))fail("GLYPH shard balance and active conversion must persist in the prestige save");
 if(!sources["assets/js/script.js"].includes("glyphShards=0;glyphGpInput=1000;glyphOperationStartedAt=0"))fail("Full RESET must clear GLYPH conversion progression");
 if(!read("assets/css/glyphs.css").includes(".glyph-progress-track")||!read("assets/css/glyphs.css").includes(".glyph-progress-fill"))fail("GLYPH converter progress bar styles are missing");
