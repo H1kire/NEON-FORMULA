@@ -637,7 +637,7 @@ if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math
 if(!scriptCore.includes('1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)'))fail("Letter Amplification must increase combined letter output by 0.1% per level");
 if(!scriptCore.includes('Math.sqrt(1+x)(1+Lx)')&&!scriptCore.includes('sqrt(1+x)(1+Lx)'))fail("Integral display must include the (1 + Lx) coefficient");
 if(!scriptCore.includes('w_i(1+Lw_i)')||!scriptCore.includes('n*w*(1+level*w)'))fail("Global Sum must apply the coefficient to every term weight");
-if(!scriptCore.includes('const weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
+if(!scriptCore.includes('weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
 if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
 try{
  const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity\)=>\{[\s\S]*?\n  \};/)?.[0];
@@ -653,11 +653,18 @@ try{
  const sumFunctions=scriptCore.match(/function getGlobalSumAdditionalWeight\(\)[\s\S]*?\nfunction getIntegralMultiplier\(\)/)?.[0];
  if(!sumFunctions)throw new Error("Global Sum and integral functions missing");
  const mathContext={prestigeUpgrades:{globalSum:2,simpleBoost:0,integralSumCoefficient:1},window:{getGlyphGlobalSumPercent:()=>0},Number,Math};
- vm.runInNewContext(sumFunctions+";globalThis.__sum=getGlobalSumMultiplier;globalThis.__integral=getIntegralMultiplier;",mathContext);
+ vm.runInNewContext(sumFunctions+";globalThis.__sum=getGlobalSumMultiplier;",mathContext);
  if(mathContext.__sum()!==6)throw new Error("L=1 must transform w0=1 and two additional w=1 terms to a total of 6");
  mathContext.prestigeUpgrades.globalSum=0;
  if(mathContext.__sum()!==1)throw new Error("Global Sum coefficient must remain inactive before Global Sum is purchased");
  pass("Integral/Sum coefficient respects k=1+L and unlock conditions");
+ const integralSource=scriptCore.match(/function getIntegralMultiplier\\(\\)[\\s\\S]*?\\nfunction getGain/)?.[0]?.split("\\nfunction getGain")[0];
+ if(!integralSource)throw new Error("Integral multiplier implementation missing");
+ const integralContext={getE:()=>2,safePow:(base,power)=>Math.pow(base,power),safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),prestigeUpgrades:{integralSumCoefficient:1}};
+ vm.runInNewContext(integralSource+";globalThis.__integral=getIntegralMultiplier;",integralContext);
+ const expectedIntegral=2/5*(Math.pow(3,2.5)-1);
+ if(Math.abs(integralContext.__integral()-expectedIntegral)>1e-10)throw new Error("L=1 integral must equal integral of (1+x)^(3/2) from 0 to 2");
+ pass("Analytical integral coefficient matches its exact antiderivative");
 }catch(error){fail("Batch / Additional Upgrade runtime test: "+error.message)}
 
 if(errors.length){process.stderr.write("\nAUDIT FAILED: "+errors.length+" issue(s)\n");for(const e of errors)process.stderr.write("  FAIL "+e+"\n");process.exitCode=1}else{process.stdout.write("\nAUDIT PASSED");if(warnings.length)process.stdout.write(" with warnings");process.stdout.write(".\n")}
