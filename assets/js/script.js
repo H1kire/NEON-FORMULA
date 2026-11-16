@@ -48,7 +48,7 @@ window.TimeDilation={
   const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(dilationCurrency,offset=>getDilationUpgradeCost(key,offset)):{count:1,total:getDilationUpgradeCost(key),affordable:dilationCurrency>=getDilationUpgradeCost(key)};
   if(!quote.count||!quote.affordable)return false;
   dilationCurrency-=quote.total;
-  for(let i=0;i<quote.count;i++){if(key==="i")dilationILevel++;else if(key==="k")dilationKLevel++;else if(key==="v")dilationVLevel++;else dilationTauLevel++}
+  if(key==="i")dilationILevel+=quote.count;else if(key==="k")dilationKLevel+=quote.count;else if(key==="v")dilationVLevel+=quote.count;else dilationTauLevel+=quote.count
   saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch();return true
  },
  setMode:enabled=>{if(dilationIntegrating)return false;if(enabled&&!window.isTimeDilationUnlocked?.())return false;dilationMode=!!enabled;lastFrame=performance.now();saveGame(true);updateUI();return true},
@@ -320,7 +320,7 @@ function purchaseLetterBatch(costGetter,remaining,apply){
  const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(value,costGetter,remaining,getLetterPriceGrowth()===1):{count:1,total:costGetter(),affordable:value>=costGetter()};
  if(!quote.count||!quote.affordable)return false;
  value-=quote.total;
- for(let i=0;i<quote.count;i++){apply();FA_META.stats.purchases++}
+ apply(quote.count);FA_META.stats.purchases+=quote.count
  saveMeta();lastLetterBatchRefresh=0;updateUI();return true;
 }
 let lastLetterBatchRefresh=0;
@@ -341,10 +341,10 @@ function refreshLetterBatchUI(force=false){
  }
 }
 window.refreshLetterBatchUI=()=>refreshLetterBatchUI(true);
-function buyA(){purchaseLetterBatch(getACost,Infinity,()=>aLevel++)}function buyB(){purchaseLetterBatch(getBCost,Infinity,()=>bLevel++)}function buyC(){purchaseLetterBatch(getCCost,Infinity,()=>cLevel++)}function buyD(){purchaseLetterBatch(getDCost,Infinity,()=>dLevel++)}function buyE(){purchaseLetterBatch(getECost,Infinity,()=>eLevel++)}
-function buyF(){purchaseLetterBatch(getFCost,Math.max(0,LETTER_F_MAX_LEVEL-fLevel),()=>fLevel++)}
-function buyG(){if(!window.isLetterGUnlocked?.())return;purchaseLetterBatch(getGCost,Infinity,()=>gLevel++)}
-function buyH(){if(!window.isLetterHUnlocked?.())return;purchaseLetterBatch(getHCost,Math.max(0,LETTER_H_MAX_LEVEL-hLevel),()=>hLevel++)}
+function buyA(){purchaseLetterBatch(getACost,Infinity,count=>aLevel+=count)}function buyB(){purchaseLetterBatch(getBCost,Infinity,count=>bLevel+=count)}function buyC(){purchaseLetterBatch(getCCost,Infinity,count=>cLevel+=count)}function buyD(){purchaseLetterBatch(getDCost,Infinity,count=>dLevel+=count)}function buyE(){purchaseLetterBatch(getECost,Infinity,count=>eLevel+=count)}
+function buyF(){purchaseLetterBatch(getFCost,Math.max(0,LETTER_F_MAX_LEVEL-fLevel),count=>fLevel+=count)}
+function buyG(){if(!window.isLetterGUnlocked?.())return;purchaseLetterBatch(getGCost,Infinity,count=>gLevel+=count)}
+function buyH(){if(!window.isLetterHUnlocked?.())return;purchaseLetterBatch(getHCost,Math.max(0,LETTER_H_MAX_LEVEL-hLevel),count=>hLevel+=count)}
 function updateFormulaText(){
  const sumLevel=Math.max(0,Number(prestigeUpgrades.globalSum)||0);
  const integralUnlocked=typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
