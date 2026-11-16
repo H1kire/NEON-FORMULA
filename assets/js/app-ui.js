@@ -14,8 +14,9 @@
   window.getMetaBonus=type=>{const l=meta.research;if(type==="efficiency")return 1+l[0]*.04;if(type==="letterExponentReduction")return Math.min(.99,l[1]*.001);if(type==="letterBaseReduction")return Math.min(.5,l[2]*.0001);if(type==="limitExpansion")return l[3];if(type==="coupling")return 1+l[4]*.02;if(type==="eInput")return 1+l[5]*.08;if(type==="time")return 1+l[6]*.04;if(type==="auto")return 1+l[7]*.1;if(type==="production")return 1+l[8]*.15;if(type==="prestige")return 1+l[9]*.1;return 1};
   const costs=[1,1,2,3,4,6,8,12,16,25],caps=[0,990,0,0,0,100,100,10,100,20];
   const formatSafe=n=>typeof format==="function"?format(n):String(n);
-  window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity)=>{
-    const mode=meta.buyQuantityMode,limit=Number.isFinite(maxCount)?Math.max(0,Math.floor(maxCount)):100000,target=mode==="max"?Math.min(limit,100000):Math.min(Number(mode)||1,limit);
+  window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity,constantCost=false)=>{
+    const mode=meta.buyQuantityMode,limit=Number.isFinite(maxCount)?Math.max(0,Math.floor(maxCount)):constantCost?Number.MAX_SAFE_INTEGER:100000,target=mode==="max"?Math.min(limit,constantCost?Number.MAX_SAFE_INTEGER:100000):Math.min(Number(mode)||1,limit);
+    if(mode==="max"&&constantCost){const cost=Number(costGetter(0)),count=Number.isFinite(cost)&&cost>0?Math.min(limit,Math.floor(balance/cost)):0,total=Math.min(Number.MAX_VALUE,count*cost);return {count,total,affordable:count>0&&total<=balance}}
     let total=0,count=0,overflow=false;
     while(count<target){const cost=Number(costGetter(count));if(!Number.isFinite(cost)||cost<=0)break;if(mode==="max"&&cost>Math.max(0,balance-total))break;if(cost>Number.MAX_VALUE-total)overflow=true;total=Math.min(Number.MAX_VALUE,total+cost);count++}
     return {count,total,affordable:count>0&&!overflow&&total<=balance};
