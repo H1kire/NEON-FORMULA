@@ -158,12 +158,12 @@
   }
 
   window.refreshGlyphConverter = () => {
+    renderConversionFormula();
     finishConversion();
     updateConverter();
   };
 
   window.refreshGlyphsAccess();
-  renderConversionFormula();
   initConverter();
   window.refreshGlyphConverter();
   setInterval(window.refreshGlyphConverter, 50);
