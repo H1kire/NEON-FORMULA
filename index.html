@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/glyphs.css">
 <link rel="stylesheet" href="assets/css/formula-math.css">
 </head>
 <body>
@@ -76,6 +76,113 @@
 <section id="dilationResearchPanel" class="research-subpage" hidden><div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="dilationResearchKicker">TEMPORAL RESEARCH</span></div><h2 data-i18n="dilationUpgTitle">Dilation Upg</h2></div><span class="section-count" data-i18n="dilationUpgCount">04 PARAMETERS</span></div><p class="dilation-research-description" id="dilationUpgDescription" data-i18n="dilationUpgDescription">Improve the function used to calculate ∆t₍dl₎. Each parameter can be upgraded independently.</p><div class="research-resource-strip"><span id="dilationResearchCurrencyLabel" data-i18n="dilationCurrencyLabel">BALANCE</span><strong id="dilationResearchCurrency">0</strong></div><div id="dilationResearchGrid" class="research-grid"></div></section></section><section class="page" id="page-tree" data-page="tree"><div class="page-heading tree-heading"><div><div class="section-kicker"><span class="kicker-line"></span> EXPANSION NETWORK</div><h1 data-i18n="treeTitle">Upgrade tree</h1><p data-i18n="treeSubtitle">2,084 nodes connected in a large network.</p></div><div class="tree-progress"><strong id="treeGpBalance">0 GP</strong><small data-i18n="genesisPoints">GENESIS POINTS</small><strong id="treeProgress">0 / 2084</strong><small data-i18n="nodesCompleted">NODES COMPLETED</small></div></div>
 <div class="tree-toolbar"><span id="treeStatus" data-i18n="treeStatus">Select a node to inspect its effect.</span><div><button onclick="treeZoom(-1)">−</button><button onclick="treeZoom(1)">+</button><button onclick="treeResetView()" data-i18n="centerTree">CENTER</button></div></div>
 <div class="tree-layout"><div class="tree-canvas-wrap"><canvas id="treeCanvas" aria-label="Interactive upgrade tree"></canvas><div class="tree-legend"><span class="legend-shape square"></span><span data-i18n="nodeTypeSquare">Content</span><span class="legend-shape circle"></span><span data-i18n="nodeTypeCircle">Standard</span><span class="legend-shape triangle"></span><span data-i18n="nodeTypeTriangle">Major</span><span class="legend-shape pentagon"></span><span data-i18n="nodeTypePentagon">Hyper</span></div></div><aside class="tree-inspector" id="treeInspector"><span class="inspector-id">NODE —</span><h3 data-i18n="selectNode">Select a node</h3><p data-i18n="selectNodeDesc">Choose a glowing node on the map to view its effect.</p><div class="inspector-level"><span data-i18n="level">LEVEL</span><strong id="nodeLevel">0 / 1</strong></div><div class="inspector-cost"><span data-i18n="cost">COST</span><strong id="nodeCost">—</strong></div><button id="nodeBuy" class="buy-button" disabled data-i18n="selectNode">SELECT NODE</button></aside></div>
+<section class="page glyphs-page" id="page-glyphs" data-page="glyphs">
+<div class="page-heading glyphs-heading">
+  <div class="section-kicker"><span class="kicker-line"></span><span data-i18n="glyphsKicker">GLYPH RESEARCH / RELIC SYSTEM</span></div>
+  <h1 data-i18n="glyphsTitle">Glyphs</h1>
+  <p data-i18n="glyphsSubtitle">A new layer of discovery. Shape, refine and preserve the power sealed within each glyph.</p>
+  <div class="glyphs-resource-strip">
+    <div class="glyph-resource gs"><span class="glyph-resource-symbol">✧</span><div class="glyph-resource-copy"><small>GLYPH SHARDS · GS</small><strong>—</strong></div></div>
+    <div class="glyph-resource gf"><span class="glyph-resource-symbol">◇</span><div class="glyph-resource-copy"><small>GLYPH FRAGMENTS · GF</small><strong>—</strong></div></div>
+    <div class="glyph-resource sc"><span class="glyph-resource-symbol">✦</span><div class="glyph-resource-copy"><small>SHINY CRYSTALS · SC</small><strong>—</strong></div></div>
+  </div>
+</div>
+<div class="module-tabs glyphs-tabs" role="tablist" aria-label="Glyph system sections">
+  <button class="menu-tab active" type="button" data-glyph-tab="converter" aria-selected="true" onclick="showGlyphTab('converter')" data-i18n="glyphsTabConverter">Converter</button>
+  <button class="menu-tab" type="button" data-glyph-tab="inventory" aria-selected="false" onclick="showGlyphTab('inventory')" data-i18n="glyphsTabInventory">Inventory</button>
+  <button class="menu-tab" type="button" data-glyph-tab="upgrades" aria-selected="false" onclick="showGlyphTab('upgrades')" data-i18n="glyphsTabUpgrades">Upgrades</button>
+  <button class="menu-tab" type="button" data-glyph-tab="synthesis" aria-selected="false" onclick="showGlyphTab('synthesis')" data-i18n="glyphsTabSynthesis">Synthesis / Ascension</button>
+</div>
+
+<section class="glyphs-panel active" id="glyphsConverterPanel" data-glyph-panel="converter">
+  <div class="glyphs-panel-shell">
+    <div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="glyphsConverterKicker">RESOURCE TRANSMUTATION</span></div><h2 data-i18n="glyphsConverterTitle">Converter</h2></div><span class="section-count">02 CONVERSION PATHS</span></div>
+    <p class="glyphs-description" data-i18n="glyphsConverterDesc">Transform Genesis resources into the materials required to create and develop glyphs.</p>
+    <div class="glyph-card-grid">
+      <article class="glyph-card">
+        <div class="glyph-card-heading"><span class="glyph-card-icon">✧</span><div><h3 data-i18n="glyphsGpToGs">Genesis → Glyph Shards</h3><small>GP → GS</small></div></div>
+        <div class="glyph-flow"><div class="glyph-flow-token gp"><div><strong>GP</strong><br><small>GENESIS</small></div></div><div class="glyph-flow-arrow">⟶</div><div class="glyph-flow-token gs"><div><strong>GS</strong><br><small>SHARDS</small></div></div></div>
+        <div class="glyph-card-meta"><div><small data-i18n="glyphsConversionRate">CONVERSION RATE</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong>—</strong></div></div>
+        <div class="glyph-pending" data-i18n="glyphsConversionPending">Conversion formula not configured</div>
+      </article>
+      <article class="glyph-card">
+        <div class="glyph-card-heading"><span class="glyph-card-icon">◇</span><div><h3 data-i18n="glyphsGsToGf">Glyph Shards → Glyph Fragments</h3><small>GS → GF</small></div></div>
+        <div class="glyph-flow"><div class="glyph-flow-token gs"><div><strong>GS</strong><br><small>SHARDS</small></div></div><div class="glyph-flow-arrow">⟶</div><div class="glyph-flow-token gf"><div><strong>GF</strong><br><small>FRAGMENTS</small></div></div></div>
+        <div class="glyph-card-meta"><div><small data-i18n="glyphsConversionRate">CONVERSION RATE</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">AVAILABLE BALANCE</small><strong>—</strong></div></div>
+        <div class="glyph-pending" data-i18n="glyphsConversionPending">Conversion formula not configured</div>
+      </article>
+    </div>
+    <div class="glyph-stage-note" data-i18n="glyphsStageNote">The converter is a visual framework for now. Resource balances, exchange rates and conversion actions will be connected in a later implementation stage.</div>
+  </div>
+</section>
+
+<section class="glyphs-panel" id="glyphsInventoryPanel" data-glyph-panel="inventory" hidden>
+  <div class="glyphs-panel-shell">
+    <div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="glyphsCollectionKicker">GLYPH COLLECTION</span></div><h2 data-i18n="glyphsInventoryTitle">Inventory</h2></div><span class="section-count" data-i18n="glyphsSlots">25 STORAGE SLOTS</span></div>
+    <p class="glyphs-description" data-i18n="glyphsInventoryDesc">Store discovered glyphs, choose one active relic and keep unwanted finds separate.</p>
+    <div class="glyph-inventory-layout">
+      <div class="glyph-inventory-main">
+        <div class="glyph-inventory-toolbar"><span data-i18n="glyphsStorage">GLYPH STORAGE · 25 / 25</span><button class="glyph-disabled-action" id="glyphCreateButton" type="button" disabled data-i18n="glyphsCreateGlyph">CREATE GLYPH <span>100 GF</span></button></div>
+        <div class="glyph-storage-grid" aria-label="25 empty glyph inventory slots">
+          <div class="glyph-storage-slot"><span>01</span></div><div class="glyph-storage-slot"><span>02</span></div><div class="glyph-storage-slot"><span>03</span></div><div class="glyph-storage-slot"><span>04</span></div><div class="glyph-storage-slot"><span>05</span></div>
+          <div class="glyph-storage-slot"><span>06</span></div><div class="glyph-storage-slot"><span>07</span></div><div class="glyph-storage-slot"><span>08</span></div><div class="glyph-storage-slot"><span>09</span></div><div class="glyph-storage-slot"><span>10</span></div>
+          <div class="glyph-storage-slot"><span>11</span></div><div class="glyph-storage-slot"><span>12</span></div><div class="glyph-storage-slot"><span>13</span></div><div class="glyph-storage-slot"><span>14</span></div><div class="glyph-storage-slot"><span>15</span></div>
+          <div class="glyph-storage-slot"><span>16</span></div><div class="glyph-storage-slot"><span>17</span></div><div class="glyph-storage-slot"><span>18</span></div><div class="glyph-storage-slot"><span>19</span></div><div class="glyph-storage-slot"><span>20</span></div>
+          <div class="glyph-storage-slot"><span>21</span></div><div class="glyph-storage-slot"><span>22</span></div><div class="glyph-storage-slot"><span>23</span></div><div class="glyph-storage-slot"><span>24</span></div><div class="glyph-storage-slot"><span>25</span></div>
+        </div>
+        <div class="glyph-rarity-legend" aria-label="Glyph rarity tiers">
+          <span class="glyph-rarity common">COMMON</span><span class="glyph-rarity uncommon">UNCOMMON</span><span class="glyph-rarity rare">RARE</span><span class="glyph-rarity epic">EPIC</span><span class="glyph-rarity legendary">LEGENDARY</span><span class="glyph-rarity divine">DIVINE</span><span class="glyph-rarity celestial">CELESTIAL</span><span class="glyph-rarity immortal">IMMORTAL</span>
+        </div>
+      </div>
+      <aside class="glyph-special-slots">
+        <div class="glyph-special-slot active-slot"><small data-i18n="glyphsActiveSlot">ACTIVE GLYPH</small><strong>✧</strong><div class="glyph-pending" data-i18n="glyphsNoActive">No glyph equipped</div></div>
+        <div class="glyph-special-slot discard-slot"><small data-i18n="glyphsDiscardSlot">DISCARD SLOT</small><strong>⌫</strong><div class="glyph-pending" data-i18n="glyphsDiscardHint">Place a glyph here to discard it</div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="glyphs-panel" id="glyphsUpgradesPanel" data-glyph-panel="upgrades" hidden>
+  <div class="glyphs-panel-shell">
+    <div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="glyphsProgressionKicker">GLYPH PROGRESSION</span></div><h2 data-i18n="glyphsUpgradesTitle">Upgrades</h2></div><span class="section-count">GS / GF / SC</span></div>
+    <p class="glyphs-description" data-i18n="glyphsUpgradesDesc">Three research branches will shape the creation, refinement and late-game potential of glyphs.</p>
+    <div class="glyph-upgrade-grid">
+      <article class="glyph-upgrade-card"><span class="glyph-card-icon">✧</span><h3 data-i18n="glyphsGsUpgrades">Glyph Shard Upgrades</h3><p data-i18n="glyphsGsDesc">A foundational branch powered by Glyph Shards.</p><div class="glyph-card-meta"><div><small data-i18n="glyphsUpgradeCount">UPGRADES</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">BALANCE</small><strong>— GS</strong></div></div><div class="glyph-pending" data-i18n="glyphsUpgradePending">Upgrade list not configured</div></article>
+      <article class="glyph-upgrade-card"><span class="glyph-card-icon">◇</span><h3 data-i18n="glyphsGfUpgrades">Glyph Fragment Upgrades</h3><p data-i18n="glyphsGfDesc">Improve glyph creation and the quality of generated relics.</p><div class="glyph-card-meta"><div><small data-i18n="glyphsUpgradeCount">UPGRADES</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">BALANCE</small><strong>— GF</strong></div></div><div class="glyph-pending" data-i18n="glyphsUpgradePending">Upgrade list not configured</div></article>
+      <article class="glyph-upgrade-card"><span class="glyph-card-icon">✦</span><h3 data-i18n="glyphsScUpgrades">Shiny Crystal Upgrades</h3><p data-i18n="glyphsScDesc">A distant progression layer for the rarest glyph tiers.</p><div class="glyph-card-meta"><div><small data-i18n="glyphsUpgradeCount">UPGRADES</small><strong>—</strong></div><div><small data-i18n="glyphsBalance">BALANCE</small><strong>— SC</strong></div></div><div class="glyph-pending" data-i18n="glyphsUpgradePending">Upgrade list not configured</div></article>
+    </div>
+  </div>
+</section>
+
+<section class="glyphs-panel" id="glyphsSynthesisPanel" data-glyph-panel="synthesis" hidden>
+  <div class="glyphs-panel-shell">
+    <div class="section-heading"><div><div class="section-kicker"><span class="kicker-line"></span><span data-i18n="glyphsTransmutationKicker">RITUAL WORKSHOP</span></div><h2 data-i18n="glyphsSynthesisTitle">Synthesis & Ascension</h2></div><span class="section-count">5 → 1 / PERMANENT</span></div>
+    <p class="glyphs-description" data-i18n="glyphsSynthesisDesc">Combine five equal-rarity glyphs into a higher tier, or sacrifice a glyph to preserve a fraction of its power permanently.</p>
+    <div class="glyph-workbench-grid">
+      <article class="glyph-workbench-card">
+        <div class="glyph-card-heading"><span class="glyph-card-icon">⟁</span><div><h3 data-i18n="glyphsSynthesisWorkbench">Synthesis</h3><small data-i18n="glyphsFiveInputs">FIVE INPUT GLYPHS</small></div></div>
+        <div class="glyph-pentagram-stage" aria-label="Five glyph input sockets surrounding one result socket">
+          <svg class="glyph-pentagram-lines" viewBox="0 0 300 280" aria-hidden="true"><path d="M150 24 L245 205 L38 92 L262 92 L55 205 Z"/></svg>
+          <div class="glyph-socket top">◇<small>01</small></div><div class="glyph-socket upper-right">◇<small>02</small></div><div class="glyph-socket lower-right">◇<small>03</small></div><div class="glyph-socket lower-left">◇<small>04</small></div><div class="glyph-socket upper-left">◇<small>05</small></div>
+          <div class="glyph-result-socket">✧<small data-i18n="glyphsResult">RESULT</small></div>
+        </div>
+        <div class="glyph-workbench-meta"><span data-i18n="glyphsSameRarity">SAME RARITY REQUIRED</span><span>5 : 1</span></div>
+        <div class="glyph-pending" data-i18n="glyphsSynthesisPending">Synthesis is not active yet</div>
+      </article>
+      <article class="glyph-workbench-card">
+        <div class="glyph-card-heading"><span class="glyph-card-icon">☼</span><div><h3 data-i18n="glyphsAscensionTitle">Ascension</h3><small data-i18n="glyphsPermanentProgression">PERMANENT PROGRESSION</small></div></div>
+        <p data-i18n="glyphsAscensionDesc">Sacrifice one glyph to retain a rarity-scaled fraction of its bonuses as permanent effects.</p>
+        <div class="glyph-ascension-sacrifice"><div class="glyph-sacrifice-slot"><strong>◇</strong><small data-i18n="glyphsSacrificeSlot">SACRIFICE GLYPH</small></div><div class="glyph-sacrifice-arrow">⟶</div><div class="glyph-bonus-slot"><strong>✧</strong><small data-i18n="glyphsPermanentBonus">PERMANENT BONUS</small></div></div>
+        <div class="glyph-workbench-meta"><span data-i18n="glyphsRetention">RETAINED POWER</span><span data-i18n="glyphsRarityScaled">RARITY SCALED</span></div>
+        <div class="glyph-retention-grid">
+          <div class="glyph-retention-item"><small>COMMON</small><strong>1 / 1,000</strong></div><div class="glyph-retention-item"><small>UNCOMMON</small><strong>1 / 750</strong></div><div class="glyph-retention-item"><small>RARE</small><strong>1 / 500</strong></div><div class="glyph-retention-item"><small>EPIC</small><strong>1 / 250</strong></div>
+          <div class="glyph-retention-item"><small>LEGENDARY</small><strong>1 / 125</strong></div><div class="glyph-retention-item"><small>DIVINE</small><strong>1 / 62.5</strong></div><div class="glyph-retention-item"><small>CELESTIAL</small><strong>1 / 31.25</strong></div><div class="glyph-retention-item"><small>IMMORTAL</small><strong>1 / 15.625</strong></div>
+        </div>
+        <div class="glyph-pending" data-i18n="glyphsAscensionPending">Ascension is not active yet</div>
+      </article>
+    </div>
+  </div>
+</section>
 </section>
 </main>
 
@@ -85,12 +192,13 @@
 <button class="nav-button active" data-page-target="formula" onclick="navigate('formula')"><span class="nav-icon">ƒ</span><span data-i18n="formulaUpgrades">Formula upgrades</span></button>
 <button class="nav-button" data-page-target="research" onclick="navigate('research')"><span class="nav-icon">✦</span><span data-i18n="research">Research</span></button>
 <button class="nav-button locked-nav" id="treeNav" data-page-target="tree" onclick="navigate('tree')" disabled><span class="nav-icon">⌘</span><span data-i18n="upgradeTree">Upgrade tree</span><span class="nav-lock">LOCKED</span></button>
+<button class="nav-button" id="glyphsNav" data-page-target="glyphs" onclick="navigate('glyphs')" hidden disabled><span class="nav-icon">✧</span><span data-i18n="glyphsNav">Glyphs</span></button>
 <div class="nav-footer"><span class="status-dot"></span><small>LOCAL SAVE</small></div>
 </nav>
 </div>
 <footer class="footer"><span>FORMULA ASCENT <b>·</b> IDLE EXPERIMENT</span><span>KEEP ITERATING <i>✳</i></span></footer>
 </div>
-<script src="assets/js/storage.js"></script><script src="assets/js/prestige.js"></script><script src="assets/js/tree.js"></script><script src="assets/js/app-ui.js"></script>
+<script src="assets/js/storage.js"></script><script src="assets/js/prestige.js"></script><script src="assets/js/tree.js"></script><script src="assets/js/app-ui.js"></script><script src="assets/js/glyphs.js"></script>
 <script src="assets/vendor/katex/katex.min.js"></script><script src="assets/js/formula-renderer.js"></script>
 <script src="assets/js/script.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
