@@ -519,7 +519,7 @@ else pass("Full RESET clears run, AP/GP, prestige upgrades, Research, automation
 if(/cloudSave|firebase|saveToCloud|deleteCloud|cloudRestore/.test(resetSource))fail("Full RESET must not access Firebase or cloud-save operations");
 else pass("Full RESET is local-only and leaves Firebase cloud storage untouched");
 try{
- const costStart=prestigeSource.indexOf("function getGlobalSumCost(offset=0)"),costEnd=prestigeSource.indexOf("\\nfunction getIntegralSumCoefficientCost",costStart),costSource=costStart>=0&&costEnd>costStart?prestigeSource.slice(costStart,costEnd):null;
+ const costStart=prestigeSource.indexOf("function getGlobalSumCost(offset=0)"),costEnd=prestigeSource.indexOf("function getIntegralSumCoefficientCost",costStart),costSource=costStart>=0&&costEnd>costStart?prestigeSource.slice(costStart,costEnd):null;
  if(!costSource)throw new Error("Global Sum cost function missing");
  const costContext={prestigeUpgrades:{globalSum:0}};
  vm.runInNewContext(costSource+";globalThis.__cost=getGlobalSumCost;",costContext);
@@ -658,7 +658,7 @@ try{
  mathContext.prestigeUpgrades.globalSum=0;
  if(mathContext.__sum()!==1)throw new Error("Global Sum coefficient must remain inactive before Global Sum is purchased");
  pass("Integral/Sum coefficient respects k=1+L and unlock conditions");
- const integralStart=scriptCore.indexOf("function getIntegralMultiplier()"),integralEnd=scriptCore.indexOf("\\nfunction getGain",integralStart),integralSource=integralStart>=0&&integralEnd>integralStart?scriptCore.slice(integralStart,integralEnd):null;
+ const integralStart=scriptCore.indexOf("function getIntegralMultiplier()"),integralEnd=scriptCore.indexOf("function getGain",integralStart),integralSource=integralStart>=0&&integralEnd>integralStart?scriptCore.slice(integralStart,integralEnd):null;
  if(!integralSource)throw new Error("Integral multiplier implementation missing");
  const integralContext={getE:()=>2,safePow:(base,power)=>Math.pow(base,power),safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),prestigeUpgrades:{integralSumCoefficient:1}};
  vm.runInNewContext(integralSource+";globalThis.__integral=getIntegralMultiplier;",integralContext);
