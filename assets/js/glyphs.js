@@ -130,12 +130,14 @@
     input.value = String(glyphGpInput || MIN_GP_CONVERSION);\n    input.addEventListener("input", () => { glyphGpInput = Math.max(MIN_GP_CONVERSION, Math.floor(Number(input.value) || MIN_GP_CONVERSION)); updateConverter(); });
     input.addEventListener("change", () => {
       const amount = Math.floor(Number(input.value));
-      if (Number.isFinite(amount) && amount >= MIN_GP_CONVERSION) input.value = String(amount);
+      if (Number.isFinite(amount) && amount >= MIN_GP_CONVERSION) { input.value = String(amount); glyphGpInput = amount; if (typeof savePrestige === "function") savePrestige(); }
       updateConverter();
     });
     button.addEventListener("click", startConversion);
     maxButton?.addEventListener("click", () => {
       input.value = String(Math.floor(Math.max(0, Number(gp) || 0)));
+      glyphGpInput = Math.max(MIN_GP_CONVERSION, Math.floor(Number(input.value) || MIN_GP_CONVERSION));
+      if (typeof savePrestige === "function") savePrestige();
       updateConverter();
     });
     updateConverter();
