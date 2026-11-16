@@ -228,7 +228,7 @@ const letterFChecks=[
  ['if(fLevel<=0||!unlocked||t<5)return 1','Letter F remains neutral until purchased, unlocked and t reaches 5 seconds'],
  ['const LETTER_F_BASE_EXPONENT=0.40','Letter F starts at exponent 0.40'],
  ['const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501','Letter F has a bounded upgrade progression'],
- ['function getFCost()','Letter F uses the shared letter price curve'],
+ ['function getFCost(offset=0)','Letter F uses the shared letter price curve'],
  ['if(fLevel<=0||!unlocked||t<5)return 1','Letter F is inactive until purchased, unlocked and t reaches five seconds'],
  ['function buyF()','Letter F can be purchased and upgraded'],
  ['fLevel,gLevel,hLevel,fExponent:getFExponent()','Letter F–H levels and F exponent are exposed'],
@@ -452,7 +452,7 @@ if(!timingSource.includes("factors.push(getGlobalSumMultiplier(),letterProduct,1
 if(!timingSource.includes("function getIntegralMultiplier()")||!timingSource.includes("factors.push(getIntegralMultiplier())"))fail("NODE #0001 integral must multiply production after it is permanently unlocked");
 if(!timingSource.includes("const sumTerm=sumLevel>0?"))fail("Displayed formula must show Global Sum only after it is purchased");
 if(!timingSource.includes('const productTerm="\\\\prod_{\\\\ell\\\\in\\\\mathcal{L}}\\\\ell"'))fail("Displayed formula must use compact product notation for A–E");
-if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}"))fail("Displayed formula must place the complete multiplier product inside the integral");
+if(!timingSource.includes("\\\\int_{0}^{e}\\\\sqrt{1+x}(1+Lx)"))fail("Displayed formula must place the complete multiplier product inside the integral");
 if(!timingSource.includes("const formulaLetterGetters=[getA,getB,getC,getD,getE,getF,getG,getH]"))fail("All current letter multipliers, including F–H, must be registered inside the global sum");
 if(!timingSource.includes("Math.log1p(t)")||!timingSource.includes("Math.log1p(upper)")||!timingSource.includes("Math.exp(powered)"))fail("Letter F must use the agreed integral-exponential formula");
 if(!timingSource.includes("if(aLevel>0)active.push(getA())")||!timingSource.includes("if(bLevel>0)active.push(getB())")||!timingSource.includes("if(cLevel>0)active.push(getC())")||!timingSource.includes("if(dLevel>0)active.push(getD())")||!timingSource.includes("if(eLevel>0)active.push(getE())"))fail("A–E multipliers must join the production product only after their first purchase");
@@ -504,7 +504,7 @@ if(!prestigeSource.includes("fLevel=0")||!prestigeSource.includes("gLevel=0")||!
 const resetSource=sources["assets/js/script.js"].match(/function resetSave\(\)[\s\S]*?\n\}/)?.[0]||"";
 const resetRequirements=[
  "resetRun()","p=0;gp=0;prestigeUnlocked=false",
- "prestigeUpgrades={simpleBoost:0,globalSum:0}",
+ "prestigeUpgrades={simpleBoost:0,globalSum:0,integralSumCoefficient:0,letterValueBoost:0}",
  "FA_META.research=Array(10).fill(0)",
  "FA_META.automation={unlocked:Array(8).fill(false),enabled:Array(8).fill(true),paused:false}",
  "FA_META.treeUnlocked=false","FA_META.treePassPurchased=false","FA_META.settings.miniUpgrades=false",
@@ -519,7 +519,7 @@ else pass("Full RESET clears run, AP/GP, prestige upgrades, Research, automation
 if(/cloudSave|firebase|saveToCloud|deleteCloud|cloudRestore/.test(resetSource))fail("Full RESET must not access Firebase or cloud-save operations");
 else pass("Full RESET is local-only and leaves Firebase cloud storage untouched");
 try{
- const costSource=prestigeSource.match(/function getGlobalSumCost\(\)[\s\S]*?\}/)?.[0];
+ const costStart=prestigeSource.indexOf("function getGlobalSumCost(offset=0)"),costEnd=prestigeSource.indexOf("\\nfunction getIntegralSumCoefficientCost",costStart),costSource=costStart>=0&&costEnd>costStart?prestigeSource.slice(costStart,costEnd):null;
  if(!costSource)throw new Error("Global Sum cost function missing");
  const costContext={prestigeUpgrades:{globalSum:0}};
  vm.runInNewContext(costSource+";globalThis.__cost=getGlobalSumCost;",costContext);
@@ -527,7 +527,7 @@ try{
  for(let i=0;i<levels.length;i++){costContext.prestigeUpgrades.globalSum=levels[i];if(costContext.__cost()!==costs[i])throw new Error("Wrong AP cost at Global Sum n="+levels[i]+": "+costContext.__cost())}
  costContext.prestigeUpgrades.globalSum=6;if(costContext.__cost()!==Number.MAX_SAFE_INTEGER)throw new Error("Completed Global Sum must report a capped cost");
  pass("Global Sum AP costs preserve 1 / 1K / 1M / 1B / 1T progression while n starts at 2");
- const legacyCostSource=prestigeSource.match(/function getSimpleBoostCost\(\)[\s\S]*?\}/)?.[0];
+ const legacyStart=prestigeSource.indexOf("function getSimpleBoostCost(offset=0)"),legacyEnd=prestigeSource.indexOf("\\nfunction getGlobalSumCost",legacyStart),legacyCostSource=legacyStart>=0&&legacyEnd>legacyStart?prestigeSource.slice(legacyStart,legacyEnd):null;
  if(!legacyCostSource)throw new Error("Ascension Legacy cost function missing");
  const legacyContext={prestigeUpgrades:{simpleBoost:0}};
  vm.runInNewContext(legacyCostSource+";globalThis.__legacyCost=getSimpleBoostCost;",legacyContext);
@@ -635,7 +635,7 @@ if(!appUiSource.includes('caps=[0,990,0,0,0,100,100,10,100,20]'))fail("Research 
 if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity)')||!appUiSource.includes('costGetter(count)')||!html.includes('id="buyQuantitySelectFormula"')||!html.includes('id="buyQuantitySelectResearch"'))fail("Shared 1 / 5 / 25 / MAX batch purchase controls are incomplete");
 if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset)'))fail("Additional upgrades #3 and #4 must use their configured C0 and growth ratios");
 if(!scriptCore.includes('1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)'))fail("Letter Amplification must increase combined letter output by 0.1% per level");
-if(!scriptCore.includes('Math.sqrt(1+x)(1+Lx)')&&!scriptCore.includes('sqrt(1+x)(1+Lx)'))fail("Integral display must include the (1 + Lx) coefficient");
+if(!scriptCore.includes('sqrt{1+x}(1+Lx)'))fail("Integral display must include the (1 + Lx) coefficient");
 if(!scriptCore.includes('w_i(1+Lw_i)')||!scriptCore.includes('n*w*(1+level*w)'))fail("Global Sum must apply the coefficient to every term weight");
 if(!scriptCore.includes('weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
 if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
@@ -658,7 +658,7 @@ try{
  mathContext.prestigeUpgrades.globalSum=0;
  if(mathContext.__sum()!==1)throw new Error("Global Sum coefficient must remain inactive before Global Sum is purchased");
  pass("Integral/Sum coefficient respects k=1+L and unlock conditions");
- const integralSource=scriptCore.match(/function getIntegralMultiplier\\(\\)[\\s\\S]*?\\nfunction getGain/)?.[0]?.split("\\nfunction getGain")[0];
+ const integralStart=scriptCore.indexOf("function getIntegralMultiplier()"),integralEnd=scriptCore.indexOf("\\nfunction getGain",integralStart),integralSource=integralStart>=0&&integralEnd>integralStart?scriptCore.slice(integralStart,integralEnd):null;
  if(!integralSource)throw new Error("Integral multiplier implementation missing");
  const integralContext={getE:()=>2,safePow:(base,power)=>Math.pow(base,power),safeProduct:(...values)=>values.reduce((a,b)=>a*b,1),prestigeUpgrades:{integralSumCoefficient:1}};
  vm.runInNewContext(integralSource+";globalThis.__integral=getIntegralMultiplier;",integralContext);
