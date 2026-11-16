@@ -134,7 +134,7 @@ const treeStructureChecks=[
  ['if(id===3)return "square"','NODE #0004 is a square content node'],
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
- ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000','G/H gates and Miniaturization cost 25/50/10 GP'],
+ ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000:n.id===2112?10000','G/H gates and Miniaturization cost 25/50/10 GP'],
  ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0)||(n.id===2112&&nodes[2049].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
@@ -143,6 +143,7 @@ const treeStructureChecks=[
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
 if(!treeSource.includes('const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||""'))fail("Upgrade Tree must reserve NODE #1987–#1990 for letters G–J");else pass("Upgrade Tree G–J gate assignments");
+if(!treeSource.includes("n.id===2112?10000")||!treeSource.includes("n.id===2112?10000:Math.ceil(n.cost*Math.pow(1.55,level))"))fail("NODE #2113 must cost and refund exactly 10,000 GP");else pass("NODE #2113 purchase and refund cost: 10,000 GP");
 if(!treeSource.includes("window.isGlyphsUnlocked=()=>nodes[2112].level>0")||!treeSource.includes("(n.id===2112&&nodes[2049].level>0)")||!treeSource.includes("const glyphsNode=innovationNode&&n.id===2112")||!treeSource.includes("if(n.id===2112&&window.refreshGlyphsAccess)window.refreshGlyphsAccess()"))fail("NODE #2113 must unlock GLYPH only after NODE #2050 is purchased");else pass("NODE #2113 GLYPH gate and access refresh");
 if(!html.includes('id="glyphsNav"')||!html.includes('id="page-glyphs"')||!html.includes('id="glyphsConverterPanel"')||!html.includes('id="glyphsInventoryPanel"')||!html.includes('id="glyphsUpgradesPanel"')||!html.includes('id="glyphsSynthesisPanel"'))fail("GLYPH navigation or one of its four panels is missing");
 if((html.match(/class="glyph-storage-slot"/g)||[]).length!==25)fail("GLYPH inventory must contain exactly 25 storage slots");
