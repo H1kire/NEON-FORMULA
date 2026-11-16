@@ -339,7 +339,7 @@ function refreshLetterBatchCards(force=false){
   setBtn(button,shownCost);
   const disabled=maxed||!quote.count||!quote.affordable;if(button.disabled!==disabled)button.disabled=disabled;
   const level=({a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel})[key];
-  const label=quote.count>1?tr(upgradeKey)+" ×"+quote.count:firstKey&&level===0?tr(firstKey):tr(upgradeKey);
+  const label=firstKey&&level===0?tr(firstKey):tr(upgradeKey);
   if(button.textContent!==label)button.textContent=label;
  }
 }
@@ -361,9 +361,8 @@ function updateFormulaText(){
  }else{
   latex="\\begin{aligned}f(t)&=t^{2}\\cdot"+sumTerm+productTerm;
  }
- if(coefficientPurchased)latex+="\\quad k=1+L";
  latex+="\\end{aligned}";
- const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x)"+(coefficientPurchased?"k":"")+" × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ"+(coefficientPurchased?"k":"")+" × ":"")+"Π(all letter modules)"+(coefficientPurchased?", k=1+L":"");
+ const plain="f(t)=t² × "+(integralUnlocked?"∫₀ᵉ √(1+x)"+(coefficientPurchased?"k":"")+" × ":"")+(sumLevel>0?"Σ(i=0…"+sumLevel+") wᵢ"+(coefficientPurchased?"k":"")+" × ":"")+"Π(all letter modules)";
  if(window.FAFormula&&window.katex)FAFormula.render("formulaText",latex,{displayMode:true});else formulaDisplay.textContent=plain;
 }
 function updateUI(){
@@ -389,7 +388,6 @@ function updateUI(){
   $("gFormula").textContent="g(t) = 5L% × x² / (1 + x²), x = ln(1 + t) / 5";
   $("hFormula").textContent="h(t) = W₀(t / 10)^max(1, log"+getHBase().toFixed(3)+"(a·b·c·d))";
  }
- setBtn(btnA,getACost());setBtn(btnB,getBCost());setBtn(btnC,getCCost());setBtn(btnD,getDCost());setBtn(btnE,getECost());
  for(const [id,cost] of [["aCost",getACost()],["bCost",getBCost()],["cCost",getCCost()],["dCost",getDCost()],["eCost",getECost()]]){if(window.FAFormula)FAFormula.renderText(id,format(cost));else $(id).textContent=format(cost)}
  for(const b of [btnA,btnB,btnC,btnD,btnE])b.textContent=tr("buyUpgrade");
  const letterFUnlocked=typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked();
@@ -399,7 +397,6 @@ function updateUI(){
   const fLevelDisplay=$("fLevel"),fCostDisplay=$("fCost"),fBuyButton=$("btnF");
   if(fLevelDisplay)fLevelDisplay.textContent=fLevel;
   if(fCostDisplay){if(fLevel>=LETTER_F_MAX_LEVEL)fCostDisplay.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText("fCost",format(getFCost()));else fCostDisplay.textContent=format(getFCost())}
-  if(fBuyButton){setBtn(fBuyButton,getFCost());fBuyButton.disabled=fLevel>=LETTER_F_MAX_LEVEL;fBuyButton.textContent=fLevel===0?tr("buyF"):tr("buyUpgrade");}
   const letterGUnlocked=typeof window.isLetterGUnlocked==="function"&&window.isLetterGUnlocked();
   const letterHUnlocked=typeof window.isLetterHUnlocked==="function"&&window.isLetterHUnlocked();
   const gCard=$("letterGUpgrade"),hCard=$("letterHUpgrade"),gRow=$("formulaValueGRow"),hRow=$("formulaValueHRow");
@@ -407,10 +404,8 @@ function updateUI(){
   if(hCard)hCard.hidden=!letterHUnlocked;if(hRow)hRow.hidden=!letterHUnlocked;
   const gLevelDisplay=$("gLevel"),gCostDisplay=$("gCost"),gBuyButton=$("btnG");
   if(gLevelDisplay)gLevelDisplay.textContent=gLevel;if(gCostDisplay){if(window.FAFormula)FAFormula.renderText("gCost",format(getGCost()));else gCostDisplay.textContent=format(getGCost())}
-  if(gBuyButton){setBtn(gBuyButton,getGCost());gBuyButton.textContent=gLevel===0?tr("buyG"):tr("buyUpgrade");}
   const hLevelDisplay=$("hLevel"),hCostDisplay=$("hCost"),hBuyButton=$("btnH");
   if(hLevelDisplay)hLevelDisplay.textContent=hLevel;if(hCostDisplay){if(hLevel>=LETTER_H_MAX_LEVEL)hCostDisplay.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText("hCost",format(getHCost()));else hCostDisplay.textContent=format(getHCost())}
-  if(hBuyButton){setBtn(hBuyButton,getHCost());hBuyButton.disabled=hLevel>=LETTER_H_MAX_LEVEL;hBuyButton.textContent=hLevel===0?tr("buyH"):tr("buyUpgrade");}
   const liveValues={a:getA(),b:getB(),c:getC(),d:getD(),e:getE(),f:getF(),g:getG()*100,h:getH()};
   for(const letter of ["a","b","c","d","e","f","g","h"]){
    const display=$("formulaValue"+letter.toUpperCase());
