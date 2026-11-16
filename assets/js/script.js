@@ -174,7 +174,8 @@ function getLetterProduct(){
  if(eLevel>0)active.push(getE());
  if(fLevel>0&&typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked())active.push(getF());
  if(hLevel>0&&typeof window.isLetterHUnlocked==="function"&&window.isLetterHUnlocked())active.push(getH());
- return safeProduct(...active,...formulaLetterGetters.slice(8).map(getter=>getter()),typeof window.getGlyphLetterValueMultiplier==="function"?window.getGlyphLetterValueMultiplier():1);
+ const extraLetters=formulaLetterGetters.slice(8).map(getter=>getter()),activeLetterCount=active.length+extraLetters.length,letterBoost=activeLetterCount?Math.pow(1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0),activeLetterCount):1;
+ return safeProduct(...active,...extraLetters,letterBoost,typeof window.getGlyphLetterValueMultiplier==="function"?window.getGlyphLetterValueMultiplier():1);
 }
 window.FAMathSystem={
  getEffectiveLevel:getEffectiveLetterLevel,
@@ -298,7 +299,7 @@ function getGain(){
  const formulaTime=typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1;
  const factors=[safeProduct(t,t,formulaTime,formulaTime)];
  if(integralUnlocked)factors.push(getIntegralMultiplier());
- factors.push(getGlobalSumMultiplier(),letterProduct,1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0),boost);
+ factors.push(getGlobalSumMultiplier(),letterProduct,boost);
  let result=safeProduct(...factors);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
