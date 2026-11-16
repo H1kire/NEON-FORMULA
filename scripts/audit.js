@@ -650,7 +650,7 @@ try{
  const max=context.__quote(16,offset=>Math.pow(2,offset));
  if(max.count!==4||max.total!==15||max.affordable!==true)throw new Error("MAX must buy exactly the affordable sequential levels");
  pass("Batch quote sums sequential costs and calculates MAX affordability");
- const sumFunctions=scriptCore.match(/function getGlobalSumAdditionalWeight\(\)[\s\S]*?\nfunction getIntegralMultiplier\(\)/)?.[0];
+ const sumStart=scriptCore.indexOf("function getGlobalSumAdditionalWeight()"),sumEnd=scriptCore.indexOf("function getIntegralMultiplier()",sumStart),sumFunctions=sumStart>=0&&sumEnd>sumStart?scriptCore.slice(sumStart,sumEnd):null;
  if(!sumFunctions)throw new Error("Global Sum and integral functions missing");
  const mathContext={prestigeUpgrades:{globalSum:2,simpleBoost:0,integralSumCoefficient:1},window:{getGlyphGlobalSumPercent:()=>0},Number,Math};
  vm.runInNewContext(sumFunctions+";globalThis.__sum=getGlobalSumMultiplier;",mathContext);
