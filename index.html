@@ -146,17 +146,12 @@
     </section>
     <div class="glyph-inventory-layout">
       <div class="glyph-inventory-main">
-        <div class="glyph-inventory-toolbar"><span data-i18n="glyphsStorage">GLYPH STORAGE · 25 / 25</span><span class="glyph-storage-capacity">25 <i>/</i> 25</span></div>
-        <div class="glyph-storage-grid" id="glyphStorageGrid" aria-label="25 glyph inventory slots">
-          <div class="glyph-storage-slot"><span>01</span></div><div class="glyph-storage-slot"><span>02</span></div><div class="glyph-storage-slot"><span>03</span></div><div class="glyph-storage-slot"><span>04</span></div><div class="glyph-storage-slot"><span>05</span></div>
-          <div class="glyph-storage-slot"><span>06</span></div><div class="glyph-storage-slot"><span>07</span></div><div class="glyph-storage-slot"><span>08</span></div><div class="glyph-storage-slot"><span>09</span></div><div class="glyph-storage-slot"><span>10</span></div>
-          <div class="glyph-storage-slot"><span>11</span></div><div class="glyph-storage-slot"><span>12</span></div><div class="glyph-storage-slot"><span>13</span></div><div class="glyph-storage-slot"><span>14</span></div><div class="glyph-storage-slot"><span>15</span></div>
-          <div class="glyph-storage-slot"><span>16</span></div><div class="glyph-storage-slot"><span>17</span></div><div class="glyph-storage-slot"><span>18</span></div><div class="glyph-storage-slot"><span>19</span></div><div class="glyph-storage-slot"><span>20</span></div>
-          <div class="glyph-storage-slot"><span>21</span></div><div class="glyph-storage-slot"><span>22</span></div><div class="glyph-storage-slot"><span>23</span></div><div class="glyph-storage-slot"><span>24</span></div><div class="glyph-storage-slot"><span>25</span></div>
-        </div>
+        <div class="glyph-inventory-toolbar"><span data-i18n="glyphsStorage">GLYPH STORAGE</span><div class="glyph-page-controls"><span class="glyph-storage-capacity">0 / 28</span><button type="button" id="glyphPrevPage" aria-label="Previous inventory page" disabled>‹</button><span id="glyphPageLabel">1 / 1</span><button type="button" id="glyphNextPage" aria-label="Next inventory page" disabled>›</button></div></div>
+        <div class="glyph-storage-grid" id="glyphStorageGrid" aria-label="28 glyph inventory slots" data-glyph-drop="storage"></div>
         <div class="glyph-rarity-legend" aria-label="Glyph rarity tiers">
           <span class="glyph-rarity common">COMMON</span><span class="glyph-rarity uncommon">UNCOMMON</span><span class="glyph-rarity rare">RARE</span><span class="glyph-rarity epic">EPIC</span><span class="glyph-rarity legendary">LEGENDARY</span><span class="glyph-rarity divine">DIVINE</span><span class="glyph-rarity celestial">CELESTIAL</span><span class="glyph-rarity immortal">IMMORTAL</span>
         </div>
+      <section class="glyph-bonus-overview"><div class="glyph-detail-heading"><span class="glyph-detail-kicker" data-i18n="glyphsEffectsKicker">ACTIVE EFFECTS</span><h3 data-i18n="glyphsEffectsTitle">Equipped glyph bonuses</h3></div><div id="glyphAggregateBonuses" class="glyph-aggregate-list"><p class="glyph-empty-state" data-i18n="glyphsNoEquipped">No glyph bonuses are active.</p></div></section>
       </div>
       <aside class="glyph-inventory-side">
         <section class="glyph-equipped-panel">
@@ -174,12 +169,13 @@
           <div class="glyph-equip-caption" data-i18n="glyphsEquipProgress">ONE SLOT AVAILABLE · FIVE LOCKED</div>
         </section>
         <section class="glyph-discard-panel">
-          <div class="glyph-side-heading"><span data-i18n="glyphsDiscardSlot">DISCARD SLOT</span><small>⌫</small></div>
-          <div class="glyph-storage-slot glyph-discard-cell" aria-label="Empty glyph discard slot"><span>⌫</span></div>
+          <div class="glyph-side-heading"><span data-i18n="glyphsDiscardSlot">DISCARD SLOT</span></div>
+          <div class="glyph-storage-slot glyph-discard-cell" aria-label="Drop a glyph here to discard it" data-glyph-drop="discard"></div>
           <p data-i18n="glyphsDiscardHint">Place a glyph here to discard it</p>
         </section>
-      <section class="glyph-bonus-overview"><div class="glyph-detail-heading"><span class="glyph-detail-kicker" data-i18n="glyphsEffectsKicker">ACTIVE EFFECTS</span><h3 data-i18n="glyphsEffectsTitle">Equipped glyph bonuses</h3></div><div id="glyphAggregateBonuses" class="glyph-aggregate-list"><p class="glyph-empty-state" data-i18n="glyphsNoEquipped">No glyph bonuses are active.</p></div></section>
-      <section class="glyph-detail-panel" id="glyphDetailPanel"><div class="glyph-detail-heading"><span class="glyph-detail-kicker" data-i18n="glyphsDetailsKicker">GLYPH ANALYSIS</span><h3 data-i18n="glyphsDetailsTitle">Glyph details</h3></div><div id="glyphDetailContent" class="glyph-detail-content"><div class="glyph-detail-empty"><span>⧖</span><p>Create or select a glyph to inspect its properties.</p></div></div></section>
+        <section class="glyph-detail-panel" id="glyphDetailPanel"><div class="glyph-detail-heading"><span class="glyph-detail-kicker" data-i18n="glyphsDetailsKicker">GLYPH ANALYSIS</span><h3 data-i18n="glyphsDetailsTitle">Glyph details</h3></div><div id="glyphDetailContent" class="glyph-detail-content"><div class="glyph-detail-empty"><span>⧖</span><p>Create or select a glyph to inspect its properties.</p></div></div></section>
+      
+      
       </aside>
     </div>
   </div>
