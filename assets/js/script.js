@@ -34,7 +34,7 @@ function safeLogProduct(...values){return Math.log1p(safeProduct(...values))}
 function getDilationLevels(){return {i:dilationILevel,k:dilationKLevel,v:dilationVLevel,tau:dilationTauLevel}}
 function getDilationParameters(){return {i:1+dilationILevel,k:1+0.1*dilationKLevel,v:1+0.5*dilationVLevel,tau:1+0.05*dilationTauLevel}}
 function getDilationTimeSpeed(){return 1+0.05*dilationTauLevel}
-function getDilationUpgradeCost(key){const level=({i:dilationILevel,k:dilationKLevel,v:dilationVLevel,tau:dilationTauLevel})[key],pricing={i:{base:100000,ratio:2.5},v:{base:250000,ratio:3},k:{base:1000000,ratio:3.5},tau:{base:1000,ratio:10}}[key];if(level===undefined||!pricing)return Number.MAX_SAFE_INTEGER;const cost=pricing.base*Math.pow(pricing.ratio,level);return Number.isFinite(cost)?Math.min(Number.MAX_SAFE_INTEGER,Math.ceil(cost)):Number.MAX_SAFE_INTEGER}
+function getDilationUpgradeCost(key,offset=0){const level=({i:dilationILevel,k:dilationKLevel,v:dilationVLevel,tau:dilationTauLevel})[key]+offset,pricing={i:{base:100000,ratio:2.5},v:{base:250000,ratio:3},k:{base:1000000,ratio:3.5},tau:{base:1000,ratio:10}}[key];if(level===undefined||!pricing)return Number.MAX_SAFE_INTEGER;const cost=pricing.base*Math.pow(pricing.ratio,level);return Number.isFinite(cost)?Math.min(Number.MAX_SAFE_INTEGER,Math.ceil(cost)):Number.MAX_SAFE_INTEGER}
 function calculateDilationReward(upper=dilationTime){const {i,k,v}=getDilationParameters(),power=safePow(1+safeProduct(v,Math.max(0,upper)),k+1),difference=Math.max(0,power-1),factor=i/(v*(k+1));return Math.min(Number.MAX_VALUE,safeProduct(factor,difference))}
 function completeDilationIntegration(){if(!dilationIntegrating)return;dilationCurrency=Math.min(Number.MAX_VALUE,dilationCurrency+dilationOperationReward);dilationTime=0;dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch()}
 function updateTimeDilationUI(){const unlocked=typeof window.isTimeDilationUnlocked==="function"&&window.isTimeDilationUnlocked(),parameters=getDilationParameters(),timeTab=$("timeDilationTab"),modeToggle=$("dilationModeToggle"),timeDisplay=$("dilationTimeDisplay"),currencyDisplay=$("dilationCurrencyDisplay"),researchCurrency=$("dilationResearchCurrency"),integrate=$("dilationIntegrateBtn"),progressTrack=$("dilationProgressTrack"),progressFill=$("dilationProgressFill"),status=$("dilationOperationStatus"),threshold=$("dilationThresholdText"),timeLabel=$("dilationTimeLabel"),currencyLabel=$("dilationCurrencyLabel");if(timeTab)timeTab.style.display=unlocked?"":"none";if(window.FAFormula){if(timeLabel)FAFormula.render("dilationTimeLabel",(window.FA_META?.language==="ru"?"\\text{НАКОПЛЕНО}":"\\text{ACCUMULATED}")+"\\;t_{dl}");if(currencyLabel)FAFormula.render("dilationCurrencyLabel",window.FA_META?.language==="ru"?"\\text{БАЛАНС}\\;\\Delta t_{dl}":"\\Delta t_{dl}\\;\\text{BALANCE}");for(const key of ["i","v","k"]){const label=$("dilationParameterLabel_"+key),display=$("dilationParameterValue_"+key);if(label&&!label.dataset.mathReady){FAFormula.render("dilationParameterLabel_"+key,key);label.dataset.mathReady="1"}if(display){const value=formatPrecise(parameters[key],2);if(display.textContent!==value)display.textContent=value}}}if(timeDisplay){if(window.FAFormula)FAFormula.renderCurrency("dilationTimeDisplay",formatPrecise(dilationTime,2),"t_{dl}");else timeDisplay.textContent=formatPrecise(dilationTime,2)+" t₍dl₎"}if(currencyDisplay){if(window.FAFormula)FAFormula.renderCurrency("dilationCurrencyDisplay",format(dilationCurrency),"\\Delta t_{dl}");else currencyDisplay.textContent=format(dilationCurrency)+" ∆t₍dl₎"}if(researchCurrency){if(window.FAFormula)FAFormula.renderCurrency("dilationResearchCurrency",format(dilationCurrency),"\\Delta t_{dl}");else researchCurrency.textContent=format(dilationCurrency)+" ∆t_dl"}if(modeToggle){modeToggle.checked=dilationMode;modeToggle.disabled=!unlocked||dilationIntegrating}if(threshold){const thresholdParts=tr("dilationThreshold").split("{time}");if(window.FAFormula&&thresholdParts.length===2){threshold.textContent="";threshold.append(document.createTextNode(thresholdParts[0]));const thresholdValue=document.createElement("span");thresholdValue.id="dilationThresholdValue";const thresholdUnit=document.createElement("span");thresholdUnit.id="dilationThresholdUnit";threshold.append(thresholdValue,document.createTextNode(" "),thresholdUnit);FAFormula.renderText("dilationThresholdValue",format(60));FAFormula.render("dilationThresholdUnit","t_{dl}")}else threshold.textContent=tr("dilationThreshold").replace("{time}",format(60))}if(window.FAFormula)FAFormula.render("dilationFormula","\\Delta t_{dl}=\\int_{0}^{t_{dl}} i(vx+1)^k\\,dx");const hint=$("dilationOperationHint");if(hint){const parts=tr("dilationOperationHint").split("{variable}");if(parts.length===2){hint.textContent="";hint.append(document.createTextNode(parts[0]));const variable=document.createElement("span");variable.id="dilationOperationHintVariable";hint.append(variable,document.createTextNode(parts[1]));if(window.FAFormula)FAFormula.render("dilationOperationHintVariable","t_{dl}");else variable.textContent="t₍dl₎"}else hint.textContent=tr("dilationOperationHint")}const modeDescription=$("dilationModeDescription");if(modeDescription){const modeParts=tr("dilationModeDescription").split("{variable}");if(modeParts.length===2){modeDescription.textContent="";modeDescription.append(document.createTextNode(modeParts[0]));const modeVariable=document.createElement("span");modeVariable.id="dilationModeDescriptionVariable";modeDescription.append(modeVariable,document.createTextNode(modeParts[1]));if(window.FAFormula)FAFormula.render("dilationModeDescriptionVariable","t_{dl}");else modeVariable.textContent="t₍dl₎"}else modeDescription.textContent=tr("dilationModeDescription")}if(integrate){integrate.disabled=!unlocked||!dilationMode||dilationIntegrating||dilationTime<60;integrate.textContent=dilationIntegrating?tr("dilationRunning"):tr("dilationIntegrate")}if(progressTrack)progressTrack.hidden=!dilationIntegrating;if(progressFill&&dilationIntegrating){const progress=Math.max(0,Math.min(1,(Date.now()-dilationOperationStartedAt)/5000));progressFill.style.width=(progress*100).toFixed(1)+"%"}if(status)status.textContent=dilationIntegrating?Math.max(0,5-(Date.now()-dilationOperationStartedAt)/1000).toFixed(1)+" s":dilationMode?tr("dilationModeActive"):tr("dilationModePaused")}
@@ -44,7 +44,7 @@ window.TimeDilation={
  getUpgradeCost:getDilationUpgradeCost,
  buyUpgrade:key=>{
   if(!window.isTimeDilationUnlocked?.()||!["i","k","v","tau"].includes(key))return false;
-  const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(dilationCurrency,()=>getDilationUpgradeCost(key)):{count:1,total:getDilationUpgradeCost(key),affordable:dilationCurrency>=getDilationUpgradeCost(key)};
+  const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(dilationCurrency,offset=>getDilationUpgradeCost(key,offset)):{count:1,total:getDilationUpgradeCost(key),affordable:dilationCurrency>=getDilationUpgradeCost(key)};
   if(!quote.count||!quote.affordable)return false;
   dilationCurrency-=quote.total;
   for(let i=0;i<quote.count;i++){if(key==="i")dilationILevel++;else if(key==="k")dilationKLevel++;else if(key==="v")dilationVLevel++;else dilationTauLevel++}
@@ -88,11 +88,11 @@ function getLetterPrice(base,level){
  const adjusted=raw/glyphDivisor;
  return Number.isFinite(adjusted)?Math.max(1,Math.min(Number.MAX_VALUE,Math.ceil(adjusted))):Number.MAX_VALUE;
 }
-function getACost(){return getLetterPrice(LETTER_BASE_COSTS.a,aLevel)}
-function getBCost(){return getLetterPrice(LETTER_BASE_COSTS.b,bLevel)}
-function getCCost(){return getLetterPrice(LETTER_BASE_COSTS.c,cLevel)}
-function getDCost(){return getLetterPrice(LETTER_BASE_COSTS.d,dLevel)}
-function getECost(){return getLetterPrice(LETTER_BASE_COSTS.e,eLevel)}
+function getACost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.a,aLevel+offset)}
+function getBCost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.b,bLevel+offset)}
+function getCCost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.c,cLevel+offset)}
+function getDCost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.d,dLevel+offset)}
+function getECost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.e,eLevel+offset)}
 function updateFormulaState(timeSeconds){
  const old=formulaState,p=getLetterParameters(),coupling=Math.max(1,metaBonus("coupling"));
  const formulaTime=timeSeconds*(typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1);
@@ -117,7 +117,7 @@ function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;f
 function getA(){return safeProduct(formulaState.a,getGFactor())}function getB(){return safeProduct(formulaState.b,getGFactor())}function getC(){return safeProduct(formulaState.c,getGFactor())}function getD(){return safeProduct(formulaState.d,getGFactor())}function getE(){return safeProduct(formulaState.e,getGFactor())}
 const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501;
 function getFExponent(){return Math.min(LETTER_F_MAX_EXPONENT,LETTER_F_BASE_EXPONENT+Math.max(0,fLevel-1)*0.0001)}
-function getFCost(){return fLevel>=LETTER_F_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.f,fLevel)}
+function getFCost(offset=0){return fLevel+offset>=LETTER_F_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.f,fLevel+offset)}
 function getF(){
  const unlocked=typeof window.isLetterFUnlocked==="function"&&window.isLetterFUnlocked();
  if(fLevel<=0||!unlocked||t<5)return 1;
@@ -160,8 +160,8 @@ function getH(){
  if(hLevel<=0||!unlocked)return 1;
  return safePow(lambertW0(Math.max(0,t)/10),getHExponent());
 }
-function getGCost(){return getLetterPrice(LETTER_BASE_COSTS.g,gLevel)}
-function getHCost(){return hLevel>=LETTER_H_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.h,hLevel)}
+function getGCost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.g,gLevel+offset)}
+function getHCost(offset=0){return hLevel+offset>=LETTER_H_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.h,hLevel+offset)}
 
 const formulaLetterGetters=[getA,getB,getC,getD,getE,getF,getG,getH];
 window.registerFormulaLetter=getter=>{if(typeof getter==="function"&&!formulaLetterGetters.includes(getter))formulaLetterGetters.push(getter)};
