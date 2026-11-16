@@ -538,15 +538,15 @@ else{
   const countSource=thresholdMatch[0].split("\nfunction getPrestigeGain")[0],context={};
   try{
     vm.runInNewContext(countSource+";globalThis.__count=countThresholds;",context);
-    for(const [scale,base,divisor] of [[1e15,1.05,1],[1000,1.1,2.5],[1e15,1.05,1.25],[1000,1.1,3.125]]){
+    for(const [scale,base,divisor] of [[1e15,1.05,1],[1000,1.1,2.5],[1e15,1.05,2.25],[1000,1.1,5.625]]){
       for(const x of [2,3,4]){
         const threshold=scale*Math.pow(base,x/divisor);
         if(context.__count(threshold,scale,base,divisor)!==x-1)fail("Prestige threshold exact-boundary error at x="+x);
         if(context.__count(threshold*(1-1e-12),scale,base,divisor)!==x-2)fail("Prestige threshold below-boundary error at x="+x);
       }
     }
-    if(context.__count(1e18,1e15,1.05,1.25)!==175)fail("NODE #1924 maximum-level AP gain must be 175 at 1e18 Score");
-     if(context.__count(10000,1000,1.1,3.125)!==74)fail("NODE #1925 maximum-level GP gain must be 74 at 10,000 AP");
+    if(context.__count(1e18,1e15,1.05,2.25)!==317)fail("NODE #1924 maximum-level AP gain must be 317 at 1e18 Score");
+     if(context.__count(10000,1000,1.1,5.625)!==134)fail("NODE #1925 maximum-level GP gain must be 134 at 10,000 AP");
      pass("AP and GP threshold boundaries, including NODE #1924 and #1925");
   }catch(error){fail("Prestige threshold runtime test: "+error.message)}
 }
