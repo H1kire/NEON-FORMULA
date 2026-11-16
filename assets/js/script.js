@@ -324,7 +324,7 @@ function purchaseLetterBatch(costGetter,remaining,apply){
  saveMeta();lastLetterBatchRefresh=0;updateUI();return true;
 }
 let lastLetterBatchRefresh=0;
-function refreshLetterBatchUI(force=false){
+function refreshLetterBatchCards(force=false){
  const now=performance.now();if(!force&&now-lastLetterBatchRefresh<250)return;lastLetterBatchRefresh=now;
  const defs=[
   ["a",getACost,Infinity,btnA,"buyUpgrade",null],["b",getBCost,Infinity,btnB,"buyUpgrade",null],["c",getCCost,Infinity,btnC,"buyUpgrade",null],["d",getDCost,Infinity,btnD,"buyUpgrade",null],["e",getECost,Infinity,btnE,"buyUpgrade",null],
@@ -340,7 +340,7 @@ function refreshLetterBatchUI(force=false){
   const level=({a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel})[key];button.textContent=(quote.count>1?tr(upgradeKey)+" ×"+quote.count:firstKey&&level===0?tr(firstKey):tr(upgradeKey));
  }
 }
-window.refreshLetterBatchUI=()=>refreshLetterBatchUI(true);
+window.refreshLetterBatchUI=()=>refreshLetterBatchCards(true);
 function buyA(){purchaseLetterBatch(getACost,Infinity,count=>aLevel+=count)}function buyB(){purchaseLetterBatch(getBCost,Infinity,count=>bLevel+=count)}function buyC(){purchaseLetterBatch(getCCost,Infinity,count=>cLevel+=count)}function buyD(){purchaseLetterBatch(getDCost,Infinity,count=>dLevel+=count)}function buyE(){purchaseLetterBatch(getECost,Infinity,count=>eLevel+=count)}
 function buyF(){purchaseLetterBatch(getFCost,Math.max(0,LETTER_F_MAX_LEVEL-fLevel),count=>fLevel+=count)}
 function buyG(){if(!window.isLetterGUnlocked?.())return;purchaseLetterBatch(getGCost,Infinity,count=>gLevel+=count)}
@@ -420,7 +420,7 @@ function updateUI(){
    if(w0Display)w0Display.textContent=formatPrecise(1+Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0),2);
    if(wiDisplay)wiDisplay.textContent=formatPrecise(getGlobalSumAdditionalWeight(),2);
   }
-  refreshLetterBatchUI();updateFormulaText();updateTimeDilationUI();if(window.refreshDilationAccess)window.refreshDilationAccess();if(window.refreshTree)window.refreshTree();
+  refreshLetterBatchCards();updateFormulaText();updateTimeDilationUI();if(window.refreshDilationAccess)window.refreshDilationAccess();if(window.refreshTree)window.refreshTree();
 }
 window.getDeveloperValues=()=>({t,ap:p,gp});
 window.applyDeveloperValues=(next)=>{
