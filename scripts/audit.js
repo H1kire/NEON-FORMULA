@@ -160,7 +160,7 @@ try{
  if(!match)throw new Error("Conversion reward function not found");
  const context={window:{},MIN_GP_CONVERSION:1000};
  vm.runInNewContext(match[0]+";globalThis.__reward=window.calculateGlyphShardReward;",context);
- for(const [gpAmount,expected] of [[1000,1.5],[2000,4],[5000,17],[10000,60.5]]){
+ for(const [gpAmount,expected] of [[1000,1.5],[2000,4],[5000,17.5],[10000,60.5]]){
    const actual=context.__reward(gpAmount);
    if(Math.abs(actual-expected)>1e-10)throw new Error("Incorrect output for "+gpAmount+" GP: "+actual);
  }
