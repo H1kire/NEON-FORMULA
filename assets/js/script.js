@@ -318,6 +318,24 @@ function purchaseLetterBatch(costGetter,remaining,apply){
  for(let i=0;i<quote.count;i++){apply();FA_META.stats.purchases++}
  saveMeta();updateUI();return true;
 }
+let lastLetterBatchRefresh=0;
+function refreshLetterBatchUI(force=false){
+ const now=performance.now();if(!force&&now-lastLetterBatchRefresh<250)return;lastLetterBatchRefresh=now;
+ const defs=[
+  ["a",getACost,Infinity,btnA,"buyUpgrade",null],["b",getBCost,Infinity,btnB,"buyUpgrade",null],["c",getCCost,Infinity,btnC,"buyUpgrade",null],["d",getDCost,Infinity,btnD,"buyUpgrade",null],["e",getECost,Infinity,btnE,"buyUpgrade",null],
+  ["f",getFCost,Math.max(0,LETTER_F_MAX_LEVEL-fLevel),$("btnF"),"buyUpgrade","buyF"],["g",getGCost,Infinity,$("btnG"),"buyUpgrade","buyG"],["h",getHCost,Math.max(0,LETTER_H_MAX_LEVEL-hLevel),$("btnH"),"buyUpgrade","buyH"]
+ ];
+ for(const [key,costGetter,remaining,button,upgradeKey,firstKey] of defs){
+  if(!button)continue;
+  const quote=window.getUpgradeBatchQuote(value,offset=>costGetter(offset),remaining),maxed=remaining===0;
+  const display=$(key+"Cost");
+  const shownCost=quote.count?quote.total:costGetter(0);
+  if(display){if(maxed)display.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText(key+"Cost",format(shownCost));else display.textContent=format(shownCost)}
+  setBtn(button,shownCost);button.disabled=maxed||!quote.count||!quote.affordable;
+  button.textContent=(quote.count>1?tr(upgradeKey)+" ×"+quote.count:firstKey&&({a:0})[key]===1?tr(firstKey):firstKey&&({f:1,g:1,h:1})[key]?tr(firstKey):tr(upgradeKey));
+ }
+}
+window.refreshLetterBatchUI=()=>refreshLetterBatchUI(true);
 function buyA(){purchaseLetterBatch(getACost,Infinity,()=>aLevel++)}function buyB(){purchaseLetterBatch(getBCost,Infinity,()=>bLevel++)}function buyC(){purchaseLetterBatch(getCCost,Infinity,()=>cLevel++)}function buyD(){purchaseLetterBatch(getDCost,Infinity,()=>dLevel++)}function buyE(){purchaseLetterBatch(getECost,Infinity,()=>eLevel++)}
 function buyF(){purchaseLetterBatch(getFCost,Math.max(0,LETTER_F_MAX_LEVEL-fLevel),()=>fLevel++)}
 function buyG(){if(!window.isLetterGUnlocked?.())return;purchaseLetterBatch(getGCost,Infinity,()=>gLevel++)}
@@ -395,7 +413,7 @@ function updateUI(){
    if(w0Display)w0Display.textContent="1";
    if(wiDisplay)wiDisplay.textContent=formatPrecise(getGlobalSumAdditionalWeight(),2);
   }
-  updateFormulaText();updateTimeDilationUI();if(window.refreshDilationAccess)window.refreshDilationAccess();if(window.refreshTree)window.refreshTree();
+  refreshLetterBatchUI();updateFormulaText();updateTimeDilationUI();if(window.refreshDilationAccess)window.refreshDilationAccess();if(window.refreshTree)window.refreshTree();
 }
 window.getDeveloperValues=()=>({t,ap:p,gp});
 window.applyDeveloperValues=(next)=>{
