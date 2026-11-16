@@ -632,7 +632,7 @@ if(!sources["assets/js/script.js"].includes("getGlyphOrdinaryTimeMultiplier")||!
 // New Additional Upgrades, batch purchasing, Research caps and node price progression.
 const appUiSource=sources["assets/js/app-ui.js"],scriptCore=sources["assets/js/script.js"],prestigeCore=sources["assets/js/prestige.js"];
 if(!appUiSource.includes('caps=[0,990,0,0,0,100,100,10,100,20]'))fail("Research #6, #7 and #9 must have 100 levels");
-if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity)')||!appUiSource.includes('costGetter(count)')||!html.includes('id="buyQuantitySelectFormula"')||!html.includes('id="buyQuantitySelectResearch"'))fail("Shared 1 / 5 / 25 / MAX batch purchase controls are incomplete");
+if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCount=Infinity,constantCost=false)')||!appUiSource.includes('costGetter(count)')||!html.includes('id="buyQuantitySelectFormula"')||!html.includes('id="buyQuantitySelectResearch"'))fail("Shared 1 / 5 / 25 / MAX batch purchase controls are incomplete");
 if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset)'))fail("Additional upgrades #3 and #4 must use their configured C0 and growth ratios");
 if(!scriptCore.includes('function getLetterValueMultiplier(){return 1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)}')||!scriptCore.includes('getGFactor(),getLetterValueMultiplier()')||!scriptCore.includes('getLetterValueMultiplier())'))fail("Letter Amplification must increase each active letter value by 0.1% per level");
 if(!scriptCore.includes('sqrt{1+x}(1+Lx)'))fail("Integral display must include the (1 + Lx) coefficient");
@@ -640,7 +640,7 @@ if(!scriptCore.includes('w_i(1+Lw_i)')||!scriptCore.includes('n*w*(1+level*w)'))
 if(!scriptCore.includes('weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
 if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
 try{
- const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity\)=>\{[\s\S]*?\n  \};/)?.[0];
+ const helper=appUiSource.match(/window.getUpgradeBatchQuote=\(balance,costGetter,maxCount=Infinity,constantCost=false\)=>\{[\s\S]*?\n  \};/)?.[0];
  if(!helper)throw new Error("batch quote helper missing");
  const context={window:{},meta:{buyQuantityMode:"5"}};
  vm.runInNewContext(helper+";globalThis.__quote=window.getUpgradeBatchQuote;",context);
@@ -649,6 +649,8 @@ try{
  context.meta.buyQuantityMode="max";
  const max=context.__quote(16,offset=>Math.pow(2,offset));
  if(max.count!==4||max.total!==15||max.affordable!==true)throw new Error("MAX must buy exactly the affordable sequential levels");
+ const flat=context.__quote(100,()=>3,Infinity,true);
+ if(flat.count!==33||flat.total!==99||flat.affordable!==true)throw new Error("MAX must calculate flat-price purchases without an arbitrary iteration cap");
  pass("Batch quote sums sequential costs and calculates MAX affordability");
  const sumStart=scriptCore.indexOf("function getGlobalSumAdditionalWeight()"),sumEnd=scriptCore.indexOf("function getIntegralMultiplier()",sumStart),sumFunctions=sumStart>=0&&sumEnd>sumStart?scriptCore.slice(sumStart,sumEnd):null;
  if(!sumFunctions)throw new Error("Global Sum and integral functions missing");
