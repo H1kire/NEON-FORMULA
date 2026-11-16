@@ -80,11 +80,14 @@ function getLetterParameters(){
   e:getLetterParameter(2.057,getExpandedParameterLimit(1.30,"divisor"),eLevel)
  };
 }
-function getLetterPrice(base,level){
- const glyphDivisor=typeof window.getGlyphCostDivisor==="function"?Math.max(1,window.getGlyphCostDivisor()):1;
+function getLetterPriceGrowth(){
  const exponent=Math.max(0.03,3*(1-Math.min(0.99,Math.max(0,metaBonus("letterExponentReduction")))));
  const baseFactor=Math.max(1,2*(1-Math.min(0.5,Math.max(0,metaBonus("letterBaseReduction")))));
- const growth=Math.pow(baseFactor,exponent);
+ return Math.pow(baseFactor,exponent);
+}
+function getLetterPrice(base,level){
+ const glyphDivisor=typeof window.getGlyphCostDivisor==="function"?Math.max(1,window.getGlyphCostDivisor()):1;
+ const growth=getLetterPriceGrowth();
  const raw=base*Math.pow(growth,Math.max(0,level));
  const adjusted=raw/glyphDivisor;
  return Number.isFinite(adjusted)?Math.max(1,Math.min(Number.MAX_VALUE,Math.ceil(adjusted))):Number.MAX_VALUE;
@@ -314,7 +317,7 @@ function getGrowthPerSecond(){return getGain()}
 function setBtn(btn,cost){if(!btn)return;btn.classList.toggle("good",value>=cost);btn.classList.toggle("bad",value<cost)}
 function purchase(cost,fn){if(value<cost)return false;value-=cost;fn();FA_META.stats.purchases++;saveMeta();updateUI();return true}
 function purchaseLetterBatch(costGetter,remaining,apply){
- const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(value,costGetter,remaining):{count:1,total:costGetter(),affordable:value>=costGetter()};
+ const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(value,costGetter,remaining,getLetterPriceGrowth()===1):{count:1,total:costGetter(),affordable:value>=costGetter()};
  if(!quote.count||!quote.affordable)return false;
  value-=quote.total;
  for(let i=0;i<quote.count;i++){apply();FA_META.stats.purchases++}
@@ -329,7 +332,7 @@ function refreshLetterBatchUI(force=false){
  ];
  for(const [key,costGetter,remaining,button,upgradeKey,firstKey] of defs){
   if(!button)continue;
-  const quote=window.getUpgradeBatchQuote(value,offset=>costGetter(offset),remaining),maxed=remaining===0;
+  const quote=window.getUpgradeBatchQuote(value,offset=>costGetter(offset),remaining,getLetterPriceGrowth()===1),maxed=remaining===0;
   const display=$(key+"Cost");
   const shownCost=quote.count?quote.total:costGetter(0);
   if(display){if(maxed)display.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText(key+"Cost",format(shownCost));else display.textContent=format(shownCost)}
