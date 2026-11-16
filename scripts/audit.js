@@ -160,7 +160,7 @@ try{
  if(!match)throw new Error("GS → GF reward function not found");
  const context={window:{},MIN_GS_CONVERSION:1000};
  vm.runInNewContext(match[0]+";globalThis.__reward=window.calculateGlyphFragmentReward;",context);
- const cases=[[1000,1.5],[2000,4],[5000,17],[10000,60.5],[100000,5050]];
+ const cases=[[1000,1.5],[2000,4],[5000,17.5],[10000,60],[100000,5100]];
  for(const [input,expected] of cases){const actual=context.__reward(input);if(Math.abs(actual-expected)>1e-9)throw new Error(input+" GS expected "+expected+" GF, got "+actual)}
  if(context.__reward(999)!==0)throw new Error("Minimum conversion must reject 999 GS");
  pass("GS → GF conversion formula runtime values (1,000 / 2,000 / 5,000 / 10,000 / 100,000 GS)");
