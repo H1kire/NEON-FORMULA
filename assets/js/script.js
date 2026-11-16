@@ -316,7 +316,7 @@ function purchaseLetterBatch(costGetter,remaining,apply){
  if(!quote.count||!quote.affordable)return false;
  value-=quote.total;
  for(let i=0;i<quote.count;i++){apply();FA_META.stats.purchases++}
- saveMeta();updateUI();return true;
+ saveMeta();lastLetterBatchRefresh=0;updateUI();return true;
 }
 let lastLetterBatchRefresh=0;
 function refreshLetterBatchUI(force=false){
@@ -332,7 +332,7 @@ function refreshLetterBatchUI(force=false){
   const shownCost=quote.count?quote.total:costGetter(0);
   if(display){if(maxed)display.textContent=tr("maxed");else if(window.FAFormula)FAFormula.renderText(key+"Cost",format(shownCost));else display.textContent=format(shownCost)}
   setBtn(button,shownCost);button.disabled=maxed||!quote.count||!quote.affordable;
-  button.textContent=(quote.count>1?tr(upgradeKey)+" ×"+quote.count:firstKey&&({a:0})[key]===1?tr(firstKey):firstKey&&({f:1,g:1,h:1})[key]?tr(firstKey):tr(upgradeKey));
+  const level=({a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel})[key];button.textContent=(quote.count>1?tr(upgradeKey)+" ×"+quote.count:firstKey&&level===0?tr(firstKey):tr(upgradeKey));
  }
 }
 window.refreshLetterBatchUI=()=>refreshLetterBatchUI(true);
