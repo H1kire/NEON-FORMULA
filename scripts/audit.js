@@ -3,7 +3,7 @@ const fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const root=path.resolve(__dirname,".."),errors=[],warnings=[];
 const read=file=>fs.readFileSync(path.join(root,file),"utf8"),exists=file=>fs.existsSync(path.join(root,file));
 const fail=message=>errors.push(message),pass=message=>process.stdout.write("  OK  "+message+"\n");
-const required=["index.html","README.md","docs/LEGACY_FORMULAS.md","package.json","assets/css/style.css","assets/css/formula-math.css","assets/vendor/katex/katex.min.css","assets/vendor/katex/katex.min.js","assets/vendor/katex/fonts","assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
+const required=["index.html","README.md","docs/LEGACY_FORMULAS.md","package.json","assets/css/style.css","assets/css/glyphs.css","assets/css/formula-math.css","assets/vendor/katex/katex.min.css","assets/vendor/katex/katex.min.js","assets/vendor/katex/fonts","assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/glyphs.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
 for(const file of required){if(!exists(file))fail("Missing "+file);else pass("Found "+file)}
 if(exists(".idea"))warnings.push(".idea should not be committed.");
 const html=read("index.html"),css=read("assets/css/style.css"),mathCss=read("assets/css/formula-math.css"),jsFiles=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/formula-renderer.js","assets/js/script.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
@@ -16,7 +16,7 @@ const idSet=new Set(ids);
 for(const file of jsFiles)for(const m of sources[file].matchAll(/getElementById\(["']([^"']+)["']\)/g))if(!idSet.has(m[1]))fail(file+" missing HTML ID #"+m[1]);
 const scriptRefs=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(m=>m[1]);
 for(const src of scriptRefs)if(!src.startsWith("http")&&!exists(src))fail("Missing script "+src);
-const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/vendor/katex/katex.min.js","assets/js/formula-renderer.js","assets/js/script.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-check-compat.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
+const order=["assets/js/storage.js","assets/js/prestige.js","assets/js/tree.js","assets/js/app-ui.js","assets/js/glyphs.js","assets/vendor/katex/katex.min.js","assets/js/formula-renderer.js","assets/js/script.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js","https://www.gstatic.com/firebasejs/10.14.1/firebase-app-check-compat.js","assets/js/firebase-auth.js","assets/js/firebase-cloud-save.js"];
 if(order.join("|")!==scriptRefs.join("|"))fail("Script order incorrect");else pass("Script dependency order");
 for(const m of html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css)["']/g)){if(!exists(m[1]))fail("Missing CSS "+m[1]);else pass("CSS path "+m[1])}
 if(!html.includes("firebase-auth.js")||!html.includes("firebase-auth-compat.js"))fail("Firebase Authentication SDK scripts are missing");
@@ -135,7 +135,7 @@ const treeStructureChecks=[
  ['const roll=random();\n  if(id===3)return "square"','NODE #0004 override preserves the existing random-generation sequence'],
  ['const cost=id===3?5','NODE #0004 costs exactly 5 GP'],
  ['function nodeCost(n){return n.id===0?1:n.id===3?5:n.id===1986?25:n.id===1987?50:n.id===1925?10:n.id===2049?1000','G/H gates and Miniaturization cost 25/50/10 GP'],
- ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
+ ['function available(n){return (n.id===0||n.id===3||(n.id===1986&&nodes[3].level>0)||(n.id===1987&&nodes[1986].level>0)||(n.id===1925&&nodes[1986].level>0)||(n.id===2049&&nodes[1986].level>0)||(n.id===2112&&nodes[2049].level>0))&&n.level<n.maxLevel}','F/H gates and Miniaturization unlock in sequence'],
  ['window.isLetterFUnlocked=()=>nodes[3].level>0','NODE #0004 unlocks Letter F'],
  ['const addEdge=','deduplicated edge builder'],
  ['nodes[a].links.push(b);nodes[b].links.push(a)','bidirectional multi-link adjacency'],
@@ -143,6 +143,13 @@ const treeStructureChecks=[
 ];
 for(const [token,label] of treeStructureChecks){if(!treeSource.includes(token))fail("Upgrade tree structure missing "+label);else pass("Upgrade tree "+label)}
 if(!treeSource.includes('const letterGate=({1986:"G",1987:"H",1988:"I",1989:"J"})[n.id]||""'))fail("Upgrade Tree must reserve NODE #1987–#1990 for letters G–J");else pass("Upgrade Tree G–J gate assignments");
+if(!treeSource.includes("window.isGlyphsUnlocked=()=>nodes[2112].level>0")||!treeSource.includes("(n.id===2112&&nodes[2049].level>0)")||!treeSource.includes("const glyphsNode=innovationNode&&n.id===2112")||!treeSource.includes("if(n.id===2112&&window.refreshGlyphsAccess)window.refreshGlyphsAccess()"))fail("NODE #2113 must unlock GLYPH only after NODE #2050 is purchased");else pass("NODE #2113 GLYPH gate and access refresh");
+if(!html.includes('id="glyphsNav"')||!html.includes('id="page-glyphs"')||!html.includes('id="glyphsConverterPanel"')||!html.includes('id="glyphsInventoryPanel"')||!html.includes('id="glyphsUpgradesPanel"')||!html.includes('id="glyphsSynthesisPanel"'))fail("GLYPH navigation or one of its four panels is missing");
+if((html.match(/class="glyph-storage-slot"/g)||[]).length!==25)fail("GLYPH inventory must contain exactly 25 storage slots");
+if(!html.includes('id="glyphCreateButton" type="button" disabled')||!html.includes('data-i18n="glyphsSynthesisPending"')||!html.includes('data-i18n="glyphsAscensionPending"'))fail("GLYPH stage must remain visual-only with creation, synthesis and ascension disabled");
+if(!sources["assets/js/glyphs.js"].includes("window.showGlyphTab")||!sources["assets/js/glyphs.js"].includes("window.refreshGlyphsAccess")||!sources["assets/js/app-ui.js"].includes('page==="glyphs"&&!(typeof window.isGlyphsUnlocked==="function"&&window.isGlyphsUnlocked())'))fail("GLYPH tab navigation and locked-page guard are missing");
+if(!css.includes(".glyphs-page")||!css.includes(".glyph-pentagram-stage")||!css.includes(".glyph-storage-grid")||!css.includes(".glyph-rarity.immortal"))fail("GLYPH visual styles are incomplete");
+
 if(!treeSource.includes('window.isLetterFUnlocked=()=>nodes[3].level>0;window.isLetterGUnlocked=()=>nodes[1986].level>0;window.isLetterHUnlocked=()=>nodes[1987].level>0;window.isMiniaturizationUnlocked=()=>nodes[1925].level>0;'))fail("Upgrade Tree F–H and QOL unlock APIs are missing");else pass("Upgrade Tree F–H and QOL unlock APIs");
 if(!treeSource.includes("if(isSquareCell(p.col,p.row))return \"square\"")||!treeSource.includes('innovationNode=n.type==="square"'))fail("Designated square cells must be square innovation nodes");else pass("Designated square nodes are square innovation slots");
 if(!treeSource.includes("window.refundUpgradeTree=()=>")||!treeSource.includes("window.FAAuth.isDeveloper()")||!treeSource.includes("gp=Math.min(Number.MAX_VALUE,gp+refunded)")||!treeSource.includes("for(const n of nodes)if(n.active)n.level=0"))fail("Developer tree refund must be UID-restricted, return spent GP and clear active node levels");else pass("Developer-only Upgrade Tree refund and bonus deactivation");
