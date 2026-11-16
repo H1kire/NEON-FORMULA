@@ -94,6 +94,8 @@
     if (preview) preview.textContent = valid ? formatConversionValue(reward) + " GS" : "— GS";
     if (gpBalance) gpBalance.textContent = formatValue(balance) + " GP";
     if (gsBalance) gsBalance.textContent = formatValue(glyphShards) + " GS";
+    const headerGsBalance = $("glyphHeaderGsBalance");
+    if (headerGsBalance) headerGsBalance.textContent = formatValue(glyphShards);
     input.max = String(Math.floor(balance));
     input.disabled = active;
     button.disabled = active || !valid;
@@ -138,6 +140,8 @@
     if (preview) preview.textContent = valid ? formatConversionValue(reward) + " GF" : "— GF";
     if (gsBalance) gsBalance.textContent = formatValue(balance) + " GS";
     if (gfBalance) gfBalance.textContent = formatValue(glyphFragments) + " GF";
+    const headerGfBalance = $("glyphHeaderGfBalance");
+    if (headerGfBalance) headerGfBalance.textContent = formatValue(glyphFragments);
     input.max = String(Math.floor(balance));
     input.disabled = active;
     button.disabled = active || !valid;
