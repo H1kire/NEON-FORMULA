@@ -34,16 +34,21 @@
   }
 
   // Keep notation consistent in static copy and in content inserted by UI updates.
-  const tokenPattern = /(?:[Δ∆]\s*t(?:[_₍]\s*(?:dl|bl)[₎]?)?|t[_₍]\s*(?:dl|bl)[₎]?|A[–−-][H]|[A-H]|[a-h](?=\s*=)|\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\b|\b(?:i|v|k|q|s|w|t|x|p|L|n)\b|\d+(?:[.,]\d+)?\s*%)/g;
+  const tokenPattern = /(?:[Δ∆]\s*t(?:[_₍]\s*(?:dl|bl)[₎]?)?|t[_₍]\s*(?:dl|bl)[₎]?|A[–−-][H]|[A-Za-z]_[A-Za-z0-9]+|[A-Za-z][⁰¹²³⁴⁵⁶⁷⁸⁹]+|W₀|[fgh](?=\s*\()|[A-H]|[a-h](?=\s*=)|\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\b|\b(?:i|v|k|q|s|w|t|x|p|L|n)\b|\d+(?:[.,]\d+)?\s*%)/g;
   function tokenLatex(token) {
     const compact = token.replace(/\s+/g, "");
     const temporal = compact.match(/^[Δ∆]?t[_₍]?(dl|bl)[₎]?$/i);
     if (temporal) return (compact.startsWith("Δ") || compact.startsWith("∆") ? "\\Delta " : "") + "t_{" + temporal[1].toLowerCase() + "}";
     if (/^[A-H][–−-][A-H]$/.test(compact)) return compact[0] + "\\text{–}" + compact[2];
+    if (/^[A-Za-z]_[A-Za-z0-9]+$/.test(compact)) return compact[0] + "_{" + compact.slice(2) + "}";
+    if (/^[A-Za-z][⁰¹²³⁴⁵⁶⁷⁸⁹]+$/.test(compact)) return compact[0] + "^{" + compact.slice(1).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, digit => "⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(digit)) + "}";
+    if (compact === "W₀") return "W_0";
+    if (/^[fgh]\\(/.test(compact)) return compact.replace(/([fgh])\\(([^)]*)\\)/, "$1($2)");
     if (/^\d/.test(compact)) return compact.replace(",", ".").replace("%", "\\%");
     if (/^(AP|GP|GS|GF|SC|Qa|Qi|Sx)$/.test(compact)) return "\\mathrm{" + compact + "}";
     if (/^[A-H]$/.test(compact)) return "\\mathrm{" + compact + "}";
     if (/^[A-Za-z]$/.test(compact)) return compact;
+    if (/^[τΣΛ∫√]$/.test(compact)) return compact;
     return compact;
   }
   function shouldSkip(node) {
