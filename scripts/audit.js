@@ -640,7 +640,7 @@ if(!appUiSource.includes('window.getUpgradeBatchQuote=(balance,costGetter,maxCou
 if(!prestigeCore.includes('10000*Math.pow(3.7543')||!prestigeCore.includes('Math.pow(1.1,Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)+offset)'))fail("Additional upgrades #3 and #4 must use their configured C0 and growth ratios");
 if(!scriptCore.includes("function getLetterValueMultiplier(){return (1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0))*(1+0.005*(dilationExtraLevels.letters||0))*(1+0.01*(blackHoleLevels.letters||0))}")||!scriptCore.includes('getGFactor(),getLetterValueMultiplier()')||!scriptCore.includes('getLetterValueMultiplier())'))fail("Letter Amplification must increase each active letter value by 0.1% per level");
 if(!scriptCore.includes('sqrt{1+x}')||!scriptCore.includes('coefficientPurchased?"k":""')||scriptCore.includes('k=1+L'))fail("Integral display must use k only after the coefficient upgrade is purchased, without an unnecessary definition");
-if(!scriptCore.includes('w_i"+(coefficientPurchased?"k":"")')||!scriptCore.includes('n*w*(1+level*w)'))fail("Global Sum must display k conditionally and preserve the coefficient on every term weight");
+if(!scriptCore.includes('w_i"+(coefficientPurchased?"k":"")')||!scriptCore.includes('temporalN*w*(1+level*w)'))fail("Global Sum must display k conditionally and preserve the coefficient on every term weight");
 if(!scriptCore.includes('weightedPart=Math.max(0,safeProduct(2/5')||!scriptCore.includes('base+safeProduct(level,weightedPart)'))fail("Integral coefficient must integrate the x-weighted term analytically");
 if(!treeSource.includes('Math.pow(6.7325,level)')||!treeSource.includes('Math.pow(12.6542,level)'))fail("NODE #1861 / #1923 cost ratios are not updated");
 try{
@@ -659,7 +659,7 @@ try{
  pass("Batch quote sums sequential costs and calculates MAX affordability");
  const sumStart=scriptCore.indexOf("function getGlobalSumAdditionalWeight()"),sumEnd=scriptCore.indexOf("function getIntegralMultiplier()",sumStart),sumFunctions=sumStart>=0&&sumEnd>sumStart?scriptCore.slice(sumStart,sumEnd):null;
  if(!sumFunctions)throw new Error("Global Sum and integral functions missing");
- const mathContext={prestigeUpgrades:{globalSum:2,simpleBoost:0,integralSumCoefficient:1},window:{getGlyphGlobalSumPercent:()=>0},Number,Math};
+ const mathContext={dilationExtraLevels:{sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0},blackHoleLevels:{q:0,s:0,w:0,tau:0,sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0},prestigeUpgrades:{globalSum:2,simpleBoost:0,integralSumCoefficient:1},window:{getGlyphGlobalSumPercent:()=>0},Number,Math};
  vm.runInNewContext(sumFunctions+";globalThis.__sum=getGlobalSumMultiplier;",mathContext);
  if(mathContext.__sum()!==6)throw new Error("L=1 must transform w0=1 and two additional w=1 terms to a total of 6");
  mathContext.prestigeUpgrades.globalSum=0;
