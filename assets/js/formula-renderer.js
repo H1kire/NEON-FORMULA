@@ -15,36 +15,32 @@
       return;
     }
     window.katex.render(latex, element, {
-      displayMode,
-      throwOnError: false,
-      strict: "ignore",
-      trust: false,
-      output: "htmlAndMathml"
+      displayMode, throwOnError: false, strict: "ignore",
+      trust: false, output: "htmlAndMathml"
     });
   }
   function escapeText(value) {
-    return String(value ?? "").replace(/\\/g, "\\\\backslash ")
-      .replace(/([{}#$%&_])/g, "\\\\$1")
-      .replace(/~/g, "\\\\textasciitilde{}")
-      .replace(/\^/g, "\\\\textasciicircum{}");
+    return String(value ?? "").replace(/\\/g, "\\backslash ")
+      .replace(/([{}#$%&_])/g, "\\$1")
+      .replace(/~/g, "\\textasciitilde{}")
+      .replace(/\^/g, "\\textasciicircum{}");
   }
   function renderText(id, value) {
-    render(id, "\\\\text{" + escapeText(value) + "}");
+    render(id, "\\text{" + escapeText(value) + "}");
   }
   function renderCurrency(id, value, symbol) {
     if (typeof symbol !== "string" || !symbol.trim()) return renderText(id, value);
-    render(id, "\\\\text{" + escapeText(value) + "}\\\\, " + symbol);
+    render(id, "\\text{" + escapeText(value) + "}\\, " + symbol);
   }
 
-  // Mathematical notation is never left as raw underscores, Unicode subscripts,
-  // or plain-text currency/variable abbreviations in interface copy.
-  const tokenPattern = /(?:[Δ∆]\\s*t(?:[_₍]\\s*(?:dl|bl)[₎]?)?|t[_₍]\\s*(?:dl|bl)[₎]?|A[–−-][H]|[A-H](?=\\s*(?:module|letter|multiplier|level|gate|value|formula|upgrade))|\\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\\b|\\b(?:i|v|k|q|s|w|t|x|p|L|n)\\b|\\d+(?:[.,]\\d+)?\\s*%)/g;
+  // Keep notation consistent in static copy and in content inserted by UI updates.
+  const tokenPattern = /(?:[Δ∆]\s*t(?:[_₍]\s*(?:dl|bl)[₎]?)?|t[_₍]\s*(?:dl|bl)[₎]?|A[–−-][H]|[A-H](?=\s*(?:module|letter|multiplier|level|gate|value|formula|upgrade))|\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\b|\b(?:i|v|k|q|s|w|t|x|p|L|n)\b|\d+(?:[.,]\d+)?\s*%)/g;
   function tokenLatex(token) {
-    const compact = token.replace(/\\s+/g, "");
+    const compact = token.replace(/\s+/g, "");
     const temporal = compact.match(/^[Δ∆]?t[_₍]?(dl|bl)[₎]?$/i);
     if (temporal) return (compact.startsWith("Δ") || compact.startsWith("∆") ? "\\Delta " : "") + "t_{" + temporal[1].toLowerCase() + "}";
     if (/^[A-H][–−-][A-H]$/.test(compact)) return compact[0] + "\\text{–}" + compact[2];
-    if (/^\\d/.test(compact)) return compact.replace(",", ".").replace("%", "\\%");
+    if (/^\d/.test(compact)) return compact.replace(",", ".").replace("%", "\\%");
     if (/^(AP|GP|GS|GF|SC|Qa|Qi|Sx)$/.test(compact)) return "\\mathrm{" + compact + "}";
     if (/^[A-H]$/.test(compact)) return "\\mathrm{" + compact + "}";
     if (/^[A-Za-z]$/.test(compact)) return compact;
@@ -52,8 +48,7 @@
   }
   function shouldSkip(node) {
     const parent = node.parentElement;
-    if (!parent || parent.closest("script,style,textarea,input,select,option,button[aria-label],.katex,.math-inline,[contenteditable='true']")) return true;
-    return false;
+    return !parent || !!parent.closest("script,style,textarea,input,select,option,button[aria-label],.katex,.math-inline,[contenteditable='true']");
   }
   function renderInlineMath(root = document.body) {
     if (!root || !document.createTreeWalker || !window.katex) return;
@@ -61,15 +56,13 @@
     const nodes = [];
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      if (!shouldSkip(node) && tokenPattern.test(node.nodeValue)) nodes.push(node);
       tokenPattern.lastIndex = 0;
+      if (!shouldSkip(node) && tokenPattern.test(node.nodeValue)) nodes.push(node);
     }
     for (const node of nodes) {
-      const value = node.nodeValue;
-      const fragment = document.createDocumentFragment();
-      let last = 0;
+      const value = node.nodeValue, fragment = document.createDocumentFragment();
+      let last = 0, match;
       tokenPattern.lastIndex = 0;
-      let match;
       while ((match = tokenPattern.exec(value))) {
         if (match.index > last) fragment.append(document.createTextNode(value.slice(last, match.index)));
         const span = document.createElement("span");
@@ -82,15 +75,12 @@
         last = match.index + match[0].length;
       }
       if (last < value.length) fragment.append(document.createTextNode(value.slice(last)));
-      node.parentNode.replaceChild(fragment, node);
+      node.parentNode?.replaceChild(fragment, node);
     }
   }
   window.FAFormula = Object.freeze({ render, renderText, renderCurrency, renderInlineMath });
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => renderInlineMath());
-  } else {
-    renderInlineMath();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => renderInlineMath());
+  else renderInlineMath();
   const observer = new MutationObserver(records => {
     for (const record of records) {
       if (record.type === "characterData") renderInlineMath(record.target.parentElement);
@@ -100,5 +90,5 @@
       }
     }
   });
-  observer.observe(document.documentElement, {subtree:true, childList:true, characterData:true});
+  observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true });
 })();
