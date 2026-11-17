@@ -279,6 +279,7 @@ function resetSave(){
  prestigeUpgrades={simpleBoost:0,globalSum:0,integralSumCoefficient:0,letterValueBoost:0};
  window.prestigeUpgrades=prestigeUpgrades;
  FA_META.research=Array(10).fill(0);
+ FA_META.blackHoleResearchLevel=0;
  FA_META.researchVersion=2;
  FA_META.automation={unlocked:Array(8).fill(false),enabled:Array(8).fill(true),paused:false};
  FA_META.treeUnlocked=false;
