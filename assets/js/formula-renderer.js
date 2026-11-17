@@ -1,5 +1,4 @@
-// FORMULA ASCENT — KaTeX display adapter.
-// KaTeX is vendored locally; this file only handles typography, never game calculations.
+// FORMULA ASCENT — shared KaTeX renderer for every mathematical UI token.
 (() => {
   "use strict";
   const cache = new WeakMap();
@@ -24,17 +23,82 @@
     });
   }
   function escapeText(value) {
-    return String(value ?? "").replace(/\\/g, "\\backslash ")
-      .replace(/([{}#$%&_])/g, "\\$1")
-      .replace(/~/g, "\\textasciitilde{}")
-      .replace(/\^/g, "\\textasciicircum{}");
+    return String(value ?? "").replace(/\\/g, "\\\\backslash ")
+      .replace(/([{}#$%&_])/g, "\\\\$1")
+      .replace(/~/g, "\\\\textasciitilde{}")
+      .replace(/\^/g, "\\\\textasciicircum{}");
   }
   function renderText(id, value) {
-    render(id, "\\text{" + escapeText(value) + "}");
+    render(id, "\\\\text{" + escapeText(value) + "}");
   }
   function renderCurrency(id, value, symbol) {
     if (typeof symbol !== "string" || !symbol.trim()) return renderText(id, value);
-    render(id, "\\text{" + escapeText(value) + "}\\, " + symbol);
+    render(id, "\\\\text{" + escapeText(value) + "}\\\\, " + symbol);
   }
-  window.FAFormula = Object.freeze({ render, renderText, renderCurrency });
+
+  // Mathematical notation is never left as raw underscores, Unicode subscripts,
+  // or plain-text currency/variable abbreviations in interface copy.
+  const tokenPattern = /(?:[Δ∆]\\s*t(?:[_₍]\\s*(?:dl|bl)[₎]?)?|t[_₍]\\s*(?:dl|bl)[₎]?|A[–−-][H]|[A-H](?=\\s*(?:module|letter|multiplier|level|gate|value|formula|upgrade))|\\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\\b|\\b(?:i|v|k|q|s|w|t|x|p|L|n)\\b|\\d+(?:[.,]\\d+)?\\s*%)/g;
+  function tokenLatex(token) {
+    const compact = token.replace(/\\s+/g, "");
+    const temporal = compact.match(/^[Δ∆]?t[_₍]?(dl|bl)[₎]?$/i);
+    if (temporal) return (compact.startsWith("Δ") || compact.startsWith("∆") ? "\\Delta " : "") + "t_{" + temporal[1].toLowerCase() + "}";
+    if (/^[A-H][–−-][A-H]$/.test(compact)) return compact[0] + "\\text{–}" + compact[2];
+    if (/^\\d/.test(compact)) return compact.replace(",", ".").replace("%", "\\%");
+    if (/^(AP|GP|GS|GF|SC|Qa|Qi|Sx)$/.test(compact)) return "\\mathrm{" + compact + "}";
+    if (/^[A-H]$/.test(compact)) return "\\mathrm{" + compact + "}";
+    if (/^[A-Za-z]$/.test(compact)) return compact;
+    return compact;
+  }
+  function shouldSkip(node) {
+    const parent = node.parentElement;
+    if (!parent || parent.closest("script,style,textarea,input,select,option,button[aria-label],.katex,.math-inline,[contenteditable='true']")) return true;
+    return false;
+  }
+  function renderInlineMath(root = document.body) {
+    if (!root || !document.createTreeWalker || !window.katex) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (!shouldSkip(node) && tokenPattern.test(node.nodeValue)) nodes.push(node);
+      tokenPattern.lastIndex = 0;
+    }
+    for (const node of nodes) {
+      const value = node.nodeValue;
+      const fragment = document.createDocumentFragment();
+      let last = 0;
+      tokenPattern.lastIndex = 0;
+      let match;
+      while ((match = tokenPattern.exec(value))) {
+        if (match.index > last) fragment.append(document.createTextNode(value.slice(last, match.index)));
+        const span = document.createElement("span");
+        span.className = "math-inline";
+        window.katex.render(tokenLatex(match[0]), span, {
+          displayMode: false, throwOnError: false, strict: "ignore",
+          trust: false, output: "htmlAndMathml"
+        });
+        fragment.append(span);
+        last = match.index + match[0].length;
+      }
+      if (last < value.length) fragment.append(document.createTextNode(value.slice(last)));
+      node.parentNode.replaceChild(fragment, node);
+    }
+  }
+  window.FAFormula = Object.freeze({ render, renderText, renderCurrency, renderInlineMath });
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => renderInlineMath());
+  } else {
+    renderInlineMath();
+  }
+  const observer = new MutationObserver(records => {
+    for (const record of records) {
+      if (record.type === "characterData") renderInlineMath(record.target.parentElement);
+      for (const node of record.addedNodes || []) {
+        if (node.nodeType === Node.ELEMENT_NODE && !node.classList?.contains("math-inline") && !node.classList?.contains("katex")) renderInlineMath(node);
+        else if (node.nodeType === Node.TEXT_NODE) renderInlineMath(node.parentElement);
+      }
+    }
+  });
+  observer.observe(document.documentElement, {subtree:true, childList:true, characterData:true});
 })();
