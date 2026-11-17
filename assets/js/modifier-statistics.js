@@ -104,6 +104,7 @@
 
     const research = window.FA_META?.research || Array(10).fill(0);
     const currentLetterLevels = {a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel};
+    const currentLetterLevels = {a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel};
     const upgrades = window.prestigeUpgrades || {};
     const dilation = window.TimeDilation?.getState?.();
     const blackHole = window.BlackHole?.getState?.();
