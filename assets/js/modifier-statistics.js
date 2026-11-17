@@ -108,6 +108,7 @@
     const dilation = window.TimeDilation?.getState?.();
     const blackHole = window.BlackHole?.getState?.();
     const glyph = window.getGlyphBonuses?.() || {entries:[]};
+    const formulaDetails = window.FAMathSystem?.getState?.() || {};
     const treeProduction = typeof window.treeProductionMultiplier === "function" ? window.treeProductionMultiplier() : 1;
     const nodeLevel = id => typeof window.getTreeNodeLevel === "function" ? window.getTreeNodeLevel(id) : 0;
     const unlockedIntegral = !!window.isIntegralNodePurchased?.();
@@ -163,8 +164,21 @@
       }
       for (const [key, id] of [["f","fLevel"],["g","gLevel"],["h","hLevel"]]) {
         if (document.getElementById(id) && $(id)?.closest(".upgrade") && !$(id).closest(".upgrade").hidden) {
-          addNumber(card, tr("Уровень буквы ", "Letter level ") + key.toUpperCase(), safe(window[key + "Level"]), "UNLOCKED MODULE");
+          addNumber(card, tr("Уровень буквы ", "Letter level ") + key.toUpperCase(), safe(currentLetterLevels[key]), "UNLOCKED MODULE");
         }
+      }
+      if (safe(currentLetterLevels.f) > 0 && !$("letterFUpgrade")?.hidden) {
+        addNumber(card, tr("Показатель степени F", "Letter F exponent"), formulaDetails.fExponent, "LETTER F");
+        addMultiplier(card, tr("Текущий множитель F", "Current Letter F multiplier"), formulaDetails.f || 1, "LETTER F · ACTIVATES AT t ≥ 5");
+      }
+      if (safe(currentLetterLevels.g) > 0 && !$("letterGUpgrade")?.hidden) {
+        addMultiplier(card, tr("Общий множитель от G", "Global multiplier from G"), typeof window.getGFactor === "function" ? window.getGFactor() : 1, "LETTER G");
+        addNumber(card, tr("Текущая добавка G", "Current G additive value"), formulaDetails.g, "LETTER G");
+      }
+      if (safe(currentLetterLevels.h) > 0 && !$("letterHUpgrade")?.hidden) {
+        addNumber(card, tr("Основание степени H", "Letter H exponent base"), formulaDetails.hBase, "LETTER H");
+        addNumber(card, tr("Показатель степени H", "Letter H exponent"), formulaDetails.hExponent, "LETTER H");
+        addMultiplier(card, tr("Текущий множитель H", "Current Letter H multiplier"), formulaDetails.h || 1, "LETTER H");
       }
       if (!card.querySelector(".modifier-row")) empty(card, tr("Дополнительные усиления букв пока не активны.", "No additional letter modifiers are active."));
     }
@@ -242,6 +256,10 @@
       if (blackHoleTau !== 1) addMultiplier(card, tr("Скорость обычного времени от Black Hole", "Ordinary time speed from Black Hole"), blackHoleTau, "BLACK HOLE UPGRADE · τ");
       if (glyphOrdinary !== 1) addMultiplier(card, tr("Скорость обычного времени от глифа", "Ordinary time speed from Glyph"), glyphOrdinary, "EQUIPPED GLYPH");
       if (glyphDilation !== 1) addMultiplier(card, tr("Накопление нестандартного времени от глифа", "Non-standard time accumulation from Glyph"), glyphDilation, "EQUIPPED GLYPH");
+      if (window.FA_META?.settings?.offline !== false) {
+        addMultiplier(card, tr("Скорость офлайн-прогресса", "Offline progress rate"), 0.35, "GAME RULE · MAXIMUM 8 HOURS");
+        addNumber(card, tr("Максимальное учитываемое отсутствие", "Maximum offline duration"), "8 h", "OFFLINE PROGRESSION");
+      }
       if (researchBonus("time") !== 1) addMultiplier(card, tr("Бонус временного производства", "Time-based production bonus"), researchBonus("time"), "RESEARCH · PRODUCTION, NOT CLOCK SPEED");
       if (!card.querySelector(".modifier-row")) empty(card, tr("Дополнительных ускорителей времени пока нет.", "No additional time-flow modifiers are active."));
     }
