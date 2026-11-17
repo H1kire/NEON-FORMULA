@@ -34,7 +34,7 @@
   }
 
   // Keep notation consistent in static copy and in content inserted by UI updates.
-  const tokenPattern = /(?:[Δ∆]\s*t(?:[_₍]\s*(?:dl|bl)[₎]?)?|t[_₍]\s*(?:dl|bl)[₎]?|A[–−-][A-H]|[A-Za-z]_[A-Za-z0-9]+|[A-Za-z][⁰¹²³⁴⁵⁶⁷⁸⁹]+|W₀|[fgh](?=\s*\()|\b[A-H]\b|[a-h](?=\s*=)|\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\b|\b(?:i|v|k|q|s|w|t|x|p|L|n)\b|[τΣΛ∫√]|\d+(?:[.,]\d+)?\s*%)/g;
+  const tokenPattern = /(?:[Δ∆]\s*t(?:[_₍]\s*(?:dl|bl)[₎]?)?|t[_₍]\s*(?:dl|bl)[₎]?|[A-H][–−-][A-H]|[A-Za-z]_[A-Za-z0-9]+|[A-Za-z][⁰¹²³⁴⁵⁶⁷⁸⁹]+|W₀|[fgh](?=\s*\()|\b[A-H]\b|[a-h](?=\s*=)|\b(?:AP|GP|GS|GF|SC|Qa|Qi|Sx)\b|\b(?:i|v|k|q|s|w|t|x|p|L|n)\b|[τΣΛ∫√]|\d+(?:[.,]\d+)?\s*%)/g;
   function tokenLatex(token) {
     const compact = token.replace(/\s+/g, "");
     const temporal = compact.match(/^[Δ∆]?t[_₍]?(dl|bl)[₎]?$/i);
