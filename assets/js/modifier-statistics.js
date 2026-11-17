@@ -100,6 +100,7 @@
     rowId = 0;
 
     const research = window.FA_META?.research || Array(10).fill(0);
+    const currentLetterLevels = {a:aLevel,b:bLevel,c:cLevel,d:dLevel,e:eLevel,f:fLevel,g:gLevel,h:hLevel};
     const upgrades = window.prestigeUpgrades || {};
     const dilation = window.TimeDilation?.getState?.();
     const blackHole = window.BlackHole?.getState?.();
@@ -120,7 +121,7 @@
     // Production formula: preserve the exact order and independent factors used by getGain().
     {
       const card = addCard(root, tr("Производство Score", "Score production"), "f(t)");
-      addRow(card, tr("Базовая временная часть", "Base time term"), fmt(safe(window.t) ** 2), {latex:"t^2"});
+      addRow(card, tr("Базовая временная часть", "Base time term"), fmt(safe(t) ** 2), {latex:"t^2"});
       if (glyphFormula !== 1) addMultiplier(card, tr("Влияние времени в формуле (дважды)", "Formula time influence (applied twice)"), glyphFormula ** 2, "GLYPH");
       if (unlockedIntegral) addMultiplier(card, tr("Интегральный множитель", "Integral multiplier"), typeof window.getIntegralMultiplier === "function" ? window.getIntegralMultiplier() : 1, "GENESIS CORE + AP UPGRADES");
       if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Global Sum", "Global Sum"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "AP UPGRADES + TEMPORAL + GLYPH");
@@ -154,7 +155,7 @@
         for (const key of ["a","b","c","d","e"]) {
           const value = params[key];
           const label = tr("Текущий параметр ", "Current parameter ") + key.toUpperCase();
-          addNumber(card, label, value, "LETTER LEVEL " + safe(window[key + "Level"]));
+          addNumber(card, label, value, "LETTER LEVEL " + safe(currentLetterLevels[key]));
         }
       }
       for (const [key, id] of [["f","fLevel"],["g","gLevel"],["h","hLevel"]]) {
@@ -172,14 +173,18 @@
       const baseReduction = Math.min(0.5, Math.max(0, 0.0001 * safe(research[2])));
       const priceExponent = Math.max(0.03, 3 * (1 - exponentReduction));
       const priceBase = Math.max(1, 2 * (1 - baseReduction));
-      const temporalDiscount = Math.pow(0.99875, safe(dilation?.levels?.discount)) * Math.pow(0.9975, safe(blackHole?.levels?.discount));
+      const dilationDiscount = Math.pow(0.99875, safe(dilation?.levels?.discount));
+      const blackHoleDiscount = Math.pow(0.9975, safe(blackHole?.levels?.discount));
+      const temporalDiscount = dilationDiscount * blackHoleDiscount;
       if (exponentReduction > 0) addPercent(card, tr("Снижение показателя роста цены", "Price growth exponent reduction"), -exponentReduction, "RESEARCH");
       if (baseReduction > 0) addPercent(card, tr("Снижение основания роста цены", "Price growth base reduction"), -baseReduction, "RESEARCH");
       addNumber(card, tr("Итоговое основание роста цены", "Final price growth base"), priceBase, "RESEARCH");
       addNumber(card, tr("Итоговый показатель степени цены", "Final price growth exponent"), priceExponent, "RESEARCH");
       addMultiplier(card, tr("Рост цены за уровень", "Price growth per level"), typeof window.getLetterPriceGrowth === "function" ? window.getLetterPriceGrowth() : Math.pow(priceBase, priceExponent), "RESEARCH");
       if (glyphCostDivisor !== 1) addRow(card, tr("Делитель стоимости от глифа", "Glyph cost divisor"), fmt(glyphCostDivisor), {source:"EQUIPPED GLYPH", latex:"\\div\\," + "\\text{" + fmt(glyphCostDivisor) + "}"});
-      if (temporalDiscount !== 1) addMultiplier(card, tr("Совокупная временная скидка", "Combined temporal discount"), temporalDiscount, "TIME DILATION + BLACK HOLE");
+      if (dilationDiscount !== 1) addMultiplier(card, tr("Скидка от Time Dilation", "Time Dilation discount"), dilationDiscount, "DILATION UPGRADES");
+      if (blackHoleDiscount !== 1) addMultiplier(card, tr("Скидка от Black Hole", "Black Hole discount"), blackHoleDiscount, "BLACK HOLE UPGRADES");
+      if (temporalDiscount !== 1) addMultiplier(card, tr("Совокупная временная скидка", "Combined temporal discount"), temporalDiscount, "TIME DILATION × BLACK HOLE");
       const finalCostFactor = temporalDiscount / glyphCostDivisor;
       if (finalCostFactor !== 1) addMultiplier(card, tr("Итоговый множитель стоимости", "Final letter cost factor"), finalCostFactor, "ALL COST MODIFIERS");
       if (!card.querySelector(".modifier-row")) empty(card, tr("Снижения стоимости пока не активны.", "No letter cost reductions are active."));
@@ -207,12 +212,16 @@
       const card = addCard(root, tr("Престиж: AP и GP", "Prestige: AP and GP"), "PRESTIGE");
       const apThresholdLevel = nodeLevel(1924), gpThresholdLevel = nodeLevel(1925);
       const apTreeLevel = nodeLevel(1861), gpTreeLevel = nodeLevel(1923);
-      const temporalThreshold = typeof window.getTemporalPrestigeDivisorMultiplier === "function" ? window.getTemporalPrestigeDivisorMultiplier() : 1;
+      const dilationThreshold = 1 + 0.001 * safe(dilation?.levels?.prestige);
+      const blackHoleThreshold = 1 + 0.002 * safe(blackHole?.levels?.prestige);
+      const temporalThreshold = dilationThreshold * blackHoleThreshold;
       const apTreeThreshold = 1 + Math.min(25, apThresholdLevel) * 0.05;
       const gpTreeThreshold = 1 + Math.min(25, gpThresholdLevel) * 0.05;
       if (researchBonus("prestige") !== 1) addMultiplier(card, tr("Получение AP от Research", "AP gain from Research"), researchBonus("prestige"), "RESEARCH");
       if (apTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Древа", "AP threshold divisor from Tree"), apTreeThreshold, "GENESIS TREE");
-      if (temporalThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от временных улучшений", "AP threshold divisor from temporal upgrades"), temporalThreshold, "TIME DILATION + BLACK HOLE");
+      if (dilationThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Time Dilation", "AP threshold divisor from Time Dilation"), dilationThreshold, "DILATION UPGRADES");
+      if (blackHoleThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Black Hole", "AP threshold divisor from Black Hole"), blackHoleThreshold, "BLACK HOLE UPGRADES");
+      if (temporalThreshold !== 1) addMultiplier(card, tr("Совокупный временной делитель порога AP", "Combined temporal AP threshold divisor"), temporalThreshold, "TIME DILATION × BLACK HOLE");
       if (apTreeLevel > 0) addMultiplier(card, tr("Множитель получения AP от Древа", "AP gain multiplier from Tree"), powerOfTwo(apTreeLevel), "GENESIS TREE");
       if (gpTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога GP от Древа", "GP threshold divisor from Tree"), gpTreeThreshold, "GENESIS TREE");
       if (gpTreeLevel > 0) addMultiplier(card, tr("Множитель получения GP от Древа", "GP gain multiplier from Tree"), powerOfTwo(gpTreeLevel), "GENESIS TREE");
