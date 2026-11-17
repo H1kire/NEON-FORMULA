@@ -68,7 +68,7 @@
       "LETTER F · ACTIVATES AT t ≥ 5":tr("Источник: формула F; до t ≥ 5 множитель равен 1","Source: Letter F formula; multiplier stays at 1 until t ≥ 5"),
       "LETTER G":tr("Источник: формула буквы G; усиливает значения A–E","Source: Letter G formula; amplifies A–E values"),
       "LETTER H":tr("Источник: формула буквы H","Source: Letter H formula"),
-      "A–H":tr("Влияет на произведение активных букв в формуле производства","Affects the active-letter product in the production formula"),
+      "A–H":tr("В произведение входят A–F и H; буква G усиливает A–E отдельно","The product includes A–F and H; letter G separately amplifies A–E"),
       "p = 0.85L":tr("Формула: показатель преобразования p равен 0,85 × L","Formula: conversion exponent p equals 0.85 × L")
     };
     if (labels[source]) return labels[source];
@@ -175,7 +175,7 @@
       addRow(card, tr("Базовая временная часть", "Base time term"), fmt(safe(t) ** 2), {latex:"t^2"});
       if (glyphFormula !== 1) addMultiplier(card, tr("Множитель глифа, применяемый дважды к временному члену t²", "Glyph multiplier applied twice to the time term t²"), glyphFormula ** 2, "GLYPH");
       if (unlockedIntegral) addMultiplier(card, tr("Множитель Integral, который умножает производство Score", "Integral multiplier applied to Score production"), typeof window.getIntegralMultiplier === "function" ? window.getIntegralMultiplier() : 1, "GENESIS CORE + AP UPGRADES");
-      if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Global Sum", "Global Sum"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "AP UPGRADES + TEMPORAL + GLYPH");
+      if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Множитель Global Sum, который применяется к производству Score", "Global Sum multiplier applied to Score production"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "AP UPGRADES + TEMPORAL + GLYPH");
       if (typeof window.getLetterProduct === "function") addMultiplier(card, tr("Произведение активных букв A–F и H (G усиливает A–E отдельно)", "Product of active letters A–F and H (G separately amplifies A–E)"), window.getLetterProduct(), "A–H");
       if (researchBonus("production") !== 1) addMultiplier(card, tr("Множитель общего производства Score от Quantum Multiplier", "Score-production multiplier from Quantum Multiplier"), researchBonus("production"), "RESEARCH");
       if (researchBonus("time") !== 1) addMultiplier(card, tr("Множитель временной составляющей производства Score от Temporal Core", "Time-dependent Score-production multiplier from Temporal Core"), researchBonus("time"), "RESEARCH");
