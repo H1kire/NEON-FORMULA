@@ -30,7 +30,15 @@
     renderPlainMath(h, title);
     const tag = document.createElement("span");
     tag.id = "modifierCategory" + (++rowId);
-    renderPlainMath(tag, category);
+    const categoryLabels = {
+      "f(t)":tr("ПРОИЗВОДСТВО","PRODUCTION"),"A–H":tr("БУКВЫ И ФОРМУЛЫ","LETTERS & FORMULAS"),
+      ECONOMY:tr("ЭКОНОМИКА","ECONOMY"),FORMULA:tr("ФОРМУЛЫ","FORMULAS"),
+      PRESTIGE:tr("ПРЕСТИЖ","PRESTIGE"),TIME:tr("ВРЕМЯ","TIME"),
+      RESEARCH:tr("ИССЛЕДОВАНИЯ","RESEARCH"),"TIME DILATION":tr("БЕЛАЯ ДЫРА","WHITE HOLE"),
+      "BLACK HOLE":tr("ЧЁРНАЯ ДЫРА","BLACK HOLE"),AUTOMATION:tr("АВТОМАТИЗАЦИЯ","AUTOMATION"),
+      "EQUIPPED GLYPH":tr("ЭКИПИРОВАННЫЙ ГЛИФ","EQUIPPED GLYPH")
+    };
+    renderPlainMath(tag, categoryLabels[category] || category);
     head.append(h, tag);
     card.append(head);
     root.append(card);
