@@ -223,10 +223,12 @@
       if (hasLevel(upgrades.globalSum)) addNumber(card, tr("Уровень Global Sum (дополнительные члены)", "Global Sum level (additional terms)"), upgrades.globalSum, "AP UPGRADE");
       if (hasLevel(upgrades.simpleBoost)) addMultiplier(card, tr("Вес каждого дополнительного члена", "Weight of each additional term"), 1 + 0.25 * safe(upgrades.simpleBoost), "AP UPGRADE");
       if (hasLevel(upgrades.integralSumCoefficient)) addNumber(card, tr("Коэффициент интеграла и суммы", "Integral and Sum coefficient"), 1 + safe(upgrades.integralSumCoefficient), "AP UPGRADE");
-      const dilationSum = 1 + 0.01 * safe(dilation?.levels?.sum);
-      const blackHoleSum = 1 + 0.02 * safe(blackHole?.levels?.sum);
-      if (dilationSum !== 1) addMultiplier(card, tr("Дополнительный вес от Time Dilation", "Additional weight from Time Dilation"), dilationSum, "DILATION UPGRADES");
-      if (blackHoleSum !== 1) addMultiplier(card, tr("Дополнительный вес от Black Hole", "Additional weight from Black Hole"), blackHoleSum, "BLACK HOLE UPGRADES");
+      const dilationSumBonus = 0.01 * safe(dilation?.levels?.sum);
+      const blackHoleSumBonus = 0.02 * safe(blackHole?.levels?.sum);
+      const temporalSumMultiplier = 1 + dilationSumBonus + blackHoleSumBonus;
+      if (dilationSumBonus > 0) addPercent(card, tr("Добавка к числу членов от Time Dilation", "Global Sum term bonus from Time Dilation"), dilationSumBonus, "DILATION UPGRADES");
+      if (blackHoleSumBonus > 0) addPercent(card, tr("Добавка к числу членов от Black Hole", "Global Sum term bonus from Black Hole"), blackHoleSumBonus, "BLACK HOLE UPGRADES");
+      if (temporalSumMultiplier !== 1) addMultiplier(card, tr("Итоговый временной множитель числа членов", "Combined temporal term-count multiplier"), temporalSumMultiplier, "ADDITIVE BONUS");
       if (glyphSum > 0) addPercent(card, tr("Бонус Global Sum от глифа", "Glyph Global Sum bonus"), glyphSum, "EQUIPPED GLYPH");
       if (hasLevel(upgrades.globalSum)) addNumber(card, tr("Итоговый дополнительный вес", "Final additional term weight"), typeof window.getGlobalSumAdditionalWeight === "function" ? window.getGlobalSumAdditionalWeight() : 0, "LIVE CALCULATION");
       if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Итоговый множитель Global Sum", "Final Global Sum multiplier"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "LIVE CALCULATION");
@@ -239,16 +241,16 @@
       const card = addCard(root, tr("Престиж: AP и GP", "Prestige: AP and GP"), "PRESTIGE");
       const apThresholdLevel = nodeLevel(1924), gpThresholdLevel = nodeLevel(1925);
       const apTreeLevel = nodeLevel(1861), gpTreeLevel = nodeLevel(1923);
-      const dilationThreshold = 1 + 0.001 * safe(dilation?.levels?.prestige);
-      const blackHoleThreshold = 1 + 0.002 * safe(blackHole?.levels?.prestige);
-      const temporalThreshold = dilationThreshold * blackHoleThreshold;
+      const dilationThresholdBonus = 0.001 * safe(dilation?.levels?.prestige);
+      const blackHoleThresholdBonus = 0.002 * safe(blackHole?.levels?.prestige);
+      const temporalThreshold = 1 + dilationThresholdBonus + blackHoleThresholdBonus;
       const apTreeThreshold = 1 + Math.min(25, apThresholdLevel) * 0.05;
       const gpTreeThreshold = 1 + Math.min(25, gpThresholdLevel) * 0.05;
       if (researchBonus("prestige") !== 1) addMultiplier(card, tr("Получение AP от Research", "AP gain from Research"), researchBonus("prestige"), "RESEARCH");
       if (apTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Древа", "AP threshold divisor from Tree"), apTreeThreshold, "GENESIS TREE");
-      if (dilationThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Time Dilation", "AP threshold divisor from Time Dilation"), dilationThreshold, "DILATION UPGRADES");
-      if (blackHoleThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Black Hole", "AP threshold divisor from Black Hole"), blackHoleThreshold, "BLACK HOLE UPGRADES");
-      if (temporalThreshold !== 1) addMultiplier(card, tr("Совокупный временной делитель порога AP", "Combined temporal AP threshold divisor"), temporalThreshold, "TIME DILATION × BLACK HOLE");
+      if (dilationThresholdBonus > 0) addPercent(card, tr("Добавка к делителю AP от Time Dilation", "AP divisor bonus from Time Dilation"), dilationThresholdBonus, "DILATION UPGRADES");
+      if (blackHoleThresholdBonus > 0) addPercent(card, tr("Добавка к делителю AP от Black Hole", "AP divisor bonus from Black Hole"), blackHoleThresholdBonus, "BLACK HOLE UPGRADES");
+      if (temporalThreshold !== 1) addMultiplier(card, tr("Совокупный временной делитель порога AP", "Combined temporal AP threshold divisor"), temporalThreshold, "ADDITIVE BONUS");
       if (apTreeLevel > 0) addMultiplier(card, tr("Множитель получения AP от Древа", "AP gain multiplier from Tree"), powerOfTwo(apTreeLevel), "GENESIS TREE");
       if (gpTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога GP от Древа", "GP threshold divisor from Tree"), gpTreeThreshold, "GENESIS TREE");
       addNumber(card, tr("Итоговый делитель порога AP", "Final AP threshold divisor"), apTreeThreshold * temporalThreshold, "BASE × TREE × TEMPORAL");
@@ -267,6 +269,8 @@
       if (dilationTau !== 1) addMultiplier(card, tr("Скорость обычного времени от Time Dilation", "Ordinary time speed from Time Dilation"), dilationTau, "DILATION UPGRADE · τ");
       if (blackHoleTau !== 1) addMultiplier(card, tr("Скорость обычного времени от Black Hole", "Ordinary time speed from Black Hole"), blackHoleTau, "BLACK HOLE UPGRADE · τ");
       if (glyphOrdinary !== 1) addMultiplier(card, tr("Скорость обычного времени от глифа", "Ordinary time speed from Glyph"), glyphOrdinary, "EQUIPPED GLYPH");
+      const ordinaryTimeSpeed = (typeof window.getDilationTimeSpeed === "function" ? window.getDilationTimeSpeed() : dilationTau * blackHoleTau) * glyphOrdinary;
+      if (ordinaryTimeSpeed !== 1) addMultiplier(card, tr("Итоговая скорость обычного времени", "Total ordinary time speed"), ordinaryTimeSpeed, "TIME DILATION × BLACK HOLE × GLYPH");
       if (glyphDilation !== 1) addMultiplier(card, tr("Накопление нестандартного времени от глифа", "Non-standard time accumulation from Glyph"), glyphDilation, "EQUIPPED GLYPH");
       if (window.FA_META?.settings?.offline !== false) {
         addMultiplier(card, tr("Скорость офлайн-прогресса", "Offline progress rate"), 0.35, "GAME RULE · MAXIMUM 8 HOURS");
