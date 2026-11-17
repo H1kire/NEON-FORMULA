@@ -313,9 +313,9 @@ function getGain(){
  const boost=metaBonus("production")*metaBonus("time");
  const integralUnlocked=typeof window!=="undefined"&&typeof window.isIntegralNodePurchased==="function"&&window.isIntegralNodePurchased();
  const formulaTime=typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1;
- const factors=[safeProduct(t,t,formulaTime,formulaTime,1+0.005*(dilationExtraLevels.letters||0),1+0.01*(blackHoleLevels.letters||0))];
+ const factors=[safeProduct(t,t,formulaTime,formulaTime)];
  if(integralUnlocked)factors.push(getIntegralMultiplier());
- factors.push(getGlobalSumMultiplier()*(1+0.01*(dilationExtraLevels.sum||0)+0.02*(blackHoleLevels.sum||0)),letterProduct,boost*(1+0.1*(dilationExtraLevels.production||0)+0.2*(blackHoleLevels.production||0)));
+ factors.push(getGlobalSumMultiplier(),safeProduct(letterProduct,1+0.005*(dilationExtraLevels.letters||0),1+0.01*(blackHoleLevels.letters||0)),boost*(1+0.1*(dilationExtraLevels.production||0)+0.2*(blackHoleLevels.production||0)));
  let result=safeProduct(...factors);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
