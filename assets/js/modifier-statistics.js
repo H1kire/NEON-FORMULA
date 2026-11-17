@@ -222,7 +222,7 @@
       const card = addCard(root, tr("Global Sum и Integral", "Global Sum and Integral"), "FORMULA");
       if (hasLevel(upgrades.globalSum)) addNumber(card, tr("Уровень Global Sum (дополнительные члены)", "Global Sum level (additional terms)"), upgrades.globalSum, "AP UPGRADE");
       if (hasLevel(upgrades.simpleBoost)) addMultiplier(card, tr("Вес каждого дополнительного члена", "Weight of each additional term"), 1 + 0.25 * safe(upgrades.simpleBoost), "AP UPGRADE");
-      if (hasLevel(upgrades.integralSumCoefficient)) addNumber(card, tr("Коэффициент интеграла и суммы", "Integral and Sum coefficient"), 1 + safe(upgrades.integralSumCoefficient), "AP UPGRADE");
+      if (hasLevel(upgrades.integralSumCoefficient)) addNumber(card, tr("Уровень коэффициента k для Integral и Global Sum", "Integral and Global Sum coefficient k level"), safe(upgrades.integralSumCoefficient), tr("AP-улучшение: именно это значение k входит в формулы", "AP upgrade: this is the k value used in the formulas"));
       const dilationSumBonus = 0.01 * safe(dilation?.levels?.sum);
       const blackHoleSumBonus = 0.02 * safe(blackHole?.levels?.sum);
       const temporalSumMultiplier = 1 + dilationSumBonus + blackHoleSumBonus;
