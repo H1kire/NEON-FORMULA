@@ -628,6 +628,22 @@ if(!css.includes(".buy-button.good,.buy-button.good:hover:not(:disabled)")||!css
 if(!sources["assets/js/prestige.js"].includes("glyphInventory,glyphEquippedId,glyphStorageSlots")||!sources["assets/js/prestige.js"].includes("glyphEquippedId=typeof data.glyphEquippedId")||!sources["assets/js/prestige.js"].includes(".slice(0,29)")||!sources["assets/js/prestige.js"].includes("glyphStorageSlots=Array(28).fill(null)"))fail("Glyph inventory, equipped state and independent storage slot positions must persist in prestigeSave");
 if(!sources["assets/js/glyphs.js"].includes("slots:7")||!sources["assets/js/glyphs.js"].includes("Apostle of Chronos")||!sources["assets/js/glyphs.js"].includes("letterCostDivisor"))fail("Aion glyph rarity and bonus model is incomplete");
 if(!html.includes('id="blackHoleModulePanel"')||!html.includes('id="blackHoleResearchPanel"')||!html.includes('id="blackHoleConvertInput"')||!html.includes('id="dilationConvertInput"')||!sources["assets/js/script.js"].includes("1e12")||!sources["assets/js/script.js"].includes("function calculateBlackHoleReward")||!sources["assets/js/script.js"].includes("getBlackHoleP()")||!sources["assets/js/script.js"].includes("blackHoleLevels"))fail("Black Hole unlock, conversion, formulas, or persistent upgrade state is incomplete");
+
+try{
+ const core=sources["assets/js/script.js"],start=core.indexOf("function getDilationLevels()"),end=core.indexOf("function updateTimeDilationUI()",start);
+ if(start<0||end<0)throw new Error("Temporal formula helpers missing");
+ const context={dilationMode:false,dilationTime:60,dilationCurrency:0,dilationILevel:0,dilationKLevel:0,dilationVLevel:0,dilationTauLevel:0,dilationIntegrating:false,dilationOperationStartedAt:0,dilationOperationReward:0,dilationOperationAmount:0,dilationExtraLevels:{sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0},blackHoleUnlocked:true,blackHoleMode:false,blackHoleTime:60,blackHoleCurrency:0,blackHoleIntegrating:false,blackHoleOperationStartedAt:0,blackHoleOperationAmount:0,blackHoleOperationReward:0,blackHoleLevels:{q:0,s:0,w:0,tau:0,sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0},FA_META:{},safePow:(b,p)=>b>0?Math.pow(b,p):0,safeProduct:(...v)=>v.reduce((a,b)=>a*b,1),window:{getBlackHoleResearchLevel:()=>0},Number,Math};
+ vm.runInNewContext(core.slice(start,end)+";globalThis.__temporal={calculateDilationReward,calculateBlackHoleReward,getDilationUpgradeCost,getBlackHoleUpgradeCost,getDilationParameters,getBlackHoleParameters,getBlackHoleP};",context);
+ const t=context.__temporal;
+ if(Math.abs(t.calculateDilationReward(60)-184.91933384829667)>1e-8)throw new Error("White Hole nerfed integral does not match its analytic result at 60 t_dl");
+ if(Math.abs(t.calculateBlackHoleReward(60)-2.1534406077358277)>1e-10)throw new Error("Black Hole singularity conversion does not match the agreed baseline at 60 t_bl");
+ if(t.getDilationUpgradeCost("sum")!==10||t.getDilationUpgradeCost("letters")!==2||t.getDilationUpgradeCost("discount")!==1000||t.getDilationUpgradeCost("parameters")!==100||t.getDilationUpgradeCost("production")!==1000||t.getDilationUpgradeCost("prestige")!==1000)throw new Error("Dilation UPG C0 prices are incorrect");
+ if(t.getBlackHoleUpgradeCost("q")!==1||t.getBlackHoleUpgradeCost("s")!==2.5||t.getBlackHoleUpgradeCost("w")!==5||t.getBlackHoleUpgradeCost("tau")!==1000)throw new Error("Black Hole q/s/w/time-flow C0 prices are incorrect");
+ context.window.getBlackHoleResearchLevel=()=>2;
+ if(Math.abs(t.getBlackHoleP()-1.02)>1e-12)throw new Error("p must equal 0.85 × (1 + 0.1 × L_y)");
+ pass("White Hole and Black Hole analytic conversion, starting upgrade costs and Research Center p progression");
+}catch(error){fail("Temporal mechanics runtime test: "+error.message)}
+
 if(!sources["assets/js/script.js"].includes("getGlyphOrdinaryTimeMultiplier")||!sources["assets/js/script.js"].includes("getGlyphDilationTimeMultiplier")||!sources["assets/js/script.js"].includes("getGlyphCostDivisor"))fail("Glyph effects are not wired into the game loop and letter costs");
 
 // New Additional Upgrades, batch purchasing, Research caps and node price progression.
