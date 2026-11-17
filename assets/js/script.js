@@ -41,6 +41,7 @@ function getDilationUpgradeCost(key,offset=0){const level=({i:dilationILevel,k:d
 function calculateDilationReward(upper=dilationTime){const {i,k,v}=getDilationParameters(),z=1+v*Math.sqrt(Math.max(0,upper)),a=k+2,b=k+1,term=(safePow(z,a)/a-safePow(z,b)/b)-(1/a-1/b);return Math.min(Number.MAX_VALUE,Math.max(0,safeProduct(i/(v*v),term)/1))}
 function completeDilationIntegration(){if(!dilationIntegrating)return;dilationCurrency=Math.min(Number.MAX_VALUE,dilationCurrency+dilationOperationReward);dilationTime=Math.max(0,dilationTime-dilationOperationAmount);dilationIntegrating=false;dilationOperationStartedAt=0;dilationOperationReward=0;dilationOperationAmount=0;saveGame(true);updateUI();if(window.refreshDilationResearch)window.refreshDilationResearch()}
 function getBlackHoleParameters(){const l=blackHoleLevels,boost=1+0.002*(l.parameters||0);return {q:(1+0.5*l.q)*boost,s:(1+0.25*l.s)*boost,w:(1+0.05*l.w)*boost}}
+window.getBlackHoleResearchLevel=window.getBlackHoleResearchLevel||(()=>Math.max(0,Math.floor(Number(FA_META?.blackHoleResearchLevel)||0)));
 function getBlackHoleResearchL(){return 1+0.1*Math.max(0,Number(window.getBlackHoleResearchLevel?.())||0)}
 function getBlackHoleP(){return 0.85*getBlackHoleResearchL()}
 function getBlackHoleTimeSpeed(){return (1+0.05*(blackHoleLevels.tau||0))*(1+0.05*(blackHoleLevels.timeFlow||0))}
