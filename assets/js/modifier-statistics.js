@@ -173,10 +173,10 @@
     {
       const card = addCard(root, tr("Производство Score", "Score production"), "f(t)");
       addRow(card, tr("Базовая временная часть", "Base time term"), fmt(safe(t) ** 2), {latex:"t^2"});
-      if (glyphFormula !== 1) addMultiplier(card, tr("Влияние времени в формуле (дважды)", "Formula time influence (applied twice)"), glyphFormula ** 2, "GLYPH");
-      if (unlockedIntegral) addMultiplier(card, tr("Интегральный множитель", "Integral multiplier"), typeof window.getIntegralMultiplier === "function" ? window.getIntegralMultiplier() : 1, "GENESIS CORE + AP UPGRADES");
+      if (glyphFormula !== 1) addMultiplier(card, tr("Множитель глифа, применяемый дважды к временному члену t²", "Glyph multiplier applied twice to the time term t²"), glyphFormula ** 2, "GLYPH");
+      if (unlockedIntegral) addMultiplier(card, tr("Множитель Integral, который умножает производство Score", "Integral multiplier applied to Score production"), typeof window.getIntegralMultiplier === "function" ? window.getIntegralMultiplier() : 1, "GENESIS CORE + AP UPGRADES");
       if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Global Sum", "Global Sum"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "AP UPGRADES + TEMPORAL + GLYPH");
-      if (typeof window.getLetterProduct === "function") addMultiplier(card, tr("Произведение активных букв", "Active letter product"), window.getLetterProduct(), "A–H");
+      if (typeof window.getLetterProduct === "function") addMultiplier(card, tr("Произведение активных букв A–F и H (G усиливает A–E отдельно)", "Product of active letters A–F and H (G separately amplifies A–E)"), window.getLetterProduct(), "A–H");
       if (researchBonus("production") !== 1) addMultiplier(card, tr("Множитель общего производства Score от Quantum Multiplier", "Score-production multiplier from Quantum Multiplier"), researchBonus("production"), "RESEARCH");
       if (researchBonus("time") !== 1) addMultiplier(card, tr("Множитель временной составляющей производства Score от Temporal Core", "Time-dependent Score-production multiplier from Temporal Core"), researchBonus("time"), "RESEARCH");
       const researchProduction = researchBonus("production") * researchBonus("time");
@@ -198,9 +198,9 @@
       const apLetter = 1 + 0.001 * safe(upgrades.letterValueBoost);
       const dilationLetter = 1 + 0.005 * safe(dilation?.levels?.letters);
       const blackHoleLetter = 1 + 0.01 * safe(blackHole?.levels?.letters);
-      if (apLetter !== 1) addMultiplier(card, tr("Усиление букв за AP", "AP letter amplification"), apLetter, "AP UPGRADE");
-      if (dilationLetter !== 1) addMultiplier(card, tr("Усиление букв от Time Dilation", "Time Dilation letter values"), dilationLetter, "DILATION UPGRADES");
-      if (blackHoleLetter !== 1) addMultiplier(card, tr("Усиление букв от Black Hole", "Black Hole letter values"), blackHoleLetter, "BLACK HOLE UPGRADES");
+      if (apLetter !== 1) addMultiplier(card, tr("Множитель значений активных букв от улучшения за AP", "Active-letter value multiplier from the AP upgrade"), apLetter, "AP UPGRADE");
+      if (dilationLetter !== 1) addMultiplier(card, tr("Множитель значений активных букв от Time Dilation", "Active-letter value multiplier from Time Dilation"), dilationLetter, "DILATION UPGRADES");
+      if (blackHoleLetter !== 1) addMultiplier(card, tr("Множитель значений активных букв от Black Hole", "Active-letter value multiplier from Black Hole"), blackHoleLetter, "BLACK HOLE UPGRADES");
       if (glyphLetter !== 1) addMultiplier(card, tr("Усиление букв от глифа", "Glyph letter values"), glyphLetter, "EQUIPPED GLYPH");
       if (researchBonus("efficiency") !== 1) addMultiplier(card, tr("Множитель эффективности уровней букв: усиливает влияние каждого купленного уровня на параметры A–E", "Letter-level efficiency multiplier: increases the effect of each purchased level on A–E parameters"), researchBonus("efficiency"), "RESEARCH");
       if (researchBonus("coupling") !== 1) addMultiplier(card, tr("Множитель взаимных зависимостей в формулах обновления A–E", "Cross-letter dependency multiplier in the A–E update formulas"), researchBonus("coupling"), "RESEARCH");
@@ -216,7 +216,7 @@
         const liveLetters = {a:getA(),b:getB(),c:getC(),d:getD(),e:getE()};
         for (const key of ["a","b","c","d","e"]) {
           if (safe(currentLetterLevels[key]) > 0) {
-            addMultiplier(card, tr("Текущее значение буквы ", "Current letter value ") + key.toUpperCase(), liveLetters[key], "ACTIVE LETTER");
+            addMultiplier(card, tr("Итоговое значение буквы ", "Final value of letter ") + key.toUpperCase(), liveLetters[key], "ACTIVE LETTER");
           }
         }
       }
@@ -227,16 +227,16 @@
       }
       if (safe(currentLetterLevels.f) > 0 && !$("letterFUpgrade")?.hidden) {
         addNumber(card, tr("Показатель степени F", "Letter F exponent"), formulaDetails.fExponent, "LETTER F");
-        addMultiplier(card, tr("Текущий множитель F", "Current Letter F multiplier"), formulaDetails.f || 1, "LETTER F · ACTIVATES AT t ≥ 5");
+        addMultiplier(card, tr("Множитель F, непосредственно умножающий производство Score", "F multiplier applied directly to Score production"), formulaDetails.f || 1, "LETTER F · ACTIVATES AT t ≥ 5");
       }
       if (safe(currentLetterLevels.g) > 0 && !$("letterGUpgrade")?.hidden) {
-        addMultiplier(card, tr("Общий множитель от G", "Global multiplier from G"), typeof window.getGFactor === "function" ? window.getGFactor() : 1, "LETTER G");
+        addMultiplier(card, tr("Множитель G, применяемый к значениям букв A–E", "G multiplier applied to the values of letters A–E"), typeof window.getGFactor === "function" ? window.getGFactor() : 1, "LETTER G");
         addNumber(card, tr("Текущая добавка G", "Current G additive value"), formulaDetails.g, "LETTER G");
       }
       if (safe(currentLetterLevels.h) > 0 && !$("letterHUpgrade")?.hidden) {
         addNumber(card, tr("Основание степени H", "Letter H exponent base"), formulaDetails.hBase, "LETTER H");
         addNumber(card, tr("Показатель степени H", "Letter H exponent"), formulaDetails.hExponent, "LETTER H");
-        addMultiplier(card, tr("Текущий множитель H", "Current Letter H multiplier"), formulaDetails.h || 1, "LETTER H");
+        addMultiplier(card, tr("Множитель H, непосредственно умножающий производство Score", "H multiplier applied directly to Score production"), formulaDetails.h || 1, "LETTER H");
       }
       if (!card.querySelector(".modifier-row")) empty(card, tr("Дополнительные усиления букв пока не активны.", "No additional letter modifiers are active."));
     }
@@ -251,17 +251,17 @@
       const dilationDiscount = Math.pow(0.99875, safe(dilation?.levels?.discount));
       const blackHoleDiscount = Math.pow(0.9975, safe(blackHole?.levels?.discount));
       const temporalDiscount = dilationDiscount * blackHoleDiscount;
-      if (exponentReduction > 0) addPercent(card, tr("Снижение показателя роста цены", "Price growth exponent reduction"), -exponentReduction, "RESEARCH");
-      if (baseReduction > 0) addPercent(card, tr("Снижение основания роста цены", "Price growth base reduction"), -baseReduction, "RESEARCH");
+      if (exponentReduction > 0) addPercent(card, tr("Снижение показателя степени в формуле роста цены букв", "Reduction to the exponent in the letter price-growth formula"), -exponentReduction, "RESEARCH");
+      if (baseReduction > 0) addPercent(card, tr("Снижение основания в формуле роста цены букв", "Reduction to the base in the letter price-growth formula"), -baseReduction, "RESEARCH");
       addNumber(card, tr("Итоговое основание роста цены", "Final price growth base"), priceBase, "RESEARCH");
       addNumber(card, tr("Итоговый показатель степени цены", "Final price growth exponent"), priceExponent, "RESEARCH");
-      addMultiplier(card, tr("Рост цены за уровень", "Price growth per level"), typeof window.getLetterPriceGrowth === "function" ? window.getLetterPriceGrowth() : Math.pow(priceBase, priceExponent), "RESEARCH");
+      addMultiplier(card, tr("Множитель цены каждого следующего уровня букв", "Price multiplier for each next letter level"), typeof window.getLetterPriceGrowth === "function" ? window.getLetterPriceGrowth() : Math.pow(priceBase, priceExponent), "RESEARCH");
       if (glyphCostDivisor !== 1) addRow(card, tr("Делитель стоимости от глифа", "Glyph cost divisor"), fmt(glyphCostDivisor), {source:"EQUIPPED GLYPH", latex:"\\div\\," + "\\text{" + fmt(glyphCostDivisor) + "}"});
-      if (dilationDiscount !== 1) addMultiplier(card, tr("Скидка от Time Dilation", "Time Dilation discount"), dilationDiscount, "DILATION UPGRADES");
-      if (blackHoleDiscount !== 1) addMultiplier(card, tr("Скидка от Black Hole", "Black Hole discount"), blackHoleDiscount, "BLACK HOLE UPGRADES");
-      if (temporalDiscount !== 1) addMultiplier(card, tr("Совокупная временная скидка", "Combined temporal discount"), temporalDiscount, "TIME DILATION × BLACK HOLE");
+      if (dilationDiscount !== 1) addMultiplier(card, tr("Множитель стоимости улучшений букв от скидки Time Dilation", "Letter-upgrade cost multiplier from Time Dilation discount"), dilationDiscount, "DILATION UPGRADES");
+      if (blackHoleDiscount !== 1) addMultiplier(card, tr("Множитель стоимости улучшений букв от скидки Black Hole", "Letter-upgrade cost multiplier from Black Hole discount"), blackHoleDiscount, "BLACK HOLE UPGRADES");
+      if (temporalDiscount !== 1) addMultiplier(card, tr("Совокупный множитель стоимости улучшений букв от временных скидок", "Combined letter-upgrade cost multiplier from temporal discounts"), temporalDiscount, "TIME DILATION × BLACK HOLE");
       const finalCostFactor = temporalDiscount / glyphCostDivisor;
-      if (finalCostFactor !== 1) addMultiplier(card, tr("Итоговый множитель стоимости", "Final letter cost factor"), finalCostFactor, "ALL COST MODIFIERS");
+      if (finalCostFactor !== 1) addMultiplier(card, tr("Итоговый множитель к цене улучшений букв после всех скидок и делителя глифа", "Final letter-upgrade cost multiplier after all discounts and Glyph divisor"), finalCostFactor, "ALL COST MODIFIERS");
       if (!card.querySelector(".modifier-row")) empty(card, tr("Снижения стоимости пока не активны.", "No letter cost reductions are active."));
     }
 
@@ -274,13 +274,13 @@
       const dilationSumBonus = 0.01 * safe(dilation?.levels?.sum);
       const blackHoleSumBonus = 0.02 * safe(blackHole?.levels?.sum);
       const temporalSumMultiplier = 1 + dilationSumBonus + blackHoleSumBonus;
-      if (dilationSumBonus > 0) addPercent(card, tr("Добавка к числу членов от Time Dilation", "Global Sum term bonus from Time Dilation"), dilationSumBonus, "DILATION UPGRADES");
-      if (blackHoleSumBonus > 0) addPercent(card, tr("Добавка к числу членов от Black Hole", "Global Sum term bonus from Black Hole"), blackHoleSumBonus, "BLACK HOLE UPGRADES");
-      if (temporalSumMultiplier !== 1) addMultiplier(card, tr("Итоговый временной множитель числа членов", "Combined temporal term-count multiplier"), temporalSumMultiplier, "ADDITIVE BONUS");
-      if (glyphSum > 0) addPercent(card, tr("Бонус Global Sum от глифа", "Glyph Global Sum bonus"), glyphSum, "EQUIPPED GLYPH");
+      if (dilationSumBonus > 0) addPercent(card, tr("Добавка к количеству членов n в Global Sum от Time Dilation", "Additive bonus to the Global Sum term count n from Time Dilation"), dilationSumBonus, "DILATION UPGRADES");
+      if (blackHoleSumBonus > 0) addPercent(card, tr("Добавка к количеству членов n в Global Sum от Black Hole", "Additive bonus to the Global Sum term count n from Black Hole"), blackHoleSumBonus, "BLACK HOLE UPGRADES");
+      if (temporalSumMultiplier !== 1) addMultiplier(card, tr("Итоговый множитель к количеству членов n в Global Sum", "Final multiplier to the Global Sum term count n"), temporalSumMultiplier, "ADDITIVE BONUS");
+      if (glyphSum > 0) addPercent(card, tr("Процентная добавка глифа к весу членов Global Sum", "Glyph percentage bonus to Global Sum term weight"), glyphSum, "EQUIPPED GLYPH");
       if (hasLevel(upgrades.globalSum)) addNumber(card, tr("Итоговый дополнительный вес", "Final additional term weight"), typeof window.getGlobalSumAdditionalWeight === "function" ? window.getGlobalSumAdditionalWeight() : 0, "LIVE CALCULATION");
-      if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Итоговый множитель Global Sum", "Final Global Sum multiplier"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "LIVE CALCULATION");
-      if (unlockedIntegral) addMultiplier(card, tr("Итоговый множитель Integral", "Final Integral multiplier"), typeof window.getIntegralMultiplier === "function" ? window.getIntegralMultiplier() : 1, "GENESIS CORE");
+      if (hasLevel(upgrades.globalSum)) addMultiplier(card, tr("Итоговый множитель Global Sum к производству Score", "Final Global Sum multiplier to Score production"), typeof window.getGlobalSumMultiplier === "function" ? window.getGlobalSumMultiplier() : 1, "LIVE CALCULATION");
+      if (unlockedIntegral) addMultiplier(card, tr("Итоговый множитель Integral к производству Score", "Final Integral multiplier to Score production"), typeof window.getIntegralMultiplier === "function" ? window.getIntegralMultiplier() : 1, "GENESIS CORE");
       if (!card.querySelector(".modifier-row")) empty(card, tr("Global Sum и Integral ещё не имеют активных улучшений.", "Global Sum and Integral have no active upgrades yet."));
     }
 
@@ -294,16 +294,16 @@
       const temporalThreshold = 1 + dilationThresholdBonus + blackHoleThresholdBonus;
       const apTreeThreshold = 1 + Math.min(25, apThresholdLevel) * 0.05;
       const gpTreeThreshold = 1 + Math.min(25, gpThresholdLevel) * 0.05;
-      if (researchBonus("prestige") !== 1) addMultiplier(card, tr("Получение AP от Research", "AP gain from Research"), researchBonus("prestige"), "RESEARCH");
-      if (apTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога AP от Древа", "AP threshold divisor from Tree"), apTreeThreshold, "GENESIS TREE");
-      if (dilationThresholdBonus > 0) addPercent(card, tr("Добавка к делителю AP от Time Dilation", "AP divisor bonus from Time Dilation"), dilationThresholdBonus, "DILATION UPGRADES");
-      if (blackHoleThresholdBonus > 0) addPercent(card, tr("Добавка к делителю AP от Black Hole", "AP divisor bonus from Black Hole"), blackHoleThresholdBonus, "BLACK HOLE UPGRADES");
-      if (temporalThreshold !== 1) addMultiplier(card, tr("Совокупный временной делитель порога AP", "Combined temporal AP threshold divisor"), temporalThreshold, "ADDITIVE BONUS");
-      if (apTreeLevel > 0) addMultiplier(card, tr("Множитель получения AP от Древа", "AP gain multiplier from Tree"), powerOfTwo(apTreeLevel), "GENESIS TREE");
-      if (gpTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога GP от Древа", "GP threshold divisor from Tree"), gpTreeThreshold, "GENESIS TREE");
+      if (researchBonus("prestige") !== 1) addMultiplier(card, tr("Множитель количества AP, получаемых при Вознесении", "Multiplier to AP gained on Ascension"), researchBonus("prestige"), "RESEARCH");
+      if (apTreeThreshold !== 1) addMultiplier(card, tr("Множитель делителя показателя степени порогов AP от узла AP Threshold", "AP-threshold exponent-divisor multiplier from the AP Threshold node"), apTreeThreshold, "GENESIS TREE");
+      if (dilationThresholdBonus > 0) addPercent(card, tr("Добавка к делителю показателя степени порогов AP от Time Dilation", "Additive bonus to the AP-threshold exponent divisor from Time Dilation"), dilationThresholdBonus, "DILATION UPGRADES");
+      if (blackHoleThresholdBonus > 0) addPercent(card, tr("Добавка к делителю показателя степени порогов AP от Black Hole", "Additive bonus to the AP-threshold exponent divisor from Black Hole"), blackHoleThresholdBonus, "BLACK HOLE UPGRADES");
+      if (temporalThreshold !== 1) addMultiplier(card, tr("Совокупный множитель делителя показателя степени порогов AP", "Combined multiplier to the AP-threshold exponent divisor"), temporalThreshold, "ADDITIVE BONUS");
+      if (apTreeLevel > 0) addMultiplier(card, tr("Множитель количества получаемых AP от узла AP Multiplier", "AP gain multiplier from the AP Multiplier node"), powerOfTwo(apTreeLevel), "GENESIS TREE");
+      if (gpTreeThreshold !== 1) addMultiplier(card, tr("Множитель делителя показателя степени порогов GP от узла GP Threshold", "GP-threshold exponent-divisor multiplier from the GP Threshold node"), gpTreeThreshold, "GENESIS TREE");
       addNumber(card, tr("Итоговый делитель порога AP", "Final AP threshold divisor"), apTreeThreshold * temporalThreshold, "BASE × TREE × TEMPORAL");
       addNumber(card, tr("Итоговый делитель порога GP", "Final GP threshold divisor"), 2.5 * gpTreeThreshold, "BASE 2.5 × GENESIS TREE");
-      if (gpTreeLevel > 0) addMultiplier(card, tr("Множитель получения GP от Древа", "GP gain multiplier from Tree"), powerOfTwo(gpTreeLevel), "GENESIS TREE");
+      if (gpTreeLevel > 0) addMultiplier(card, tr("Множитель количества получаемых GP от узла GP Multiplier", "GP gain multiplier from the GP Multiplier node"), powerOfTwo(gpTreeLevel), "GENESIS TREE");
       if (typeof window.getPrestigeGain === "function") addRow(card, tr("Текущее количество AP, которое будет получено при Вознесении", "AP currently gained by Ascension"), fmt(window.getPrestigeGain()), {currency:"\\mathrm{AP}", source:"CURRENT SCORE"});
       if (typeof window.getGenesisGain === "function" && window.FA_META?.treePassPurchased) addRow(card, tr("Текущее количество GP, которое будет получено при Престиже Генезиса", "GP currently gained by Genesis Prestige"), fmt(window.getGenesisGain()), {currency:"\\mathrm{GP}", source:"CURRENT AP"});
       if (!card.querySelector(".modifier-row")) empty(card, tr("Бонусы престижа пока не активны.", "No prestige modifiers are active yet."));
@@ -314,12 +314,12 @@
       const card = addCard(root, tr("Временные потоки", "Time flow systems"), "TIME");
       const dilationTau = 1 + 0.05 * safe(dilation?.levels?.tau);
       const blackHoleTau = 1 + 0.05 * safe(blackHole?.levels?.tau);
-      if (dilationTau !== 1) addMultiplier(card, tr("Скорость обычного времени от Time Dilation", "Ordinary time speed from Time Dilation"), dilationTau, "DILATION UPGRADE · τ");
-      if (blackHoleTau !== 1) addMultiplier(card, tr("Скорость обычного времени от Black Hole", "Ordinary time speed from Black Hole"), blackHoleTau, "BLACK HOLE UPGRADE · τ");
-      if (glyphOrdinary !== 1) addMultiplier(card, tr("Скорость обычного времени от глифа", "Ordinary time speed from Glyph"), glyphOrdinary, "EQUIPPED GLYPH");
+      if (dilationTau !== 1) addMultiplier(card, tr("Множитель скорости накопления обычного времени t от Time Dilation", "Ordinary-time t accumulation multiplier from Time Dilation"), dilationTau, "DILATION UPGRADE · τ");
+      if (blackHoleTau !== 1) addMultiplier(card, tr("Множитель скорости накопления обычного времени t от Black Hole", "Ordinary-time t accumulation multiplier from Black Hole"), blackHoleTau, "BLACK HOLE UPGRADE · τ");
+      if (glyphOrdinary !== 1) addMultiplier(card, tr("Множитель скорости накопления обычного времени t от глифа", "Ordinary-time t accumulation multiplier from Glyph"), glyphOrdinary, "EQUIPPED GLYPH");
       const ordinaryTimeSpeed = (typeof window.getDilationTimeSpeed === "function" ? window.getDilationTimeSpeed() : dilationTau * blackHoleTau) * glyphOrdinary;
-      if (ordinaryTimeSpeed !== 1) addMultiplier(card, tr("Итоговая скорость обычного времени", "Total ordinary time speed"), ordinaryTimeSpeed, "TIME DILATION × BLACK HOLE × GLYPH");
-      if (glyphDilation !== 1) addMultiplier(card, tr("Накопление нестандартного времени от глифа", "Non-standard time accumulation from Glyph"), glyphDilation, "EQUIPPED GLYPH");
+      if (ordinaryTimeSpeed !== 1) addMultiplier(card, tr("Итоговый множитель скорости накопления обычного времени t", "Final ordinary-time t accumulation multiplier"), ordinaryTimeSpeed, "TIME DILATION × BLACK HOLE × GLYPH");
+      if (glyphDilation !== 1) addMultiplier(card, tr("Множитель скорости накопления нестандартного времени t_dl и t_bl от глифа", "Glyph multiplier to non-standard time accumulation t_dl and t_bl"), glyphDilation, "EQUIPPED GLYPH");
       if (window.FA_META?.settings?.offline !== false) {
         addMultiplier(card, tr("Базовый коэффициент офлайн-прогресса", "Base offline progression coefficient"), 0.35, "GAME RULE · MAXIMUM 8 HOURS");
         addNumber(card, tr("Максимальное учитываемое отсутствие", "Maximum offline duration"), "8 h", "OFFLINE PROGRESSION");
@@ -352,7 +352,7 @@
       for (const key of ["i","v","k"]) addNumber(card, tr("Параметр ", "Parameter ") + key + tr(" интегральной функции Белой дыры", " of the White Hole integral"), dilation.parameters[key], tr("Уровень прокачки параметра: ", "Parameter upgrade level: ") + safe(dilation.levels[key]));
       addNumber(card, tr("Параметр временного потока τ", "Temporal flow parameter τ"), dilation.parameters.tau, "DILATION LEVEL " + safe(dilation.levels.tau));
       const parameterBoost = 1 + 0.001 * safe(dilation.levels.parameters);
-      if (parameterBoost !== 1) addMultiplier(card, tr("Резонанс параметров i, v и k", "i, v and k parameter resonance"), parameterBoost, "DILATION UPGRADES");
+      if (parameterBoost !== 1) addMultiplier(card, tr("Множитель параметров i, v и k в интегральной функции Белой дыры", "Multiplier to parameters i, v and k in the White Hole integral"), parameterBoost, "DILATION UPGRADES");
       for (const key of ["sum","letters","discount","production","prestige"]) {
         if (hasLevel(dilation.levels[key])) addNumber(card, tr("Уровень улучшения ", "Upgrade level ") + key, dilation.levels[key], "DILATION UPGRADES");
       }
@@ -363,10 +363,10 @@
       const card = addCard(root, tr("Чёрная дыра: параметры", "Black Hole: parameters"), "BLACK HOLE");
       for (const key of ["q","s","w"]) addNumber(card, tr("Параметр ", "Parameter ") + key + tr(" интегральной функции Чёрной дыры", " of the Black Hole integral"), blackHole.parameters[key], tr("Уровень прокачки параметра: ", "Parameter upgrade level: ") + safe(blackHole.levels[key]));
       const parameterBoost = 1 + 0.002 * safe(blackHole.levels.parameters);
-      if (parameterBoost !== 1) addMultiplier(card, tr("Резонанс параметров q, s и w", "q, s and w parameter resonance"), parameterBoost, "BLACK HOLE UPGRADES");
+      if (parameterBoost !== 1) addMultiplier(card, tr("Множитель параметров q, s и w в интегральной функции Чёрной дыры", "Multiplier to parameters q, s and w in the Black Hole integral"), parameterBoost, "BLACK HOLE UPGRADES");
       if (safe(blackHole.p) > 0) addNumber(card, tr("Показатель степени p", "Exponent p"), blackHole.p, "p = 0.85L");
       const researchL = 1 + 0.1 * safe(window.getBlackHoleResearchLevel?.());
-      if (researchL !== 1) addMultiplier(card, tr("Усиление L от исследования", "Research enhancement of L"), researchL, "BLACK HOLE RESEARCH");
+      if (researchL !== 1) addMultiplier(card, tr("Множитель L, определяющего показатель степени p преобразования Чёрной дыры", "Multiplier to L, which determines the Black Hole conversion exponent p"), researchL, "BLACK HOLE RESEARCH");
       for (const key of ["sum","letters","discount","production","prestige"]) {
         if (hasLevel(blackHole.levels[key])) addNumber(card, tr("Уровень улучшения ", "Upgrade level ") + key, blackHole.levels[key], "BLACK HOLE UPGRADES");
       }
@@ -378,7 +378,7 @@
       const automation = window.FA_META?.automation || {};
       const unlocked = (automation.unlocked || []).filter(Boolean).length;
       const enabled = (automation.unlocked || []).filter((value, index) => value && automation.enabled?.[index] !== false).length;
-      if (researchBonus("auto") !== 1) addMultiplier(card, tr("Эффективность автоматических покупок", "Automatic purchase efficiency"), researchBonus("auto"), "RESEARCH");
+      if (researchBonus("auto") !== 1) addMultiplier(card, tr("Множитель эффективности автоматических покупок улучшений букв", "Automatic letter-upgrade purchase efficiency multiplier"), researchBonus("auto"), "RESEARCH");
       addNumber(card, tr("Открыто модулей", "Modules unlocked"), unlocked, "AUTOMATION");
       addNumber(card, tr("Активно модулей", "Modules enabled"), enabled, "AUTOMATION");
       addRow(card, tr("Общая пауза", "Global pause"), automation.paused ? tr("Включена", "ON") : tr("Выключена", "OFF"));
