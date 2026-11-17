@@ -119,7 +119,6 @@
     const glyphCostDivisor = typeof window.getGlyphCostDivisor === "function" ? window.getGlyphCostDivisor() : 1;
     const glyphLetter = typeof window.getGlyphLetterValueMultiplier === "function" ? window.getGlyphLetterValueMultiplier() : 1;
     const glyphSum = typeof window.getGlyphGlobalSumPercent === "function" ? window.getGlyphGlobalSumPercent() : 0;
-    const glyphGs = typeof window.getGlyphGsGainMultiplier === "function" ? window.getGlyphGsGainMultiplier() : 1;
     const researchBonus = key => typeof window.getMetaBonus === "function" ? window.getMetaBonus(key) : 1;
     const addIf = (card, condition, fn) => { if (condition) fn(); };
 
@@ -242,6 +241,8 @@
       if (temporalThreshold !== 1) addMultiplier(card, tr("Совокупный временной делитель порога AP", "Combined temporal AP threshold divisor"), temporalThreshold, "TIME DILATION × BLACK HOLE");
       if (apTreeLevel > 0) addMultiplier(card, tr("Множитель получения AP от Древа", "AP gain multiplier from Tree"), powerOfTwo(apTreeLevel), "GENESIS TREE");
       if (gpTreeThreshold !== 1) addMultiplier(card, tr("Делитель порога GP от Древа", "GP threshold divisor from Tree"), gpTreeThreshold, "GENESIS TREE");
+      addNumber(card, tr("Итоговый делитель порога AP", "Final AP threshold divisor"), apTreeThreshold * temporalThreshold, "BASE × TREE × TEMPORAL");
+      addNumber(card, tr("Итоговый делитель порога GP", "Final GP threshold divisor"), 2.5 * gpTreeThreshold, "BASE 2.5 × GENESIS TREE");
       if (gpTreeLevel > 0) addMultiplier(card, tr("Множитель получения GP от Древа", "GP gain multiplier from Tree"), powerOfTwo(gpTreeLevel), "GENESIS TREE");
       if (typeof window.getPrestigeGain === "function") addRow(card, tr("Доступное получение AP сейчас", "AP currently available to gain"), fmt(window.getPrestigeGain()), {currency:"\\mathrm{AP}", source:"CURRENT SCORE"});
       if (typeof window.getGenesisGain === "function" && window.FA_META?.treePassPurchased) addRow(card, tr("Доступное получение GP сейчас", "GP currently available to gain"), fmt(window.getGenesisGain()), {currency:"\\mathrm{GP}", source:"CURRENT AP"});
@@ -335,7 +336,6 @@
         addRow(card, entry.name || entry.id, value, {source:"AION", latex:latex || undefined});
       }
       if (!entries.length) empty(card, tr("Экипированный глиф отсутствует или не даёт активных бонусов.", "No equipped glyph or no active glyph bonuses."));
-      if (glyphGs !== 1) addMultiplier(card, tr("Получение Glyph Shards", "Glyph Shard gain"), glyphGs, "EQUIPPED GLYPH");
     }
 
     const note = document.createElement("p");
