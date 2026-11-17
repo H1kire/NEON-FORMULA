@@ -18,3 +18,7 @@
 @media(max-width:480px){
   .mini-upgrades #formulaModulePanel .upgrade-desc.math-formula .katex{font-size:16px}
 }
+
+/* Inline mathematical tokens are typeset consistently inside descriptions and labels. */
+.math-inline{display:inline-block;vertical-align:baseline;white-space:nowrap;line-height:1}
+.math-inline .katex{font-size:1em;color:inherit}
