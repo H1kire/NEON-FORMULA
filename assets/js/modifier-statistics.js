@@ -26,9 +26,11 @@
     const head = document.createElement("div");
     head.className = "modifier-card-head";
     const h = document.createElement("h4");
-    h.textContent = title;
+    h.id = "modifierHeading" + (++rowId);
+    renderPlainMath(h, title);
     const tag = document.createElement("span");
-    tag.textContent = category;
+    tag.id = "modifierCategory" + (++rowId);
+    renderPlainMath(tag, category);
     head.append(h, tag);
     card.append(head);
     root.append(card);
@@ -37,18 +39,21 @@
   const addRow = (card, label, value, options = {}) => {
     const row = document.createElement("div");
     row.className = "modifier-row";
+    const rowKey = ++rowId;
     const copy = document.createElement("div");
     copy.className = "modifier-row-label";
-    copy.textContent = label;
+    copy.id = "modifierLabel" + rowKey;
+    renderPlainMath(copy, label);
     if (options.source) {
       const source = document.createElement("small");
       source.className = "modifier-row-source";
-      source.textContent = options.source;
+      source.id = "modifierSource" + rowKey;
+      renderPlainMath(source, options.source);
       copy.append(source);
     }
     const result = document.createElement("strong");
     result.className = "modifier-row-value";
-    result.id = "modifierValue" + (++rowId);
+    result.id = "modifierValue" + rowKey;
     row.append(copy, result);
     card.append(row);
     if (options.currency) {
