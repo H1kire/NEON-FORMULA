@@ -367,3 +367,28 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .buy-quantity-toolbar select{min-width:78px;padding:7px 9px;border:1px solid rgba(107,216,207,.28);background:#101b22;color:var(--text);font:11px var(--mono);outline:none}
 #page-research .buy-quantity-toolbar{margin:0 0 14px}
 @media(max-width:480px){.buy-quantity-toolbar{justify-content:space-between}}
+
+/* Black Hole — singularity chamber and temporal conversion controls. */
+.blackhole-page{position:relative;isolation:isolate;overflow:hidden;padding:22px;border:1px solid rgba(180,137,255,.2);background:radial-gradient(ellipse at 78% 8%,rgba(137,91,210,.15),transparent 36%),radial-gradient(ellipse at 45% 50%,rgba(71,52,115,.12),transparent 58%),linear-gradient(145deg,rgba(23,17,39,.98),rgba(7,9,19,.99) 68%,rgba(20,16,34,.98));box-shadow:inset 0 0 70px rgba(145,104,230,.06),0 16px 45px rgba(0,0,0,.18)}
+.blackhole-page>.section-heading h2{color:#f0e8ff;text-shadow:0 0 22px rgba(173,139,255,.28)}
+.blackhole-page .section-kicker{color:#c5b1e8}.blackhole-page .kicker-line{background:#b99aff;box-shadow:0 0 9px rgba(183,151,255,.75)}
+.blackhole-art{position:absolute;z-index:-1;top:0;right:5%;width:250px;height:205px;pointer-events:none;opacity:.78}
+.blackhole-core{position:absolute;left:50%;top:45%;width:66px;height:66px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#020207 0 54%,#161020 60%,rgba(124,91,191,.35) 68%,transparent 74%);box-shadow:0 0 22px 9px rgba(145,110,219,.24),0 0 70px 25px rgba(103,72,165,.18)}
+.blackhole-ring{position:absolute;left:50%;top:45%;width:205px;height:72px;border:2px solid rgba(195,164,255,.52);border-radius:50%;transform:translate(-50%,-50%) rotate(-24deg);box-shadow:0 0 20px rgba(163,128,255,.25),inset 0 0 14px rgba(163,128,255,.15)}
+.blackhole-unlock-card{max-width:560px;margin:22px auto;padding:24px;border:1px solid rgba(190,154,255,.25);background:rgba(27,21,43,.75);text-align:center}
+.blackhole-unlock-card p{color:#b6a7cf}.blackhole-unlock-card strong{display:block;margin:14px;color:#e2d3ff;font:22px var(--mono)}
+.blackhole-page .dilation-stat-card{border-color:rgba(190,154,255,.2);background:linear-gradient(145deg,rgba(36,27,57,.88),rgba(12,13,25,.94))}
+.blackhole-page .dilation-stat-card span{color:#b9a8d8}.blackhole-page .dilation-stat-card strong{color:#e8ddff;text-shadow:0 0 16px rgba(180,145,255,.2)}
+.blackhole-page .dilation-currency-card{border-color:rgba(196,158,255,.34)}
+.blackhole-page .dilation-mode-card{border-color:rgba(190,154,255,.25);background:rgba(45,32,68,.28)}
+.blackhole-page .dilation-mode-copy strong{color:#eee5ff}.blackhole-page .dilation-mode-copy small{color:#b3a4cb}
+.blackhole-page .dilation-operation-card{border-color:rgba(190,154,255,.28);background:linear-gradient(145deg,rgba(36,25,58,.86),rgba(10,11,22,.97))}
+.blackhole-page .dilation-equation{color:#e4d7ff;text-shadow:0 0 18px rgba(180,145,255,.2)}
+.blackhole-page .dilation-progress-fill{background:linear-gradient(90deg,#8d6cc9,#e8d8ff);box-shadow:0 0 18px rgba(180,145,255,.45)}
+.blackhole-page .dilation-integrate-button{border-color:rgba(190,154,255,.42);background:rgba(145,107,206,.12);color:#e8dcff}
+.blackhole-input-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:10px 12px;border:1px solid rgba(160,180,190,.16);background:rgba(255,255,255,.025)}
+.blackhole-input-row label{color:#a8b8c6;font:9px var(--mono);letter-spacing:.8px}
+.blackhole-input-row input{width:min(260px,55%);min-width:0;padding:9px 10px;border:1px solid rgba(160,180,190,.25);background:rgba(4,9,16,.75);color:#e9f2ff;font:13px var(--mono);outline:none}
+.blackhole-input-row input:focus{border-color:rgba(174,145,255,.7);box-shadow:0 0 0 2px rgba(174,145,255,.1)}
+#blackHoleResearchPanel .dilation-research-card .upgrade-symbol{color:#c9aaff;border-color:rgba(190,154,255,.35);background:rgba(145,107,206,.08)}
+@media(max-width:700px){.blackhole-page{padding:17px 14px}.blackhole-input-row{align-items:stretch;flex-direction:column}.blackhole-input-row input{width:100%}}
