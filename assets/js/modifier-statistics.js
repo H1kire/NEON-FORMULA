@@ -69,7 +69,7 @@
   const addPercent = (card, label, value, source) =>
     addRow(card, label, percent(value), {source, latex: percent(value)});
   const addNumber = (card, label, value, source) =>
-    addRow(card, label, fmt(value), {source});
+    addRow(card, label, typeof value === "number" ? fmt(value) : String(value), {source});
   const empty = (root, message) => {
     const el = document.createElement("div");
     el.className = "modifier-empty";
@@ -159,7 +159,7 @@
       if (researchBonus("efficiency") !== 1) addMultiplier(card, tr("Множитель эффективности уровней букв: усиливает влияние каждого купленного уровня на параметры A–E", "Letter-level efficiency multiplier: increases the effect of each purchased level on A–E parameters"), researchBonus("efficiency"), "RESEARCH");
       if (researchBonus("coupling") !== 1) addMultiplier(card, tr("Множитель взаимных зависимостей в формулах обновления A–E", "Cross-letter dependency multiplier in the A–E update formulas"), researchBonus("coupling"), "RESEARCH");
       if (researchBonus("eInput") !== 1) addMultiplier(card, tr("Множитель логарифмического входа, используемого при расчёте E", "Multiplier for the logarithmic input used to calculate E"), researchBonus("eInput"), "RESEARCH");
-      if (researchBonus("limitExpansion") !== 1) addMultiplier(card, tr("Расширение пределов параметров", "Parameter limit expansion"), 1 + 0.01 * researchBonus("limitExpansion"), "RESEARCH");
+      if (researchBonus("limitExpansion") > 0) addMultiplier(card, tr("Масштаб расширения пределов параметров A–E", "A–E parameter-limit expansion scale"), 1 + 0.01 * researchBonus("limitExpansion"), tr("Делители параметров уменьшаются, показатели степени увеличиваются", "Parameter divisors decrease; exponents increase"));
       if (typeof window.getLetterParameters === "function") {
         const params = window.getLetterParameters();
         for (const key of ["a","b","c","d","e"]) {
@@ -278,7 +278,7 @@
         addMultiplier(card, tr("Базовый коэффициент офлайн-прогресса", "Base offline progression coefficient"), 0.35, "GAME RULE · MAXIMUM 8 HOURS");
         addNumber(card, tr("Максимальное учитываемое отсутствие", "Maximum offline duration"), "8 h", "OFFLINE PROGRESSION");
       }
-      if (researchBonus("time") !== 1) addMultiplier(card, tr("Бонус временного производства", "Time-based production bonus"), researchBonus("time"), "RESEARCH · PRODUCTION, NOT CLOCK SPEED");
+      if (researchBonus("time") !== 1) addMultiplier(card, tr("Множитель временной составляющей производства Score", "Time-dependent Score-production multiplier"), researchBonus("time"), "RESEARCH · PRODUCTION, NOT CLOCK SPEED");
       if (!card.querySelector(".modifier-row")) empty(card, tr("Дополнительных ускорителей времени пока нет.", "No additional time-flow modifiers are active."));
     }
 
@@ -295,7 +295,7 @@
         [9, "prestige", tr("Множитель количества получаемых AP после расчёта порогов", "Multiplier to AP gained after threshold calculation"), researchBonus("prestige")]
       ];
       for (const [index, key, label, value] of researchRows) {
-        if (hasLevel(research[index])) addMultiplier(card, label, value, tr("Уровень ", "LEVEL ") + research[index]);
+        if (hasLevel(research[index])) addMultiplier(card, label, key === "limitExpansion" ? 1 + 0.01 * value : value, tr("Исследование №", "Research #") + (index + 1) + " · " + tr("уровень ", "level ") + research[index]);
       }
       if (!card.querySelector(".modifier-row")) empty(card, tr("Исследовательские бонусы ещё не приобретены.", "No Research Division bonuses have been purchased."));
     }
