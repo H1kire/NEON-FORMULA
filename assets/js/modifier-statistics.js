@@ -96,6 +96,9 @@
       "Все действующие бонусы игры, разделённые по источникам и типам влияния.",
       "Every currently active game bonus, separated by source and effect."
     );
+    document.querySelectorAll("[data-statistics-label]").forEach(el => {
+      el.textContent = el.dataset.statisticsLabel === "account" ? tr("СТАТИСТИКА АККАУНТА", "ACCOUNT STATISTICS") : tr("МОДИФИКАТОРЫ", "MODIFIERS");
+    });
     root.replaceChildren();
     rowId = 0;
 
