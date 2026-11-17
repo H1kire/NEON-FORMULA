@@ -12,7 +12,7 @@ const aLevelDisplay=$("aLevel"),bLevelDisplay=$("bLevel"),cLevelDisplay=$("cLeve
 const btnA=$("btnA"),btnB=$("btnB"),btnC=$("btnC"),btnD=$("btnD"),btnE=$("btnE");
 const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dCostDisplay=$("dCost"),eCostDisplay=$("eCost");
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
-function getLetterValueMultiplier(){return 1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0)}
+function getLetterValueMultiplier(){return (1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0))*(1+0.005*(dilationExtraLevels.letters||0))*(1+0.01*(blackHoleLevels.letters||0))}
 let formulaState={a:1,b:1,c:1,d:1,e:1},formulaSteps=0,formulaAccumulator=0;
 const LETTER_BASE_COSTS={a:1000,b:100000,c:10000000,d:1000000000,e:1000000000000,f:1000000000000000,g:1e18,h:1e21};
 const LETTER_BASE_PARAMETERS={a:1.81,b:0.652,c:1.66,d:11.7,e:2.057};
@@ -336,7 +336,7 @@ function getGain(){
  const formulaTime=typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1;
  const factors=[safeProduct(t,t,formulaTime,formulaTime)];
  if(integralUnlocked)factors.push(getIntegralMultiplier());
- factors.push(getGlobalSumMultiplier(),safeProduct(letterProduct,1+0.005*(dilationExtraLevels.letters||0),1+0.01*(blackHoleLevels.letters||0)),boost*(1+0.1*(dilationExtraLevels.production||0)+0.2*(blackHoleLevels.production||0)));
+ factors.push(getGlobalSumMultiplier(),letterProduct,boost*(1+0.1*(dilationExtraLevels.production||0)+0.2*(blackHoleLevels.production||0)));
  let result=safeProduct(...factors);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
