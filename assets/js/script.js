@@ -57,7 +57,7 @@ function updateBlackHoleUI(){
  if(currency){if(window.FAFormula)FAFormula.renderCurrency("blackHoleCurrencyDisplay",format(state.currency),"\\Delta t_{bl}");else currency.textContent=format(state.currency)+" ∆t₍bl₎"}
  for(const [key,id] of [["q","blackHoleParameterQ"],["s","blackHoleParameterS"],["w","blackHoleParameterW"]]){const el=$(id);if(el)el.textContent=state.parameters[key].toFixed(2)}
  if(mode){mode.checked=state.mode;mode.disabled=!state.unlocked||state.integrating||dilationMode}
- if(input&&!state.integrating){input.max=String(state.time);if(!input.value||Number(input.value)>state.time)input.value=String(state.time)}
+ if(input&&!state.integrating){input.max=String(state.time);if(!input.value||Number(input.value)<=0||Number(input.value)>state.time)input.value=String(state.time)}
  if(integrate){integrate.disabled=!state.unlocked||!state.mode||state.integrating||!(Number(input?.value)>0)||Number(input?.value)>state.time;integrate.textContent=state.integrating?(FA_META.language==="ru"?"ПРЕОБРАЗОВАНИЕ…":"CONVERTING…"):(FA_META.language==="ru"?"ПРЕОБРАЗОВАТЬ":"CONVERT")}
  if(track)track.hidden=!state.integrating;if(fill&&state.integrating)fill.style.width=(Math.max(0,Math.min(1,(Date.now()-blackHoleOperationStartedAt)/5000))*100).toFixed(1)+"%";
  if(status)status.textContent=state.integrating?Math.max(0,5-(Date.now()-blackHoleOperationStartedAt)/1000).toFixed(1)+" s":state.mode?(FA_META.language==="ru"?"ЧЁРНАЯ ДЫРА АКТИВНА":"BLACK HOLE ACTIVE"):(FA_META.language==="ru"?"РЕЖИМ ОСТАНОВЛЕН":"MODE PAUSED");
@@ -77,7 +77,7 @@ window.TimeDilation={
 window.BlackHole={
  getState:()=>({unlocked:blackHoleUnlocked,mode:blackHoleMode,time:blackHoleTime,currency:blackHoleCurrency,integrating:blackHoleIntegrating,levels:{...blackHoleLevels},parameters:getBlackHoleParameters(),p:getBlackHoleP()}),
  getUpgradeCost:getBlackHoleUpgradeCost,
- unlock:()=>{if(blackHoleUnlocked||dilationCurrency<1e12)return false;dilationCurrency-=1e12;blackHoleUnlocked=true;saveGame(true);updateUI();window.refreshBlackHoleAccess?.();return true},
+ unlock:()=>{if(!window.isTimeDilationUnlocked?.()||blackHoleUnlocked||dilationCurrency<1e12)return false;dilationCurrency-=1e12;blackHoleUnlocked=true;saveGame(true);updateUI();window.refreshBlackHoleAccess?.();return true},
  buyUpgrade:key=>{if(!blackHoleUnlocked||!Object.prototype.hasOwnProperty.call(blackHoleLevels,key))return false;const quote=window.getUpgradeBatchQuote?window.getUpgradeBatchQuote(blackHoleCurrency,offset=>getBlackHoleUpgradeCost(key,offset)):{count:1,total:getBlackHoleUpgradeCost(key),affordable:blackHoleCurrency>=getBlackHoleUpgradeCost(key)};if(!quote.count||!quote.affordable)return false;blackHoleCurrency-=quote.total;blackHoleLevels[key]+=quote.count;saveGame(true);updateUI();window.refreshBlackHoleResearch?.();return true},
  setMode:enabled=>{if(!blackHoleUnlocked||blackHoleIntegrating)return false;if(enabled){dilationMode=false;blackHoleMode=true}else blackHoleMode=false;lastFrame=performance.now();saveGame(true);updateUI();return true},
  startIntegration:()=>{const raw=$("blackHoleConvertInput")?.value,amount=Math.min(blackHoleTime,raw===""||raw===undefined?blackHoleTime:Number(raw));if(!blackHoleUnlocked||!blackHoleMode||blackHoleIntegrating||!Number.isFinite(amount)||amount<=0)return false;blackHoleOperationAmount=amount;blackHoleOperationReward=calculateBlackHoleReward(amount);blackHoleIntegrating=true;blackHoleOperationStartedAt=Date.now();saveGame(true);updateUI();return true}
@@ -247,7 +247,7 @@ function loadGame(){
    for(let i=1;i<=rebuild;i++){formulaSteps++;updateFormulaState(formulaSteps)}
   }
   const elapsed=Math.max(0,(Date.now()-(Number(d.lastTime)||Date.now()))/1000);
-  if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode){const away=Math.min(elapsed,28800)*.35*getDilationTimeSpeed()*(typeof window.getGlyphOrdinaryTimeMultiplier==="function"?window.getGlyphOrdinaryTimeMultiplier():1);value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
+  if(FA_META.settings.offline!==false&&elapsed>2&&!dilationMode&&!blackHoleMode){const away=Math.min(elapsed,28800)*.35*getDilationTimeSpeed()*(typeof window.getGlyphOrdinaryTimeMultiplier==="function"?window.getGlyphOrdinaryTimeMultiplier():1);value=Math.min(Number.MAX_VALUE,value+integrateOffline(away));t+=away;}
   if(sourceKey!==SAVE_KEY&&saveGame(true))FAStorage.remove(sourceKey);
  }catch(err){console.error("Save data could not be loaded",err)}
 }
