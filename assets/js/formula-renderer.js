@@ -43,7 +43,7 @@
     if (/^[A-Za-z]_[A-Za-z0-9]+$/.test(compact)) return compact[0] + "_{" + compact.slice(2) + "}";
     if (/^[A-Za-z][⁰¹²³⁴⁵⁶⁷⁸⁹]+$/.test(compact)) return compact[0] + "^{" + compact.slice(1).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, digit => "⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(digit)) + "}";
     if (compact === "W₀") return "W_0";
-    if (/^[fgh]\\(/.test(compact)) return compact.replace(/([fgh])\\(([^)]*)\\)/, "$1($2)");
+    if (/^[fgh]\(/.test(compact)) return compact.replace(/([fgh])\(([^)]*)\)/, "$1($2)");
     if (/^\d/.test(compact)) return compact.replace(",", ".").replace("%", "\\%");
     if (/^(AP|GP|GS|GF|SC|Qa|Qi|Sx)$/.test(compact)) return "\\mathrm{" + compact + "}";
     if (/^[A-H]$/.test(compact)) return "\\mathrm{" + compact + "}";
