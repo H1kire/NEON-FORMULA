@@ -47,10 +47,11 @@
     for(const item of defs){
       const level=state.levels[item.key]||0,quote=window.getUpgradeBatchQuote(state.currency,offset=>state.cost(item.key,offset)),cost=quote.count?quote.total:state.cost(item.key),card=document.createElement("article");
       card.className="research-card dilation-research-card"+(level>0?" unlocked":"");
-      const parameter=item.parameter?'<div class="dilation-parameter-value"><span>'+tr("dilationParameterValue")+'</span><strong id="'+gridId+'Param_'+item.key+'">'+item.parameter(state)+'</strong></div>':"";
-      card.innerHTML='<div class="upgrade-top"><span class="upgrade-symbol">'+item.symbol+'</span><span class="upgrade-category">'+item.category+'</span></div><div class="upgrade-title"></div><div class="upgrade-desc"></div>'+parameter+'<div class="upgrade-stats"><span>'+tr("level")+' <b>'+level+' / ∞</b></span><span>'+tr("cost")+' <b><span id="'+gridId+'Cost_'+item.key+'">'+formatSafe(cost)+'</span></b></span></div><button class="buy-button" '+(!quote.count||!quote.affordable?"disabled":"")+'>'+tr("buy")+(quote.count>1?" ×"+quote.count:"")+' <span>↗</span></button>';
+      const prefix=gridId==="dilationResearchGrid"?"dilationUpgrade":"blackHoleUpgrade",parameterId=prefix+"ParameterValue_"+item.key,costId=prefix+"Cost_"+item.key;
+      const parameter=item.parameter?'<div class="dilation-parameter-value"><span>'+tr("dilationParameterValue")+'</span><strong id="'+parameterId+'">'+item.parameter(state)+'</strong></div>':"";
+      card.innerHTML='<div class="upgrade-top"><span class="upgrade-symbol">'+item.symbol+'</span><span class="upgrade-category">'+item.category+'</span></div><div class="upgrade-title"></div><div class="upgrade-desc"></div>'+parameter+'<div class="upgrade-stats"><span>'+tr("level")+' <b>'+level+' / ∞</b></span><span>'+tr("cost")+' <b><span id="'+costId+'">'+formatSafe(cost)+'</span></b></span></div><button class="buy-button" '+(!quote.count||!quote.affordable?"disabled":"")+'>'+tr("buy")+(quote.count>1?" ×"+quote.count:"")+' <span>↗</span></button>';
       card.querySelector(".upgrade-title").textContent=item.title();card.querySelector(".upgrade-desc").textContent=item.desc();card.querySelector("button").addEventListener("click",()=>buy(item.key));grid.appendChild(card);
-      if(window.FAFormula){if(item.parameter)FAFormula.renderText(gridId+"Param_"+item.key,item.parameter(state));FAFormula.renderCurrency(gridId+"Cost_"+item.key,formatSafe(cost),unit)}
+      if(window.FAFormula){if(item.parameter)FAFormula.renderText(parameterId,item.parameter(state));FAFormula.renderCurrency(costId,formatSafe(cost),unit)}
     }
   };
   const dilationExtraDefs=[
