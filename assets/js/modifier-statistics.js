@@ -165,6 +165,12 @@
           const label = tr("Текущий параметр ", "Current parameter ") + key.toUpperCase();
           addNumber(card, label, value, "LETTER LEVEL " + safe(currentLetterLevels[key]));
         }
+        const liveLetters = {a:getA(),b:getB(),c:getC(),d:getD(),e:getE()};
+        for (const key of ["a","b","c","d","e"]) {
+          if (safe(currentLetterLevels[key]) > 0) {
+            addMultiplier(card, tr("Текущее значение буквы ", "Current letter value ") + key.toUpperCase(), liveLetters[key], "ACTIVE LETTER");
+          }
+        }
       }
       for (const [key, id] of [["f","fLevel"],["g","gLevel"],["h","hLevel"]]) {
         if (document.getElementById(id) && $(id)?.closest(".upgrade") && !$(id).closest(".upgrade").hidden) {
