@@ -1,7 +1,9 @@
 // FORMULA ASCENT — core idle simulation and universal letter mathematics
 const TICK=10, AUTOSAVE_INTERVAL=5000;
 let lastFrame=Date.now(),t=0,value=0;
-let dilationMode=false,dilationTime=0,dilationCurrency=0,dilationILevel=0,dilationKLevel=0,dilationVLevel=0,dilationTauLevel=0,dilationIntegrating=false,dilationOperationStartedAt=0,dilationOperationReward=0,dilationOperationAmount=0;\nlet dilationExtraLevels={sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};\nlet blackHoleUnlocked=false,blackHoleMode=false,blackHoleTime=0,blackHoleCurrency=0,blackHoleIntegrating=false,blackHoleOperationStartedAt=0,blackHoleOperationAmount=0,blackHoleOperationReward=0,blackHoleLevels={q:0,s:0,w:0,tau:0,sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};
+let dilationMode=false,dilationTime=0,dilationCurrency=0,dilationILevel=0,dilationKLevel=0,dilationVLevel=0,dilationTauLevel=0,dilationIntegrating=false,dilationOperationStartedAt=0,dilationOperationReward=0,dilationOperationAmount=0;
+let dilationExtraLevels={sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};
+let blackHoleUnlocked=false,blackHoleMode=false,blackHoleTime=0,blackHoleCurrency=0,blackHoleIntegrating=false,blackHoleOperationStartedAt=0,blackHoleOperationAmount=0,blackHoleOperationReward=0,blackHoleLevels={q:0,s:0,w:0,tau:0,sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};
 let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0,fLevel=0,gLevel=0,hLevel=0;
 const SAVE_KEY="formula_ascent_save_v2",LEGACY_SAVE_KEY="formula_ascent_save_v1",OLD_SAVE_KEY="neon_formula_idle_v4_5";
 const $=id=>document.getElementById(id);
@@ -119,7 +121,8 @@ function getLetterPrice(base,level){
  const glyphDivisor=typeof window.getGlyphCostDivisor==="function"?Math.max(1,window.getGlyphCostDivisor()):1;
  const growth=getLetterPriceGrowth();
  const raw=base*Math.pow(growth,Math.max(0,level));
- const temporalDiscount=Math.max(0.01,1-0.00125*(dilationExtraLevels.discount||0)-0.0025*(blackHoleLevels.discount||0));\n const adjusted=raw/glyphDivisor*temporalDiscount;
+ const temporalDiscount=Math.max(0.01,1-0.00125*(dilationExtraLevels.discount||0)-0.0025*(blackHoleLevels.discount||0));
+ const adjusted=raw/glyphDivisor*temporalDiscount;
  return Number.isFinite(adjusted)?Math.max(1,Math.min(Number.MAX_VALUE,Math.ceil(adjusted))):Number.MAX_VALUE;
 }
 function getACost(offset=0){return getLetterPrice(LETTER_BASE_COSTS.a,aLevel+offset)}
