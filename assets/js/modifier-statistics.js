@@ -36,7 +36,48 @@
     root.append(card);
     return card;
   };
-  const sourceLabel = source => ({GLYPH:tr("Источник: экипированный глиф","Source: equipped Glyph"),RESEARCH:tr("Источник: Исследовательский центр","Source: Research Division"),"AP UPGRADE":tr("Источник: улучшения за AP","Source: AP upgrades"),"GENESIS TREE":tr("Источник: Древо Генезиса","Source: Genesis Tree"),"DILATION UPGRADES":tr("Источник: улучшения Time Dilation","Source: Time Dilation upgrades"),"BLACK HOLE UPGRADES":tr("Источник: улучшения Black Hole","Source: Black Hole upgrades"),"EQUIPPED GLYPH":tr("Источник: экипированный глиф","Source: equipped Glyph"),"ACTIVE LETTER":tr("Источник: активная буква","Source: active letter"),"LIVE CALCULATION":tr("Источник: итоговый расчёт игровой формулы","Source: final live game calculation"),"GENESIS CORE":tr("Источник: узел Genesis Core","Source: Genesis Core node"),"ALL COST MODIFIERS":tr("Источник: все применяемые скидки и делители цены","Source: all applicable cost discounts and divisors"),"TIME DILATION × BLACK HOLE":tr("Источник: совместное действие Time Dilation и Black Hole","Source: combined Time Dilation and Black Hole effects"),"BASE × TREE × TEMPORAL":tr("Состав: базовое значение, Древо и временные улучшения","Components: base value, Tree and temporal upgrades"),"BASE 2.5 × GENESIS TREE":tr("Состав: базовый делитель 2,5 и узел GP Threshold","Components: base divisor 2.5 and GP Threshold node"),"DILATION UPGRADE · τ":tr("Источник: улучшение τ системы Time Dilation","Source: Time Dilation τ upgrade"),"BLACK HOLE UPGRADE · τ":tr("Источник: улучшение τ системы Black Hole","Source: Black Hole τ upgrade"),"TIME DILATION × BLACK HOLE × GLYPH":tr("Состав: Time Dilation τ × Black Hole τ × глиф","Components: Time Dilation τ × Black Hole τ × Glyph"),"OFFLINE PROGRESSION":tr("Правило офлайн-прогресса","Offline progression rule"),AUTOMATION:tr("Состояние автоматизации","Automation status"),AION:tr("Источник: экипированный глиф Айона","Source: equipped Aion Glyph")})[source] || (source ? tr("Источник: ","Source: ")+source : "");
+  const sourceLabel = source => {
+    const labels = {
+      GLYPH:tr("Источник: экипированный глиф","Source: equipped Glyph"),
+      RESEARCH:tr("Источник: Исследовательский центр","Source: Research Division"),
+      "AP UPGRADE":tr("Источник: улучшения за AP","Source: AP upgrades"),
+      "AP UPGRADES + TEMPORAL + GLYPH":tr("Источники: улучшения за AP, временные улучшения и глиф","Sources: AP upgrades, temporal upgrades and Glyph"),
+      "GENESIS TREE":tr("Источник: Древо Генезиса","Source: Genesis Tree"),
+      "DILATION UPGRADES":tr("Источник: улучшения Time Dilation","Source: Time Dilation upgrades"),
+      "BLACK HOLE UPGRADES":tr("Источник: улучшения Black Hole","Source: Black Hole upgrades"),
+      "EQUIPPED GLYPH":tr("Источник: экипированный глиф","Source: equipped Glyph"),
+      "ACTIVE LETTER":tr("Источник: активная буква","Source: active letter"),
+      "LIVE CALCULATION":tr("Источник: итоговый расчёт игровой формулы","Source: final live game calculation"),
+      "GENESIS CORE":tr("Источник: узел Genesis Core","Source: Genesis Core node"),
+      "GENESIS CORE + AP UPGRADES":tr("Источники: узел Genesis Core и улучшения за AP","Sources: Genesis Core node and AP upgrades"),
+      "ALL COST MODIFIERS":tr("Состав: все скидки и делители стоимости улучшений букв","Components: all letter-upgrade cost discounts and divisors"),
+      "TIME DILATION × BLACK HOLE":tr("Источники: Time Dilation и Black Hole","Sources: Time Dilation and Black Hole"),
+      "BASE × TREE × TEMPORAL":tr("Состав: базовое значение × узел Древа × временные улучшения","Components: base value × Tree node × temporal upgrades"),
+      "BASE 2.5 × GENESIS TREE":tr("Состав: базовый делитель 2,5 × узел GP Threshold","Components: base divisor 2.5 × GP Threshold node"),
+      "DILATION UPGRADE · τ":tr("Источник: улучшение τ системы Time Dilation","Source: Time Dilation τ upgrade"),
+      "BLACK HOLE UPGRADE · τ":tr("Источник: улучшение τ системы Black Hole","Source: Black Hole τ upgrade"),
+      "TIME DILATION × BLACK HOLE × GLYPH":tr("Состав: Time Dilation τ × Black Hole τ × множитель времени глифа","Components: Time Dilation τ × Black Hole τ × Glyph time multiplier"),
+      "OFFLINE PROGRESSION":tr("Правило офлайн-прогресса","Offline progression rule"),
+      "GAME RULE · MAXIMUM 8 HOURS":tr("Правило игры: учитывается не более 8 часов отсутствия","Game rule: at most 8 hours away are counted"),
+      "RESEARCH · PRODUCTION, NOT CLOCK SPEED":tr("Источник: Temporal Core; влияет на производство, а не на скорость часов","Source: Temporal Core; affects production, not clock speed"),
+      "ADDITIVE BONUS":tr("Состав: базовое значение плюс сумма бонусов","Components: base value plus the sum of bonuses"),
+      "BLACK HOLE RESEARCH":tr("Источник: исследование Black Hole, повышающее L","Source: Black Hole research, which increases L"),
+      "AUTOMATION":tr("Состояние модулей автоматизации","Automation module status"),
+      "UNLOCKED MODULE":tr("Источник: открытый модуль буквы","Source: unlocked letter module"),
+      "LETTER F":tr("Источник: формула буквы F","Source: Letter F formula"),
+      "LETTER F · ACTIVATES AT t ≥ 5":tr("Источник: формула F; до t ≥ 5 множитель равен 1","Source: Letter F formula; multiplier stays at 1 until t ≥ 5"),
+      "LETTER G":tr("Источник: формула буквы G; усиливает значения A–E","Source: Letter G formula; amplifies A–E values"),
+      "LETTER H":tr("Источник: формула буквы H","Source: Letter H formula"),
+      "A–H":tr("Влияет на произведение активных букв в формуле производства","Affects the active-letter product in the production formula"),
+      "p = 0.85L":tr("Формула: показатель преобразования p равен 0,85 × L","Formula: conversion exponent p equals 0.85 × L")
+    };
+    if (labels[source]) return labels[source];
+    if (source?.startsWith("LETTER LEVEL ")) return tr("Текущий уровень улучшения параметра буквы: ","Current letter parameter upgrade level: ") + source.slice(13);
+    if (source?.startsWith("DILATION LEVEL ")) return tr("Уровень улучшения параметра Белой дыры: ","White Hole parameter upgrade level: ") + source.slice(15);
+    if (source?.startsWith("BLACK HOLE LEVEL ")) return tr("Уровень улучшения параметра Чёрной дыры: ","Black Hole parameter upgrade level: ") + source.slice(17);
+    if (source?.startsWith("RESEARCH #")) return tr("Источник: исследование ","Source: Research ") + source.slice(10);
+    return source ? tr("Источник: ","Source: ") + source : "";
+  };
 
   const addRow = (card, label, value, options = {}) => {
     const row = document.createElement("div");
