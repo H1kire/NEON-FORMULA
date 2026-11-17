@@ -179,11 +179,16 @@
       if (typeof window.getLetterProduct === "function") addMultiplier(card, tr("Произведение активных букв", "Active letter product"), window.getLetterProduct(), "A–H");
       if (researchBonus("production") !== 1) addMultiplier(card, tr("Множитель общего производства Score от Quantum Multiplier", "Score-production multiplier from Quantum Multiplier"), researchBonus("production"), "RESEARCH");
       if (researchBonus("time") !== 1) addMultiplier(card, tr("Множитель временной составляющей производства Score от Temporal Core", "Time-dependent Score-production multiplier from Temporal Core"), researchBonus("time"), "RESEARCH");
-      const dilationProduction = 1 + 0.1 * safe(dilation?.levels?.production);
-      if (dilationProduction !== 1) addMultiplier(card, tr("Множитель производства Score от Time Dilation", "Score-production multiplier from Time Dilation"), dilationProduction, "DILATION UPGRADES");
-      const blackHoleProduction = 1 + 0.2 * safe(blackHole?.levels?.production);
-      if (blackHoleProduction !== 1) addMultiplier(card, tr("Множитель производства Score от Black Hole", "Score-production multiplier from Black Hole"), blackHoleProduction, "BLACK HOLE UPGRADES");
-      if (treeProduction !== 1) addMultiplier(card, tr("Общий множитель Древа", "Upgrade Tree production"), treeProduction, "GENESIS TREE");
+      const researchProduction = researchBonus("production") * researchBonus("time");
+      if (researchProduction !== 1) addMultiplier(card, tr("Совокупный множитель исследований к производству Score", "Combined Research multiplier to Score production"), researchProduction, tr("Quantum Multiplier × Temporal Core", "Quantum Multiplier × Temporal Core"));
+      const dilationProductionBonus = 0.1 * safe(dilation?.levels?.production);
+      const blackHoleProductionBonus = 0.2 * safe(blackHole?.levels?.production);
+      if (dilationProductionBonus > 0) addPercent(card, tr("Добавка к производству Score от Time Dilation", "Additive Score-production bonus from Time Dilation"), dilationProductionBonus, "DILATION UPGRADES");
+      if (blackHoleProductionBonus > 0) addPercent(card, tr("Добавка к производству Score от Black Hole", "Additive Score-production bonus from Black Hole"), blackHoleProductionBonus, "BLACK HOLE UPGRADES");
+      const temporalProduction = 1 + dilationProductionBonus + blackHoleProductionBonus;
+      if (temporalProduction !== 1) addMultiplier(card, tr("Совокупный временной множитель производства Score", "Combined temporal multiplier to Score production"), temporalProduction, tr("Базовый множитель 1 + бонус Time Dilation + бонус Black Hole", "Base factor 1 + Time Dilation bonus + Black Hole bonus"));
+      if (researchProduction * temporalProduction !== 1) addMultiplier(card, tr("Итоговый множитель исследований и временных улучшений к производству Score", "Final Research and temporal-upgrade multiplier to Score production"), researchProduction * temporalProduction, tr("Исследования перемножаются; бонусы Time Dilation и Black Hole складываются", "Research factors multiply; Time Dilation and Black Hole bonuses add"));
+      if (treeProduction !== 1) addMultiplier(card, tr("Общий множитель производства Score от активных узлов Древа", "Score-production multiplier from active Upgrade Tree nodes"), treeProduction, "GENESIS TREE");
       if (card.querySelectorAll(".modifier-row").length === 1) empty(card, tr("Кроме базового члена времени дополнительных множителей производства пока нет.", "No additional production modifiers are active beyond the base time term."));
     }
 
