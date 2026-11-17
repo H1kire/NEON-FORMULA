@@ -322,8 +322,8 @@ function getGlobalSumMultiplier(){
  if(n<=0)return 1;
  const legacy=Math.max(0,Number(prestigeUpgrades.simpleBoost)||0);
  const glyph=1+(typeof window.getGlyphGlobalSumPercent==="function"?window.getGlyphGlobalSumPercent():0);
- const w=(1+0.25*legacy)*glyph,level=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0);
- return Math.min(Number.MAX_VALUE,(1+level)+n*w*(1+level*w));
+ const w=(1+0.25*legacy)*glyph,level=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0),temporalN=n*(1+0.01*(dilationExtraLevels.sum||0)+0.02*(blackHoleLevels.sum||0));
+ return Math.min(Number.MAX_VALUE,(1+level)+temporalN*w*(1+level*w));
 }
 function getIntegralMultiplier(){
  const upper=Math.max(0,getE()),level=Math.max(0,Number(prestigeUpgrades.integralSumCoefficient)||0),base=Math.max(0,safeProduct(2/3,Math.max(0,safePow(1+upper,1.5)-1))),weightedPart=Math.max(0,safeProduct(2/5,Math.max(0,safePow(1+upper,2.5)-1))-base);
