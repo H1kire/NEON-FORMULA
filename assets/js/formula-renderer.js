@@ -78,9 +78,10 @@
       node.parentNode?.replaceChild(fragment, node);
     }
   }
-  window.FAFormula = Object.freeze({ render, renderText, renderCurrency, renderInlineMath });
+  window.FAFormula = Object.freeze({ render, renderText, renderCurrency });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => renderInlineMath());
   else renderInlineMath();
+  if (typeof MutationObserver !== "undefined") {
   const observer = new MutationObserver(records => {
     for (const record of records) {
       if (record.type === "characterData") renderInlineMath(record.target.parentElement);
@@ -91,4 +92,5 @@
     }
   });
   observer.observe(document.documentElement, { subtree: true, childList: true, characterData: true });
+  }
 })();
