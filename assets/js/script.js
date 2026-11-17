@@ -122,7 +122,7 @@ function getLetterPrice(base,level){
  const glyphDivisor=typeof window.getGlyphCostDivisor==="function"?Math.max(1,window.getGlyphCostDivisor()):1;
  const growth=getLetterPriceGrowth();
  const raw=base*Math.pow(growth,Math.max(0,level));
- const temporalDiscount=Math.max(0.01,1-0.00125*(dilationExtraLevels.discount||0)-0.0025*(blackHoleLevels.discount||0));
+ const temporalDiscount=Math.pow(0.99875,dilationExtraLevels.discount||0)*Math.pow(0.9975,blackHoleLevels.discount||0);
  const adjusted=raw/glyphDivisor*temporalDiscount;
  return Number.isFinite(adjusted)?Math.max(1,Math.min(Number.MAX_VALUE,Math.ceil(adjusted))):Number.MAX_VALUE;
 }
