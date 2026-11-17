@@ -519,8 +519,11 @@ function loop(){
  const now=performance.now(),delta=Math.max(0,(now-lastFrame)/1000);lastFrame=now;
  const rateBefore=getGain();
  const dilationUnlocked=typeof window.isTimeDilationUnlocked==="function"&&window.isTimeDilationUnlocked();
- if(dilationMode&&dilationUnlocked){if(!dilationIntegrating)dilationTime=Math.min(Number.MAX_VALUE,dilationTime+delta*(typeof window.getGlyphDilationTimeMultiplier==="function"?window.getGlyphDilationTimeMultiplier():1))}else{const elapsedT=delta*getDilationTimeSpeed()*(typeof window.getGlyphOrdinaryTimeMultiplier==="function"?window.getGlyphOrdinaryTimeMultiplier():1);t+=elapsedT;advanceFormulaClock(elapsedT)}
+ if(blackHoleMode&&blackHoleUnlocked){if(!blackHoleIntegrating)blackHoleTime=Math.min(Number.MAX_VALUE,blackHoleTime+delta*(typeof window.getGlyphDilationTimeMultiplier==="function"?window.getGlyphDilationTimeMultiplier():1))}
+ else if(dilationMode&&dilationUnlocked){if(!dilationIntegrating)dilationTime=Math.min(Number.MAX_VALUE,dilationTime+delta*(typeof window.getGlyphDilationTimeMultiplier==="function"?window.getGlyphDilationTimeMultiplier():1))}
+ else{const elapsedT=delta*getDilationTimeSpeed()*(typeof window.getGlyphOrdinaryTimeMultiplier==="function"?window.getGlyphOrdinaryTimeMultiplier():1);t+=elapsedT;advanceFormulaClock(elapsedT)}
  if(dilationIntegrating&&Date.now()-dilationOperationStartedAt>=5000)completeDilationIntegration();
+ if(blackHoleIntegrating&&Date.now()-blackHoleOperationStartedAt>=5000)completeBlackHoleIntegration();
  const rateAfter=getGain();
  // Trapezoidal integration reduces per-tick accumulation error while retaining the 10 ms loop.
  const averageRate=rateBefore+(rateAfter-rateBefore)*0.5;
