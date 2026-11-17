@@ -112,7 +112,7 @@
         !meta.stats || typeof meta.stats !== "object" || Array.isArray(meta.stats) ||
         !["totalPlayTime", "lifetimeValue", "ascensions", "genesisPrestiges", "purchases"].every(key => finiteNonNegative(meta.stats[key])) ||
         (meta.treeUnlocked !== undefined && typeof meta.treeUnlocked !== "boolean") ||
-        (meta.treePassPurchased !== undefined && typeof meta.treePassPurchased !== "boolean")) {
+        (meta.treePassPurchased !== undefined && typeof meta.treePassPurchased !== "boolean") || (meta.blackHoleResearchLevel !== undefined && (!Number.isInteger(meta.blackHoleResearchLevel) || meta.blackHoleResearchLevel < 0))) {
       throw new Error("Invalid meta state");
     }
     meta.automation.unlocked = Array.from({ length: 8 }, (_, i) => !!meta.automation.unlocked[i]);
