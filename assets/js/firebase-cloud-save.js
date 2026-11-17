@@ -90,8 +90,8 @@
         !["a", "b", "c", "d", "e"].every(key => Number.isFinite(Number(game.formulaState[key])) && Number(game.formulaState[key]) >= 1)) {
       throw new Error("Invalid game state");
     }
-    const dilationNumberKeys=["dilationTime","dilationCurrency","dilationILevel","dilationKLevel","dilationKValue","dilationVLevel","dilationTauLevel","dilationOperationStartedAt","dilationOperationReward"];
-    if(dilationNumberKeys.some(key=>game[key]!==undefined&&!finiteNonNegative(game[key]))||(game.dilationMode!==undefined&&typeof game.dilationMode!=="boolean")||(game.dilationIntegrating!==undefined&&typeof game.dilationIntegrating!=="boolean"))throw new Error("Invalid Time Dilation state");
+    const dilationNumberKeys=["dilationTime","dilationCurrency","dilationILevel","dilationKLevel","dilationKValue","dilationVLevel","dilationTauLevel","dilationOperationStartedAt","dilationOperationReward","dilationOperationAmount","blackHoleTime","blackHoleCurrency","blackHoleOperationStartedAt","blackHoleOperationAmount","blackHoleOperationReward"];
+    if(dilationNumberKeys.some(key=>game[key]!==undefined&&!finiteNonNegative(game[key]))||(game.dilationMode!==undefined&&typeof game.dilationMode!=="boolean")||(game.dilationIntegrating!==undefined&&typeof game.dilationIntegrating!=="boolean")||(game.blackHoleUnlocked!==undefined&&typeof game.blackHoleUnlocked!=="boolean")||(game.blackHoleMode!==undefined&&typeof game.blackHoleMode!=="boolean")||(game.blackHoleIntegrating!==undefined&&typeof game.blackHoleIntegrating!=="boolean")||["dilationExtraLevels","blackHoleLevels"].some(key=>game[key]!==undefined&&(!game[key]||typeof game[key]!=="object"||Array.isArray(game[key])||Object.values(game[key]).some(value=>!Number.isInteger(value)||value<0))))throw new Error("Invalid Time Dilation / Black Hole state");
     if (!prestige || typeof prestige !== "object" || Array.isArray(prestige) ||
         !finiteNonNegative(prestige.p) || !finiteNonNegative(prestige.gp) ||
         !prestige.prestigeUpgrades || typeof prestige.prestigeUpgrades !== "object" ||
