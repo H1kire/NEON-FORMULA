@@ -441,3 +441,36 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 
 /* Keep KaTeX glyphs vertically contained inside compact upgrade-card icons. */
 .upgrade-symbol .katex{font-size:1em;line-height:1}
+
+
+/* Singularity research: dedicated black-hole identity and compact telemetry. */
+.blackhole-status-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.blackhole-status-grid .dilation-stat-card{min-height:126px;justify-content:center}
+.blackhole-status-grid .dilation-live-parameters{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.blackhole-status-grid .dilation-live-parameters>div{display:flex;align-items:center;gap:6px}
+.blackhole-status-grid .dilation-live-parameters>div span{font-size:12px!important;color:#d4c1f4}
+.blackhole-status-grid .dilation-live-parameters>div strong{font-size:13px!important}
+.blackhole-p-value{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid rgba(190,154,255,.18);color:#b9a8d8;font:10px var(--mono)}
+.blackhole-p-value strong{font:13px var(--mono);color:#f0e5ff}
+.blackhole-research-panel{position:relative;isolation:isolate;overflow:hidden;padding:19px;border:1px solid rgba(180,137,255,.2);background:radial-gradient(ellipse at 88% 0%,rgba(137,91,210,.13),transparent 34%),linear-gradient(145deg,rgba(23,17,39,.48),rgba(7,9,19,.25) 70%)}
+.blackhole-research-panel:before{content:"";position:absolute;z-index:-1;top:-100px;right:-55px;width:230px;height:230px;border:1px solid rgba(190,154,255,.12);border-radius:50%;box-shadow:0 0 0 16px rgba(190,154,255,.025),0 0 0 34px rgba(190,154,255,.02),inset 0 0 55px rgba(145,104,230,.08);pointer-events:none}
+.blackhole-research-heading{position:relative;padding:4px 2px 17px;border-bottom:1px solid rgba(190,154,255,.16);margin-bottom:15px}
+.blackhole-research-heading h2{color:#f0e8ff;text-shadow:0 0 22px rgba(173,139,255,.35);letter-spacing:1.2px}
+.blackhole-research-heading .section-kicker{color:#c5b1e8}
+.blackhole-research-heading .kicker-line{background:#b99aff;box-shadow:0 0 9px rgba(183,151,255,.75)}
+.blackhole-research-subtitle{margin:6px 0 0;color:#897aa8;font:8px var(--mono);letter-spacing:1.5px}
+.blackhole-research-panel .research-resource-strip{border-color:rgba(190,154,255,.22);background:linear-gradient(90deg,rgba(145,107,206,.09),rgba(145,107,206,.025));color:#b9a8d8}
+.blackhole-research-panel .research-resource-strip strong{color:#e2d3ff;text-shadow:0 0 14px rgba(180,145,255,.22)}
+#blackHoleResearchPanel .dilation-research-card{border-color:rgba(190,154,255,.17);background:linear-gradient(145deg,rgba(36,27,57,.82),rgba(12,13,25,.96));box-shadow:inset 0 1px rgba(255,255,255,.025)}
+#blackHoleResearchPanel .dilation-research-card:hover{border-color:rgba(190,154,255,.48);background:linear-gradient(145deg,rgba(47,34,73,.9),rgba(13,13,27,.98))}
+#blackHoleResearchPanel .dilation-research-card.unlocked{border-color:rgba(190,154,255,.42);box-shadow:inset 0 0 24px rgba(145,107,206,.055)}
+#blackHoleResearchPanel .dilation-research-card .upgrade-category{color:#a995cc}
+#blackHoleResearchPanel .dilation-research-card .upgrade-title{color:#eee5ff}
+#blackHoleResearchPanel .dilation-research-card .upgrade-desc{color:#a99bbf}
+#blackHoleResearchPanel .dilation-research-card .upgrade-stats{border-color:rgba(190,154,255,.13)}
+#blackHoleResearchPanel .dilation-research-card .buy-button{border-color:rgba(190,154,255,.3);background:rgba(145,107,206,.1);color:#e8dcff}
+#blackHoleResearchPanel .dilation-research-card .buy-button:not(:disabled):hover{border-color:rgba(210,187,255,.7);background:rgba(145,107,206,.2)}
+#blackHoleResearchPanel .dilation-parameter-value{border-color:rgba(190,154,255,.16);background:rgba(145,107,206,.06);color:#a995cc}
+#blackHoleResearchPanel .dilation-parameter-value strong{color:#e2d3ff}
+@media(max-width:760px){.blackhole-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.blackhole-status-grid{grid-template-columns:1fr}.blackhole-status-grid .dilation-stat-card{min-height:0}.blackhole-research-panel{padding:14px 10px}}
