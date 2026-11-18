@@ -770,3 +770,16 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   font-size:24px!important;
   line-height:normal!important;
 }
+
+/* Black Hole KaTeX: target the actual inline wrapper for the label and the rendered value glyphs. */
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid>.dilation-stat-card:first-child>span[data-i18n="blackHoleAccumulated"] .math-inline .katex .mord.mathnormal{
+  font-size:28px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .mord.text>.mord,
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord.text>.mord{
+  font-size:24px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .mord.mathnormal,
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord.mathnormal{
+  font-size:17px!important;
+}
