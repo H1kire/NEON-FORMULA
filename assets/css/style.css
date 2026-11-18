@@ -441,15 +441,6 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 
 /* Keep KaTeX glyphs vertically contained inside compact upgrade-card icons. */
 .upgrade-symbol .katex{font-size:1em;line-height:1}
-
-
-/* Singularity research: dedicated black-hole identity and compact telemetry. */
-.blackhole-status-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-.blackhole-status-grid .dilation-stat-card{min-height:126px;justify-content:center}
-.blackhole-status-grid .dilation-live-parameters{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
-.blackhole-status-grid .dilation-live-parameters>div{display:flex;align-items:center;gap:6px}
-.blackhole-status-grid .dilation-live-parameters>div span{font-size:12px!important;color:#d4c1f4}
-.blackhole-status-grid .dilation-live-parameters>div strong{font-size:13px!important}
 .blackhole-p-value{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid rgba(190,154,255,.18);color:#b9a8d8;font:10px var(--mono)}
 .blackhole-p-value strong{font:13px var(--mono);color:#f0e5ff}
 .blackhole-research-panel{position:relative;isolation:isolate;overflow:hidden;padding:19px;border:1px solid rgba(180,137,255,.2);background:radial-gradient(ellipse at 88% 0%,rgba(137,91,210,.13),transparent 34%),linear-gradient(145deg,rgba(23,17,39,.48),rgba(7,9,19,.25) 70%)}
@@ -472,118 +463,74 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 #blackHoleResearchPanel .dilation-research-card .buy-button:not(:disabled):hover{border-color:rgba(210,187,255,.7);background:rgba(145,107,206,.2)}
 #blackHoleResearchPanel .dilation-parameter-value{border-color:rgba(190,154,255,.16);background:rgba(145,107,206,.06);color:#a995cc}
 #blackHoleResearchPanel .dilation-parameter-value strong{color:#e2d3ff}
-@media(max-width:760px){.blackhole-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:480px){.blackhole-status-grid{grid-template-columns:1fr}.blackhole-status-grid .dilation-stat-card{min-height:0}.blackhole-research-panel{padding:14px 10px}}
+@media(max-width:760px){}
+@media(max-width:480px){.blackhole-research-panel{padding:14px 10px}}
 
 
 /* Compact telemetry cards only: three status windows in White Hole and Black Hole. */
-.dilation-page>.dilation-status-grid .dilation-stat-card,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-stat-card{
+.dilation-page>.dilation-status-grid .dilation-stat-card{
   min-height:88px;
   padding:11px 13px;
   gap:6px;
   justify-content:center;
-}
-.dilation-page>.dilation-status-grid,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+}.dilation-page>.dilation-status-grid{
   gap:9px;
   margin:14px 0 11px;
-}
-.dilation-page>.dilation-status-grid .dilation-stat-card>span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-stat-card>span{
+}.dilation-page>.dilation-status-grid .dilation-stat-card>span{
   font-size:8px;
   letter-spacing:.8px;
-}
-.dilation-page>.dilation-status-grid .dilation-stat-card>strong,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-stat-card>strong{
+}.dilation-page>.dilation-status-grid .dilation-stat-card>strong{
   font-size:clamp(16px,1.7vw,21px);
-}
-.dilation-page>.dilation-status-grid .dilation-live-parameters,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-live-parameters{
+}.dilation-page>.dilation-status-grid .dilation-live-parameters{
   gap:6px;
-}
-.dilation-page>.dilation-status-grid .dilation-live-parameters>div,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-live-parameters>div{
+}.dilation-page>.dilation-status-grid .dilation-live-parameters>div{
   padding:5px 7px;
   min-width:40px;
-}
-.dilation-page>.dilation-status-grid .dilation-live-parameters>div span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-live-parameters>div span{
+}.dilation-page>.dilation-status-grid .dilation-live-parameters>div span{
   font-size:11px!important;
-}
-.dilation-page>.dilation-status-grid .dilation-live-parameters>div strong,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-live-parameters>div strong{
+}.dilation-page>.dilation-status-grid .dilation-live-parameters>div strong{
   font-size:12px!important;
 }
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .blackhole-p-value{
-  margin-top:5px;
-  padding-top:5px;
-}
-@media(max-width:700px){
-  .dilation-page>.dilation-status-grid,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{gap:7px;margin:12px 0 9px}
-  .dilation-page>.dilation-status-grid .dilation-stat-card,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-stat-card{min-height:78px;padding:9px 10px}
+@media(max-width:700px){.dilation-page>.dilation-status-grid{gap:7px;margin:12px 0 9px}.dilation-page>.dilation-status-grid .dilation-stat-card{min-height:78px;padding:9px 10px}
 }
 
 
 /* Tight telemetry layout: ONLY the three accumulated / balance / parameter cards. */
-.dilation-page>.dilation-status-grid,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+.dilation-page>.dilation-status-grid{
   align-items:start;
   gap:8px;
   margin:13px 0 11px;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card{
   align-self:start;
   height:auto;
   min-height:0;
   padding:10px 12px;
   gap:5px;
   justify-content:flex-start;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card>span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>span{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card>span{
   display:block;
   margin:0;
   line-height:1.25;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card>strong,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>strong{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card>strong{
   display:block;
   margin:0;
   line-height:1.35;
   font-size:clamp(14px,1.35vw,18px);
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters{
   margin:0;
   gap:5px;
   align-items:center;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div{
   min-width:0;
   padding:4px 6px;
   gap:3px;
 }
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
-  margin-top:4px;
-  padding-top:4px;
-  line-height:1.2;
-}
-@media(max-width:700px){
-  .dilation-page>.dilation-status-grid,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{gap:7px}
-  .dilation-page>.dilation-status-grid>.dilation-stat-card,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{padding:9px 10px}
+@media(max-width:700px){.dilation-page>.dilation-status-grid{gap:7px}.dilation-page>.dilation-status-grid>.dilation-stat-card{padding:9px 10px}
 }
 
 
 /* Content-sized telemetry: keep the three status cards only as wide as their contents. */
-.dilation-page>.dilation-status-grid,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+.dilation-page>.dilation-status-grid{
   display:grid;
   grid-template-columns:repeat(3,max-content);
   justify-content:start;
@@ -592,230 +539,56 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   width:max-content;
   max-width:100%;
   gap:8px;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card{
   width:max-content;
   min-width:0;
   max-width:100%;
   box-sizing:border-box;
   padding:10px 12px;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card:not(.dilation-parameters-card),
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:not(.dilation-parameters-card){
+}.dilation-page>.dilation-status-grid>.dilation-stat-card:not(.dilation-parameters-card){
   white-space:nowrap;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card.dilation-parameters-card,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:last-child{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card.dilation-parameters-card{
   width:max-content;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters{
   grid-template-columns:repeat(3,minmax(38px,max-content));
 }
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
-  min-width:100%;
-}
-@media(max-width:520px){
-  .dilation-page>.dilation-status-grid,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+@media(max-width:520px){.dilation-page>.dilation-status-grid{
     grid-template-columns:repeat(2,max-content);
     width:100%;
-  }
-  .dilation-page>.dilation-status-grid>.dilation-stat-card:last-child,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:last-child{
+  }.dilation-page>.dilation-status-grid>.dilation-stat-card:last-child{
     grid-column:1/-1;
   }
 }
 
 
 /* Telemetry cards: 20% larger, equal height based on the parameter card. */
-.dilation-page>.dilation-status-grid,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+.dilation-page>.dilation-status-grid{
   align-items:stretch;
   gap:9.6px;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card{
   align-self:stretch;
   height:100%;
   min-height:0;
   padding:12px 14.4px;
   gap:6px;
   font-size:120%;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card>span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>span{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card>span{
   font-size:120%;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card>strong,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>strong{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card>strong{
   font-size:clamp(16.8px,1.62vw,21.6px);
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters{
   gap:6px;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div{
   padding:4.8px 7.2px;
   gap:3.6px;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div span{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div span{
   font-size:13.2px!important;
-}
-.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div strong,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div strong{
+}.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div strong{
   font-size:14.4px!important;
 }
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
-  margin-top:4.8px;
-  padding-top:4.8px;
-  font-size:12px;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value strong{
-  font-size:15.6px;
+@media(max-width:520px){.dilation-page>.dilation-status-grid{gap:8.4px}.dilation-page>.dilation-status-grid>.dilation-stat-card{padding:10.8px 12px}
 }
 @media(max-width:520px){
-  .dilation-page>.dilation-status-grid,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{gap:8.4px}
-  .dilation-page>.dilation-status-grid>.dilation-stat-card,
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{padding:10.8px 12px}
-}
-
-
-/* Black Hole telemetry: 10% smaller; time and balance values match p. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
-  padding:10.8px 12.96px;
-  gap:5.4px;
-  font-size:110%;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>span{
-  font-size:110%;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>strong{
-  font-size:clamp(15.12px,1.458vw,19.44px);
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
-  gap:5.4px;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div{
-  padding:4.32px 6.48px;
-  gap:3.24px;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div span{
-  font-size:11.88px!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div strong{
-  font-size:12.96px!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay{
-  font-size:14.04px!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
-  margin-top:4.32px;
-  padding-top:4.32px;
-  font-size:11.88px;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value span{
-  font-size:11.88px!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value strong{
-  font-size:14.04px!important;
-}
-@media(max-width:520px){
-  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
-    padding:9.72px 10.8px;
-  }
-}
-
-/* Black Hole: first two telemetry cards match White Hole sizing. Keep parameter card unchanged. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1),
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2){
-  padding:12px 14.4px!important;
-  gap:6px!important;
-  font-size:120%!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span{
-  font-size:120%!important;
-  line-height:1.25!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span .katex{
-  font-size:1em!important;
-  line-height:normal!important;
-}
-/* ID-specific rules override older Black Hole value sizing rules. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay{
-  font-size:clamp(16.8px,1.62vw,21.6px)!important;
-  line-height:1.35!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
-  font-size:1em!important;
-  line-height:normal!important;
-}
-
-/* Black Hole typography: enlarge the accumulated t_bl label and both telemetry values. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:first-child>span[data-i18n="blackHoleAccumulated"] .katex{
-  font-size:28px!important;
-  line-height:normal!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
-  font-size:24px!important;
-  line-height:normal!important;
-}
-
-/* Black Hole KaTeX: target the actual inline wrapper for the label and the rendered value glyphs. */
-#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid>.dilation-stat-card:first-child>span[data-i18n="blackHoleAccumulated"] .math-inline .katex .mord.mathnormal{
-  font-size:28px!important;
-}
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .mord.text>.mord,
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord.text>.mord{
-  font-size:24px!important;
-}
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .mord.mathnormal,
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord.mathnormal{
-  font-size:17px!important;
-}
-
-/* Preserve compact KaTeX subscripts while sizing only the main t glyph. */
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .mord>.mord.mathnormal,
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord>.mord.mathnormal{
-  font-size:17px!important;
-}
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .msupsub .mord.mathnormal,
-#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .msupsub .mord.mathnormal{
-  font-size:12px!important;
-}
-
-/* Black Hole: mirror the exact card sizing of the Current Parameters card
-   onto the Accumulated and Balance cards. Keep the third card unchanged. */
-#blackHoleModulePanel #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(-n+2){
-  align-self:stretch!important;
-  height:100%!important;
-  min-height:0!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:100%!important;
-  box-sizing:border-box!important;
-  padding:10.8px 12.96px!important;
-  gap:5.4px!important;
-  justify-content:flex-start!important;
-  font-size:110%!important;
-}
-#blackHoleModulePanel #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(-n+2)>span{
-  font-size:110%!important;
-  line-height:1.25!important;
-}
-#blackHoleModulePanel #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(-n+2)>strong{
-  font-size:14.04px!important;
-  line-height:1.35!important;
 }
 
 /* Black Hole operation formulas: 1.5x the original 14px equation size. */
