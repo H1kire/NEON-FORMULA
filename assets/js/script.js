@@ -65,7 +65,7 @@ function updateBlackHoleUI(){
  if(track)track.hidden=!state.integrating;if(fill&&state.integrating)fill.style.width=(Math.max(0,Math.min(1,(Date.now()-blackHoleOperationStartedAt)/5000))*100).toFixed(1)+"%";
  if(status)status.textContent=state.integrating?Math.max(0,5-(Date.now()-blackHoleOperationStartedAt)/1000).toFixed(1)+" s":state.mode?(FA_META.language==="ru"?"ЧЁРНАЯ ДЫРА АКТИВНА":"BLACK HOLE ACTIVE"):(FA_META.language==="ru"?"РЕЖИМ ОСТАНОВЛЕН":"MODE PAUSED");
  if(window.FAFormula){FAFormula.render("blackHoleFormula","x=-\\int_{0}^{t_{bl}}\\frac{q}{2.5}(\\sqrt{su}+1)^w\\,du");FAFormula.render("blackHoleConversionFormula","\\Delta t_{bl}=\\left|\\frac{x}{t_{bl}}\\right|^p")}
- const pLabel=$("blackHolePLabel"),pValue=$("blackHolePValue");if(pLabel&&window.FAFormula)FAFormula.render("blackHolePLabel","p");if(pValue)pValue.textContent=state.p.toFixed(3);
+ const pLabel=$("blackHolePLabel"),pValue=$("blackHolePValue");if(pLabel&&window.FAFormula&&!pLabel.dataset.mathReady){FAFormula.render("blackHolePLabel","p");pLabel.dataset.mathReady="1"}if(pValue)pValue.textContent=state.p.toFixed(3);
 }
 window.updateBlackHoleUI=updateBlackHoleUI;
 
