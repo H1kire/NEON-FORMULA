@@ -94,3 +94,47 @@
     width: min(var(--bh-telemetry-card-width), 100%);
   }
 }
+/* Preserve the original Current Parameters card layout and typography exactly. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child {
+  min-height: 0;
+  padding: 9.72px 10.8px;
+  gap: 5.4px;
+  justify-content: flex-start;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child > span {
+  font-size: 8.8px;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .dilation-live-parameters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5.4px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .dilation-live-parameters > div {
+  display: flex;
+  align-items: center;
+  gap: 3.24px;
+  min-width: 0;
+  padding: 4.32px 6.48px;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .dilation-live-parameters > div span {
+  font-size: 11.88px !important;
+  color: #d4c1f4;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .dilation-live-parameters > div strong {
+  font-size: 12.96px !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .blackhole-p-value {
+  margin-top: 4.32px;
+  padding-top: 4.32px;
+  font-size: 11.88px;
+  line-height: 1.2;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .blackhole-p-value > span {
+  font-size: 11.88px !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .blackhole-p-value > strong {
+  font-size: 14.04px !important;
+}
