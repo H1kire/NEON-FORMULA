@@ -1,0 +1,96 @@
+/* Black Hole telemetry sizing.
+   Change these pixel values to resize the first two cards without touching
+   the Current Parameters card or the White Hole interface. */
+#blackHoleModulePanel {
+  --bh-telemetry-card-width: 200px;
+  --bh-telemetry-card-height: 104px;
+  --bh-telemetry-card-padding-x: 10.8px;
+  --bh-telemetry-card-padding-y: 9.72px;
+  --bh-telemetry-card-gap: 5.4px;
+  --bh-telemetry-heading-size: 8.8px;
+  --bh-telemetry-value-size: 14.04px;
+  --bh-telemetry-subscript-size: 9.83px;
+}
+
+/* Keep the established two-card row and the parameter card below it. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, var(--bh-telemetry-card-width));
+  align-items: stretch;
+  justify-content: start;
+  gap: 8px;
+  width: 100%;
+  margin: 13px 0 11px;
+}
+
+/* Only the Accumulated and Balance cards receive fixed pixel dimensions. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  width: var(--bh-telemetry-card-width);
+  height: var(--bh-telemetry-card-height);
+  min-width: 0;
+  min-height: var(--bh-telemetry-card-height);
+  max-width: 100%;
+  padding: var(--bh-telemetry-card-padding-y) var(--bh-telemetry-card-padding-x);
+  gap: var(--bh-telemetry-card-gap);
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* Heading typography matches the heading of Current Parameters. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > span {
+  display: block;
+  margin: 0;
+  font-size: var(--bh-telemetry-heading-size);
+  line-height: 1.25;
+  letter-spacing: 1px;
+}
+
+/* Value typography matches the p-value in Current Parameters. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > strong {
+  display: block;
+  margin: 0;
+  font-size: var(--bh-telemetry-value-size);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+/* KaTeX must inherit the same pixel sizes; neutralize the old oversized glyph rules. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:first-child > span .math-inline .katex {
+  font-size: var(--bh-telemetry-heading-size) !important;
+  line-height: normal !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex {
+  font-size: var(--bh-telemetry-value-size) !important;
+  line-height: normal !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex .mord.text > .mord,
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex .mord.mathnormal {
+  font-size: 1em !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex .msupsub .mord.mathnormal {
+  font-size: var(--bh-telemetry-subscript-size) !important;
+}
+
+/* The reference card itself is intentionally not resized or restyled. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child {
+  grid-column: 1 / -1;
+  width: max-content;
+  max-width: 100%;
+}
+
+/* Narrow screens: preserve the same pixel typography and stack the cards. */
+@media (max-width: 480px) {
+  #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid {
+    grid-template-columns: minmax(0, var(--bh-telemetry-card-width));
+  }
+  #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child {
+    grid-column: 1;
+  }
+  #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) {
+    width: min(var(--bh-telemetry-card-width), 100%);
+  }
+}
