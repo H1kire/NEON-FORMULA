@@ -799,7 +799,7 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   align-self:stretch!important;
   height:100%!important;
   min-height:0!important;
-  width:max-content!important;
+  width:100%!important;
   min-width:0!important;
   max-width:100%!important;
   box-sizing:border-box!important;
