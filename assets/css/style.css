@@ -742,5 +742,9 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 }
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>strong,
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>strong{
-  font-size:calc(1.1em - 4px)!important;
+  font-size:14.04px!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
+  font-size:14.04px!important;
 }
