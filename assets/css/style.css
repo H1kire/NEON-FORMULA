@@ -783,3 +783,13 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 #blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord.mathnormal{
   font-size:17px!important;
 }
+
+/* Preserve compact KaTeX subscripts while sizing only the main t glyph. */
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .mord>.mord.mathnormal,
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .mord>.mord.mathnormal{
+  font-size:17px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleTimeDisplay .katex .msupsub .mord.mathnormal,
+#blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .msupsub .mord.mathnormal{
+  font-size:12px!important;
+}
