@@ -117,7 +117,8 @@
     const treeProduction = typeof window.treeProductionMultiplier === "function" ? window.treeProductionMultiplier() : 1;
     const letterCommon = typeof getLetterValueMultiplier === "function" ? getLetterValueMultiplier() : 1;
     const formula = window.FAMathSystem?.getState?.() || {};
-    const letterValue = key => typeof window["get" + key.toUpperCase()] === "function" ? window["get" + key.toUpperCase()]() : 1;
+    const letterGetters = {a:getA,b:getB,c:getC,d:getD,e:getE};
+    const letterValue = key => typeof letterGetters[key] === "function" ? letterGetters[key]() : 1;
     const getLevel = key => num(dilation.levels?.[key]);
     const getBHLevel = key => num(blackHole.levels?.[key]);
 
@@ -199,7 +200,7 @@
     // Clock multipliers, separated by the time stream they affect.
     {
       const group = addGroup(root, tr("СКОРОСТЬ ВРЕМЕНИ", "TIME FLOW"));
-      const ordinaryTime = (typeof window.getDilationTimeSpeed === "function" ? window.getDilationTimeSpeed() : 1) * glyphOrdinary;
+      const ordinaryTime = (typeof getDilationTimeSpeed === "function" ? getDilationTimeSpeed() : 1) * glyphOrdinary;
       addFactor(group, "t", ordinaryTime);
       addFactor(group, "t_{dl}", glyphDilation);
       addFactor(group, "t_{bl}", glyphDilation);
