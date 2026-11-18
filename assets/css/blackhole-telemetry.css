@@ -140,3 +140,22 @@
 #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child .blackhole-p-value > strong {
   font-size: 14.04px !important;
 }
+
+/* Explicitly scale the KaTeX output generated inside the two live value nodes.
+   These values are rendered dynamically, so target their IDs as well as the
+   card structure above to cover every KaTeX wrapper produced at runtime. */
+#blackHoleModulePanel #blackHoleTimeDisplay .katex,
+#blackHoleModulePanel #blackHoleCurrencyDisplay .katex,
+#blackHoleModulePanel #blackHoleTimeDisplay .katex-display > .katex,
+#blackHoleModulePanel #blackHoleCurrencyDisplay .katex-display > .katex {
+  font-size: var(--bh-telemetry-value-size) !important;
+  line-height: normal !important;
+}
+#blackHoleModulePanel #blackHoleTimeDisplay .katex .mord,
+#blackHoleModulePanel #blackHoleCurrencyDisplay .katex .mord {
+  font-size: 1em !important;
+}
+#blackHoleModulePanel #blackHoleTimeDisplay .katex .msupsub .mord,
+#blackHoleModulePanel #blackHoleCurrencyDisplay .katex .msupsub .mord {
+  font-size: var(--bh-telemetry-subscript-size) !important;
+}
