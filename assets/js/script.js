@@ -43,7 +43,7 @@ function completeDilationIntegration(){if(!dilationIntegrating)return;dilationCu
 function getBlackHoleParameters(){const l=blackHoleLevels,boost=1+0.002*(l.parameters||0);return {q:(1+0.5*l.q)*boost,s:(1+0.25*l.s)*boost,w:(1+0.05*l.w)*boost}}
 window.getBlackHoleResearchLevel=window.getBlackHoleResearchLevel||(()=>Math.max(0,Math.floor(Number(FA_META?.blackHoleResearchLevel)||0)));
 function getBlackHoleResearchL(){return 1+0.1*Math.max(0,Number(window.getBlackHoleResearchLevel?.())||0)}
-function getBlackHoleP(){return 0.85*getBlackHoleResearchL()*Math.pow(1.1,blackHoleLevels.p||0)}
+function getBlackHoleP(){return 0.85*Math.pow(1.1,blackHoleLevels.p||0)}
 function getBlackHoleTimeSpeed(){return (1+0.05*(blackHoleLevels.tau||0))*(1+0.05*(blackHoleLevels.timeFlow||0))}
 function getBlackHoleUpgradeCost(key,offset=0){const pricing={q:{base:1,ratio:1.4},s:{base:2.5,ratio:2},w:{base:5,ratio:3.5},p:{base:1000,ratio:5},tau:{base:1000,ratio:3},sum:{base:10,ratio:5},letters:{base:2,ratio:3},discount:{base:1000,ratio:2.5},parameters:{base:100,ratio:2},production:{base:1000,ratio:15},prestige:{base:1000,ratio:5}}[key],level=blackHoleLevels[key];if(!pricing||level===undefined)return Number.MAX_SAFE_INTEGER;const cost=pricing.base*Math.pow(pricing.ratio,level+offset);return Number.isFinite(cost)?Math.min(Number.MAX_SAFE_INTEGER,cost):Number.MAX_SAFE_INTEGER}
 function calculateBlackHoleReward(upper=blackHoleTime){const {q,s,w}=getBlackHoleParameters(),z=Math.sqrt(Math.max(0,s*upper)),a=w+2,b=w+1,integral=(safePow(z+1,a)/a-safePow(z+1,b)/b)-(1/a-1/b),magnitude=safeProduct(q/(1.25*s*s),integral),average=upper>0?magnitude/upper:0;return safePow(Math.max(0,average),getBlackHoleP())}
@@ -65,7 +65,7 @@ function updateBlackHoleUI(){
  if(track)track.hidden=!state.integrating;if(fill&&state.integrating)fill.style.width=(Math.max(0,Math.min(1,(Date.now()-blackHoleOperationStartedAt)/5000))*100).toFixed(1)+"%";
  if(status)status.textContent=state.integrating?Math.max(0,5-(Date.now()-blackHoleOperationStartedAt)/1000).toFixed(1)+" s":state.mode?(FA_META.language==="ru"?"ЧЁРНАЯ ДЫРА АКТИВНА":"BLACK HOLE ACTIVE"):(FA_META.language==="ru"?"РЕЖИМ ОСТАНОВЛЕН":"MODE PAUSED");
  if(window.FAFormula){FAFormula.render("blackHoleFormula","x=-\\int_{0}^{t_{bl}}\\frac{q}{2.5}(\\sqrt{su}+1)^w\\,du");FAFormula.render("blackHoleConversionFormula","\\Delta t_{bl}=\\left|\\frac{x}{t_{bl}}\\right|^p")}
- const pLabel=$("blackHolePLabel"),pValue=$("blackHolePValue");if(pLabel&&window.FAFormula&&!pLabel.dataset.mathReady){FAFormula.render("blackHolePLabel","p");pLabel.dataset.mathReady="1"}if(pValue)pValue.textContent=state.p.toFixed(3);
+ const pLabel=$("blackHolePLabel"),pValue=$("blackHolePValue"),pFormula=$("blackHolePFormula");if(pLabel&&window.FAFormula&&!pLabel.dataset.mathReady){FAFormula.render("blackHolePLabel","p");pLabel.dataset.mathReady="1"}if(pFormula&&window.FAFormula&&!pFormula.dataset.mathReady){FAFormula.render("blackHolePFormula","p=0.85\\cdot1.1^{L_p}");pFormula.dataset.mathReady="1"}if(pValue)pValue.textContent=state.p.toFixed(3);
 }
 window.updateBlackHoleUI=updateBlackHoleUI;
 
