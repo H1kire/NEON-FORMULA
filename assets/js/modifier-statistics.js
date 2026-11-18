@@ -7,7 +7,7 @@
   let rowId = 0;
   const isRu = () => window.FA_META?.language === "ru";
   const tr = (ru, en) => isRu() ? ru : en;
-  const num = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+  const num = value => { const n = Number(value); return Number.isNaN(n) ? 0 : n; };
   const fmt = value => {
     const n = num(value);
     if (!Number.isFinite(n)) return "∞";
@@ -99,7 +99,6 @@
     rowId = 0;
 
     // These are the same live values and formulas used by the game itself.
-    const research = window.FA_META?.research || Array(10).fill(0);
     const dilation = window.TimeDilation?.getState?.() || {levels:{}};
     const blackHole = window.BlackHole?.getState?.() || {levels:{}};
     const meta = key => typeof window.getMetaBonus === "function" ? window.getMetaBonus(key) : 1;
@@ -123,14 +122,15 @@
     const lettersProduct = typeof getLetterProduct === "function" ? getLetterProduct() : 1;
     const researchProduction = meta("production") * meta("time");
     const temporalProduction = 1 + 0.1 * getLevel("production") + 0.2 * getBHLevel("production");
+    const formulaTimeSquared = safeProduct(glyphFormula, glyphFormula);
     const productionTotal = safeProduct(
-      glyphFormula * glyphFormula, integral, globalSum, lettersProduct,
+      formulaTimeSquared, integral, globalSum, lettersProduct,
       researchProduction, temporalProduction, treeProduction
     );
 
     {
       const group = addGroup(root, tr("ПРОИЗВОДСТВО SCORE", "SCORE PRODUCTION"));
-      addFactor(group, "t^2", glyphFormula * glyphFormula);
+      addFactor(group, "t^2", formulaTimeSquared);
       addFactor(group, "\\text{Integral}", integral);
       addFactor(group, "\\text{Global Sum}", globalSum);
       addFactor(group, "\\text{Letters product}", lettersProduct);
