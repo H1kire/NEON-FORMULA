@@ -730,3 +730,17 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
     padding:9.72px 10.8px;
   }
 }
+
+/* Black Hole telemetry: match accumulated label typography; values are 4px smaller. */
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span{
+  font-size:110%;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .math-inline{
+  font-size:1em!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>strong,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>strong{
+  font-size:calc(1.1em - 4px)!important;
+}
