@@ -7,9 +7,9 @@
   --bh-telemetry-card-padding-x: 10.8px;
   --bh-telemetry-card-padding-y: 9.72px;
   --bh-telemetry-card-gap: 5.4px;
-  --bh-telemetry-heading-size: 8.8px;
-  --bh-telemetry-value-size: 14.04px;
-  --bh-telemetry-subscript-size: 9.83px;
+  --bh-telemetry-heading-size: 13.2px;
+  --bh-telemetry-value-size: 21.06px;
+  --bh-telemetry-subscript-size: 14.745px;
 }
 
 /* Keep all three telemetry cards on one horizontal row. */
@@ -41,7 +41,7 @@
   overflow: hidden;
 }
 
-/* Heading typography matches the heading of Current Parameters. */
+/* Heading typography: 1.5x the previous size. */
 #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > span {
   display: block;
   margin: 0;
@@ -50,7 +50,7 @@
   letter-spacing: 1px;
 }
 
-/* Value typography matches the p-value in Current Parameters. */
+/* Value typography: 1.5x the previous size. */
 #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > strong {
   display: block;
   margin: 0;
@@ -59,20 +59,20 @@
   white-space: nowrap;
 }
 
-/* KaTeX must inherit the same pixel sizes; neutralize the old oversized glyph rules. */
-#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:first-child > span .math-inline .katex {
+/* Keep KaTeX letters, digits and subscripts in the first two cards in sync. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) .math-inline .katex {
   font-size: var(--bh-telemetry-heading-size) !important;
   line-height: normal !important;
 }
-#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex {
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > strong .katex {
   font-size: var(--bh-telemetry-value-size) !important;
   line-height: normal !important;
 }
-#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex .mord.text > .mord,
-#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex .mord.mathnormal {
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > strong .katex .mord.text > .mord,
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > strong .katex .mord.mathnormal {
   font-size: 1em !important;
 }
-#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card > strong .katex .msupsub .mord.mathnormal {
+#blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:nth-child(-n+2) > strong .katex .msupsub .mord.mathnormal {
   font-size: var(--bh-telemetry-subscript-size) !important;
 }
 
@@ -95,6 +95,7 @@
     width: min(var(--bh-telemetry-card-width), 100%);
   }
 }
+
 /* Preserve the original Current Parameters card layout and typography exactly. */
 #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child {
   min-height: 0;
