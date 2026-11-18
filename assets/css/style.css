@@ -579,3 +579,51 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   .dilation-page>.dilation-status-grid>.dilation-stat-card,
   .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{padding:9px 10px}
 }
+
+
+/* Content-sized telemetry: keep the three status cards only as wide as their contents. */
+.dilation-page>.dilation-status-grid,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+  display:grid;
+  grid-template-columns:repeat(3,max-content);
+  justify-content:start;
+  justify-items:start;
+  align-items:stretch;
+  width:max-content;
+  max-width:100%;
+  gap:8px;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
+  width:max-content;
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
+  padding:10px 12px;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card:not(.dilation-parameters-card),
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:not(.dilation-parameters-card){
+  white-space:nowrap;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card.dilation-parameters-card,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:last-child{
+  width:max-content;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
+  grid-template-columns:repeat(3,minmax(38px,max-content));
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
+  min-width:100%;
+}
+@media(max-width:520px){
+  .dilation-page>.dilation-status-grid,
+  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+    grid-template-columns:repeat(2,max-content);
+    width:100%;
+  }
+  .dilation-page>.dilation-status-grid>.dilation-stat-card:last-child,
+  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:last-child{
+    grid-column:1/-1;
+  }
+}
