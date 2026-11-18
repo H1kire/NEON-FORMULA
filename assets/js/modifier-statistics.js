@@ -89,7 +89,6 @@
 
     // These are the same live values and formulas used by the game itself.
     const research = window.FA_META?.research || Array(10).fill(0);
-    const upgrades = window.prestigeUpgrades || {};
     const dilation = window.TimeDilation?.getState?.() || {levels:{}};
     const blackHole = window.BlackHole?.getState?.() || {levels:{}};
     const meta = key => typeof window.getMetaBonus === "function" ? window.getMetaBonus(key) : 1;
@@ -97,7 +96,6 @@
     const glyphFormula = typeof window.getGlyphFormulaTimeMultiplier === "function" ? window.getGlyphFormulaTimeMultiplier() : 1;
     const glyphOrdinary = typeof window.getGlyphOrdinaryTimeMultiplier === "function" ? window.getGlyphOrdinaryTimeMultiplier() : 1;
     const glyphDilation = typeof window.getGlyphDilationTimeMultiplier === "function" ? window.getGlyphDilationTimeMultiplier() : 1;
-    const glyphLetter = typeof window.getGlyphLetterValueMultiplier === "function" ? window.getGlyphLetterValueMultiplier() : 1;
     const glyphCostDivisor = typeof window.getGlyphCostDivisor === "function" ? Math.max(1, window.getGlyphCostDivisor()) : 1;
     const treeProduction = typeof window.treeProductionMultiplier === "function" ? window.treeProductionMultiplier() : 1;
     const letterCommon = typeof getLetterValueMultiplier === "function" ? getLetterValueMultiplier() : 1;
@@ -182,7 +180,7 @@
     {
       const group = addGroup(root, tr("СКОРОСТЬ ВРЕМЕНИ", "TIME FLOW"));
       const ordinaryTime = (typeof getDilationTimeSpeed === "function" ? getDilationTimeSpeed() : 1) * glyphOrdinary;
-      addFactor(group, "t", ordinaryTime);
+      addFactor(group, "t", dilation.mode || blackHole.mode ? 0 : ordinaryTime);
       addFactor(group, "t_{dl}", glyphDilation);
       addFactor(group, "t_{bl}", glyphDilation);
       if (window.FA_META?.settings?.offline !== false) {
