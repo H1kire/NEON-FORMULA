@@ -12,15 +12,16 @@
   --bh-telemetry-subscript-size: 9.83px;
 }
 
-/* Keep the established two-card row and the parameter card below it. */
+/* Keep all three telemetry cards on one horizontal row. */
 #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid {
   display: grid;
-  grid-template-columns: repeat(2, var(--bh-telemetry-card-width));
+  grid-template-columns: var(--bh-telemetry-card-width) var(--bh-telemetry-card-width) max-content;
   align-items: stretch;
   justify-content: start;
   gap: 8px;
   width: 100%;
   margin: 13px 0 11px;
+  overflow-x: auto;
 }
 
 /* Only the Accumulated and Balance cards receive fixed pixel dimensions. */
@@ -77,7 +78,7 @@
 
 /* The reference card itself is intentionally not resized or restyled. */
 #blackHoleModulePanel #blackHoleUnlockedPanel > .blackhole-status-grid > .dilation-stat-card:last-child {
-  grid-column: 1 / -1;
+  grid-column: auto;
   width: max-content;
   max-width: 100%;
 }
