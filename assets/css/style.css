@@ -793,3 +793,34 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 #blackHoleModulePanel #blackHoleUnlockedPanel #blackHoleCurrencyDisplay .katex .msupsub .mord.mathnormal{
   font-size:12px!important;
 }
+
+/* Black Hole: copy White Hole card sizing to ONLY accumulated and balance cards. */
+#blackHoleModulePanel #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(-n+2){
+  align-self:stretch!important;
+  height:100%!important;
+  min-height:0!important;
+  width:max-content!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding:12px 14.4px!important;
+  gap:6px!important;
+  justify-content:flex-start!important;
+  font-size:120%!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(-n+2)>span{
+  font-size:120%!important;
+  line-height:1.25!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(-n+2)>strong{
+  font-size:clamp(16.8px,1.62vw,21.6px)!important;
+  line-height:1.35!important;
+}
+
+/* Black Hole operation formulas: 1.5x the original 14px equation size. */
+#blackHoleModulePanel .dilation-operation-card .dilation-equation{
+  font-size:21px!important;
+}
+#blackHoleModulePanel .dilation-operation-card .dilation-equation .katex{
+  font-size:1em!important;
+}
