@@ -53,7 +53,7 @@
   }
   function shouldSkip(node) {
     const parent = node.parentElement;
-    return !parent || !!parent.closest("script,style,textarea,input,select,option,button[aria-label],.katex,.math-inline,[contenteditable='true']");
+    return !parent || !!parent.closest("script,style,textarea,input,select,option,button[aria-label],.katex,.math-inline,.upgrade-symbol,.upgrade-category,[contenteditable='true']");
   }
   function renderInlineMath(root = document.body) {
     if (!root || !document.createTreeWalker || !window.katex) return;
