@@ -774,3 +774,32 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex .katex-html{
   line-height:1!important;
 }
+
+
+/* Black Hole: make ONLY accumulated and balance cards match White Hole telemetry sizing. */
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1),
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2){
+  padding:12px 14.4px!important;
+  gap:6px!important;
+  font-size:120%!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span{
+  font-size:120%!important;
+  line-height:1.25!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span .katex{
+  font-size:1em!important;
+  line-height:normal!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>strong,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>strong{
+  font-size:clamp(16.8px,1.62vw,21.6px)!important;
+  line-height:1.35!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>strong .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>strong .katex{
+  font-size:1em!important;
+  line-height:normal!important;
+}
