@@ -758,3 +758,19 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
   font-size:56.16px!important;
 }
+
+
+/* Black Hole telemetry: reduce oversized KaTeX line boxes without shrinking glyphs. */
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay{
+  line-height:1!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex .katex-html,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex .katex-html,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex .katex-html{
+  line-height:1!important;
+}
