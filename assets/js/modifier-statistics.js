@@ -8,7 +8,18 @@
   const isRu = () => window.FA_META?.language === "ru";
   const tr = (ru, en) => isRu() ? ru : en;
   const num = value => Number.isFinite(Number(value)) ? Number(value) : 0;
-  const fmt = value => typeof window.format === "function" ? window.format(num(value)) : String(value);
+  const fmt = value => {
+    const n = num(value);
+    if (!Number.isFinite(n)) return "∞";
+    const locale = isRu() ? "ru-RU" : "en-US";
+    const compactDisabled = window.FA_META?.settings?.compact === false;
+    if (n < 1e6 || (compactDisabled && n < 1e15)) {
+      return n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    if (typeof formatPrecise === "function") return formatPrecise(n, 2);
+    if (typeof window.formatPrecise === "function") return window.formatPrecise(n, 2);
+    return n.toFixed(2);
+  };
   const renderMath = (element, latex) => {
     if (window.FAFormula?.render) window.FAFormula.render(element.id, latex);
     else element.textContent = latex;
@@ -156,7 +167,7 @@
     {
       const group = addGroup(root, tr("ИССЛЕДОВАНИЯ", "RESEARCH"));
       addFactor(group, "\\text{A--E level efficiency}", meta("efficiency"));
-      addFactor(group, "\\text{A--E limit scale}", 1 + 0.01 * num(research[3]));
+      addFactor(group, "\\text{A--E limit scale}", 1 + 0.01 * Math.max(0, meta("limitExpansion")));
       addFactor(group, "\\text{A--E dependencies}", meta("coupling"));
       addFactor(group, "\\text{E input}", meta("eInput"));
       addFactor(group, "\\text{Automation}", meta("auto"));
@@ -184,7 +195,7 @@
       addFactor(group, "t_{dl}", glyphDilation);
       addFactor(group, "t_{bl}", glyphDilation);
       if (window.FA_META?.settings?.offline !== false) {
-        addFactor(group, "\\text{Offline rate}", 0.35 * ordinaryTime);
+        addFactor(group, "\\text{Offline rate}", 0.35 * 0.82 * ordinaryTime);
       }
     }
 
