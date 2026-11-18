@@ -759,3 +759,14 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   font-size:1em!important;
   line-height:normal!important;
 }
+
+/* Black Hole typography: enlarge the accumulated t_bl label and both telemetry values. */
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:first-child>span[data-i18n="blackHoleAccumulated"] .katex{
+  font-size:28px!important;
+  line-height:normal!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
+  font-size:24px!important;
+  line-height:normal!important;
+}
