@@ -438,3 +438,6 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .modifier-compact-live{grid-column:1/-1;padding:2px 1px;color:#61766e;font:8px var(--mono);letter-spacing:.7px;text-align:right}
 @media(max-width:700px){.modifier-statistics-content{grid-template-columns:1fr}.modifier-compact-group.wide{grid-column:auto}}
 @media(max-width:480px){.modifier-compact-group{padding:9px 11px}.modifier-compact-row{gap:8px}.modifier-compact-label,.modifier-compact-value{font-size:10px}}
+
+/* Keep KaTeX glyphs vertically contained inside compact upgrade-card icons. */
+.upgrade-symbol .katex{font-size:1em;line-height:1}
