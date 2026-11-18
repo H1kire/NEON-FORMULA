@@ -141,21 +141,16 @@
   font-size: 14.04px !important;
 }
 
-/* Explicitly scale the KaTeX output generated inside the two live value nodes.
-   These values are rendered dynamically, so target their IDs as well as the
-   card structure above to cover every KaTeX wrapper produced at runtime. */
-#blackHoleModulePanel #blackHoleTimeDisplay .katex,
-#blackHoleModulePanel #blackHoleCurrencyDisplay .katex,
-#blackHoleModulePanel #blackHoleTimeDisplay .katex-display > .katex,
-#blackHoleModulePanel #blackHoleCurrencyDisplay .katex-display > .katex {
+/* Scale the actual math-formula nodes and their KaTeX output in both cards.
+   The strong element itself is set explicitly because KaTeX inherits its size
+   from this node; the KaTeX root then uses 100% of that enlarged size. */
+#blackHoleModulePanel #blackHoleTimeDisplay.math-formula,
+#blackHoleModulePanel #blackHoleCurrencyDisplay.math-formula {
   font-size: var(--bh-telemetry-value-size) !important;
-  line-height: normal !important;
+  line-height: 1.35 !important;
 }
-#blackHoleModulePanel #blackHoleTimeDisplay .katex .mord,
-#blackHoleModulePanel #blackHoleCurrencyDisplay .katex .mord {
+#blackHoleModulePanel #blackHoleTimeDisplay.math-formula > .katex,
+#blackHoleModulePanel #blackHoleCurrencyDisplay.math-formula > .katex {
   font-size: 1em !important;
-}
-#blackHoleModulePanel #blackHoleTimeDisplay .katex .msupsub .mord,
-#blackHoleModulePanel #blackHoleCurrencyDisplay .katex .msupsub .mord {
-  font-size: var(--bh-telemetry-subscript-size) !important;
+  line-height: normal !important;
 }
