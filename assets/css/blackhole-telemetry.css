@@ -154,3 +154,26 @@
   font-size: 1em !important;
   line-height: normal !important;
 }
+
+/* FINAL OVERRIDE: target the exact two cards and exact live DOM nodes.
+   These selectors intentionally avoid relying on a class on the parent grid
+   and override the broad .dilation-page typography rules in style.css. */
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(1) > span,
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(2) > span {
+  font-size: 13.2px !important;
+  line-height: 1.25 !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(1) > span .katex,
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(2) > span .katex {
+  font-size: 13.2px !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(1) > strong,
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(2) > strong {
+  font-size: 21.06px !important;
+  line-height: 1.35 !important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(1) > strong > .katex,
+#blackHoleModulePanel #blackHoleUnlockedPanel .blackhole-status-grid > .dilation-stat-card:nth-child(2) > strong > .katex {
+  font-size: 21.06px !important;
+  line-height: normal !important;
+}
