@@ -3,7 +3,7 @@ const TICK=10, AUTOSAVE_INTERVAL=5000;
 let lastFrame=Date.now(),t=0,value=0;
 let dilationMode=false,dilationTime=0,dilationCurrency=0,dilationILevel=0,dilationKLevel=0,dilationVLevel=0,dilationTauLevel=0,dilationIntegrating=false,dilationOperationStartedAt=0,dilationOperationReward=0,dilationOperationAmount=0;
 let dilationExtraLevels={sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};
-let blackHoleUnlocked=false,blackHoleMode=false,blackHoleTime=0,blackHoleCurrency=0,blackHoleIntegrating=false,blackHoleOperationStartedAt=0,blackHoleOperationAmount=0,blackHoleOperationReward=0,blackHoleLevels={q:0,s:0,w:0,tau:0,sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};
+let blackHoleUnlocked=false,blackHoleMode=false,blackHoleTime=0,blackHoleCurrency=0,blackHoleIntegrating=false,blackHoleOperationStartedAt=0,blackHoleOperationAmount=0,blackHoleOperationReward=0,blackHoleLevels={q:0,s:0,w:0,p:0,tau:0,sum:0,letters:0,discount:0,parameters:0,production:0,prestige:0};
 let aLevel=0,bLevel=0,cLevel=0,dLevel=0,eLevel=0,fLevel=0,gLevel=0,hLevel=0;
 const SAVE_KEY="formula_ascent_save_v2",LEGACY_SAVE_KEY="formula_ascent_save_v1",OLD_SAVE_KEY="neon_formula_idle_v4_5";
 const $=id=>document.getElementById(id);
@@ -43,9 +43,9 @@ function completeDilationIntegration(){if(!dilationIntegrating)return;dilationCu
 function getBlackHoleParameters(){const l=blackHoleLevels,boost=1+0.002*(l.parameters||0);return {q:(1+0.5*l.q)*boost,s:(1+0.25*l.s)*boost,w:(1+0.05*l.w)*boost}}
 window.getBlackHoleResearchLevel=window.getBlackHoleResearchLevel||(()=>Math.max(0,Math.floor(Number(FA_META?.blackHoleResearchLevel)||0)));
 function getBlackHoleResearchL(){return 1+0.1*Math.max(0,Number(window.getBlackHoleResearchLevel?.())||0)}
-function getBlackHoleP(){return 0.85*getBlackHoleResearchL()}
+function getBlackHoleP(){return 0.85*getBlackHoleResearchL()*Math.pow(1.1,blackHoleLevels.p||0)}
 function getBlackHoleTimeSpeed(){return (1+0.05*(blackHoleLevels.tau||0))*(1+0.05*(blackHoleLevels.timeFlow||0))}
-function getBlackHoleUpgradeCost(key,offset=0){const pricing={q:{base:1,ratio:1.4},s:{base:2.5,ratio:2},w:{base:5,ratio:3.5},tau:{base:1000,ratio:3},sum:{base:10,ratio:5},letters:{base:2,ratio:3},discount:{base:1000,ratio:2.5},parameters:{base:100,ratio:2},production:{base:1000,ratio:15},prestige:{base:1000,ratio:5}}[key],level=blackHoleLevels[key];if(!pricing||level===undefined)return Number.MAX_SAFE_INTEGER;const cost=pricing.base*Math.pow(pricing.ratio,level+offset);return Number.isFinite(cost)?Math.min(Number.MAX_SAFE_INTEGER,cost):Number.MAX_SAFE_INTEGER}
+function getBlackHoleUpgradeCost(key,offset=0){const pricing={q:{base:1,ratio:1.4},s:{base:2.5,ratio:2},w:{base:5,ratio:3.5},p:{base:1000,ratio:5},tau:{base:1000,ratio:3},sum:{base:10,ratio:5},letters:{base:2,ratio:3},discount:{base:1000,ratio:2.5},parameters:{base:100,ratio:2},production:{base:1000,ratio:15},prestige:{base:1000,ratio:5}}[key],level=blackHoleLevels[key];if(!pricing||level===undefined)return Number.MAX_SAFE_INTEGER;const cost=pricing.base*Math.pow(pricing.ratio,level+offset);return Number.isFinite(cost)?Math.min(Number.MAX_SAFE_INTEGER,cost):Number.MAX_SAFE_INTEGER}
 function calculateBlackHoleReward(upper=blackHoleTime){const {q,s,w}=getBlackHoleParameters(),z=Math.sqrt(Math.max(0,s*upper)),a=w+2,b=w+1,integral=(safePow(z+1,a)/a-safePow(z+1,b)/b)-(1/a-1/b),magnitude=safeProduct(q/(1.25*s*s),integral),average=upper>0?magnitude/upper:0;return safePow(Math.max(0,average),getBlackHoleP())}
 function completeBlackHoleIntegration(){if(!blackHoleIntegrating)return;blackHoleCurrency=Math.min(Number.MAX_VALUE,blackHoleCurrency+blackHoleOperationReward);blackHoleTime=Math.max(0,blackHoleTime-blackHoleOperationAmount);blackHoleIntegrating=false;blackHoleOperationStartedAt=0;blackHoleOperationAmount=0;blackHoleOperationReward=0;saveGame(true);updateUI();if(window.refreshBlackHoleResearch)window.refreshBlackHoleResearch()}
 window.getTemporalPrestigeDivisorMultiplier=()=>1+0.001*(dilationExtraLevels.prestige||0)+0.002*(blackHoleLevels.prestige||0);
