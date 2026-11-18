@@ -55,21 +55,6 @@
     renderMath(result, factorLatex(value));
   };
 
-  const addText = (group, label, value) => {
-    const row = document.createElement("div");
-    row.className = "modifier-compact-row";
-    const name = document.createElement("span");
-    name.className = "modifier-compact-label";
-    name.id = "modifierCompactLabel" + (++rowId);
-    const result = document.createElement("strong");
-    result.className = "modifier-compact-value";
-    result.id = "modifierCompactValue" + (++rowId);
-    row.append(name, result);
-    group.append(row);
-    renderMath(name, label);
-    renderMath(result, "\\text{" + String(value).replace(/[{}\\]/g, "") + "}");
-  };
-
   window.showStatisticsTab = tab => {
     activeTab = tab === "modifiers" ? "modifiers" : "account";
     document.querySelectorAll("[data-statistics-tab]").forEach(button =>
@@ -140,8 +125,7 @@
       addFactor(group, "\\text{Integral}", integral);
       addFactor(group, "\\text{Global Sum}", globalSum);
       addFactor(group, "\\text{Letters product}", lettersProduct);
-      addFactor(group, "\\text{Research + temporal}", researchProduction * temporalProduction);
-      addFactor(group, "\\text{Genesis Tree}", treeProduction);
+      addFactor(group, "\\text{Other production}", safeProduct(researchProduction, temporalProduction, treeProduction));
       addFactor(group, "\\text{TOTAL}", productionTotal);
     }
 
@@ -159,7 +143,6 @@
       const hUnlocked = typeof window.isLetterHUnlocked === "function" && window.isLetterHUnlocked() && num(formula.hLevel) > 0;
       addFactor(group, "F", fUnlocked ? num(formula.f) : 1);
       addFactor(group, "H", hUnlocked ? num(formula.h) : 1);
-      addFactor(group, "\\text{Glyph letter factor}", glyphLetter);
     }
 
     // Final cost modifier, including every discount and divisor currently applied.
@@ -168,8 +151,7 @@
       const growth = typeof getLetterPriceGrowth === "function" ? getLetterPriceGrowth() : 1;
       const temporalDiscount = Math.pow(0.99875, getLevel("discount")) * Math.pow(0.9975, getBHLevel("discount"));
       addFactor(group, "\\text{Price growth per level}", growth);
-      addFactor(group, "\\text{Final cost factor}", temporalDiscount / glyphCostDivisor);
-      addFactor(group, "\\text{Next level cost factor}", safeProduct(growth, temporalDiscount / glyphCostDivisor));
+      addFactor(group, "\\text{Cost discount}", temporalDiscount / glyphCostDivisor);
     }
 
     // Research effects shown as their final effective factors.
@@ -180,7 +162,6 @@
       addFactor(group, "\\text{A--E dependencies}", meta("coupling"));
       addFactor(group, "\\text{E input}", meta("eInput"));
       addFactor(group, "\\text{Automation}", meta("auto"));
-      addFactor(group, "\\text{Score production}", researchProduction);
     }
 
     // Prestige: gains and threshold divisors are kept distinct.
@@ -206,7 +187,6 @@
       addFactor(group, "t_{bl}", glyphDilation);
       if (window.FA_META?.settings?.offline !== false) {
         addFactor(group, "\\text{Offline rate}", 0.35 * ordinaryTime);
-        addText(group, "\\text{Offline cap}", "8 h");
       }
     }
 
