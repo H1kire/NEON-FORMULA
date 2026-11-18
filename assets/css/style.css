@@ -748,3 +748,17 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
   font-size:14.04px!important;
 }
+
+
+/* Black Hole: double only the requested inner KaTeX elements. */
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex{
+  font-size:2em!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
+  font-size:28.08px!important;
+}
+.blackhole-page .dilation-operation-card #blackHoleFormula .katex,
+.blackhole-page .dilation-operation-card #blackHoleConversionFormula .katex{
+  font-size:2.42em!important;
+}
