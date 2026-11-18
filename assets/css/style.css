@@ -731,57 +731,33 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   }
 }
 
-/* Black Hole telemetry: match accumulated label typography; values are 4px smaller. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span{
-  font-size:110%;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .math-inline{
-  font-size:1em!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>strong,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>strong{
-  font-size:14.04px!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
-  font-size:14.04px!important;
-}
-
-
-/* Black Hole: double selected telemetry KaTeX again; leave operation formulas unchanged. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex{
-  font-size:4em!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
-  font-size:56.16px!important;
-}
-
-
-/* Black Hole telemetry: reduce oversized KaTeX line boxes without shrinking glyphs. */
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay{
-  line-height:1!important;
-}
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex .katex-html,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex .katex-html,
-.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex .katex-html{
-  line-height:1!important;
-}
-
-
-/* Black Hole: make ONLY accumulated and balance cards match White Hole telemetry sizing. */
+/* Black Hole: first two telemetry cards match White Hole sizing. Keep parameter card unchanged. */
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1),
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2){
   padding:12px 14.4px!important;
   gap:6px!important;
   font-size:120%!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span{
+  font-size:120%!important;
+  line-height:1.25!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span .katex{
+  font-size:1em!important;
+  line-height:normal!important;
+}
+/* ID-specific rules override older Black Hole value sizing rules. */
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay{
+  font-size:clamp(16.8px,1.62vw,21.6px)!important;
+  line-height:1.35!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleTimeDisplay .katex,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card #blackHoleCurrencyDisplay .katex{
+  font-size:1em!important;
+  line-height:normal!important;
 }
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(1)>span,
 .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card:nth-child(2)>span{
