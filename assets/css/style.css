@@ -627,3 +627,59 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
     grid-column:1/-1;
   }
 }
+
+
+/* Telemetry cards: 20% larger, equal height based on the parameter card. */
+.dilation-page>.dilation-status-grid,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+  align-items:stretch;
+  gap:9.6px;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
+  align-self:stretch;
+  height:100%;
+  min-height:0;
+  padding:12px 14.4px;
+  gap:6px;
+  font-size:120%;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card>span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>span{
+  font-size:120%;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card>strong,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>strong{
+  font-size:clamp(16.8px,1.62vw,21.6px);
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
+  gap:6px;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div{
+  padding:4.8px 7.2px;
+  gap:3.6px;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div span{
+  font-size:13.2px!important;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div strong,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div strong{
+  font-size:14.4px!important;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
+  margin-top:4.8px;
+  padding-top:4.8px;
+  font-size:12px;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value strong{
+  font-size:15.6px;
+}
+@media(max-width:520px){
+  .dilation-page>.dilation-status-grid,
+  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{gap:8.4px}
+  .dilation-page>.dilation-status-grid>.dilation-stat-card,
+  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{padding:10.8px 12px}
+}
