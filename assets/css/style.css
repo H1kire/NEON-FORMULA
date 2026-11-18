@@ -525,3 +525,57 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   .dilation-page>.dilation-status-grid .dilation-stat-card,
   .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid .dilation-stat-card{min-height:78px;padding:9px 10px}
 }
+
+
+/* Tight telemetry layout: ONLY the three accumulated / balance / parameter cards. */
+.dilation-page>.dilation-status-grid,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{
+  align-items:start;
+  gap:8px;
+  margin:13px 0 11px;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{
+  align-self:start;
+  height:auto;
+  min-height:0;
+  padding:10px 12px;
+  gap:5px;
+  justify-content:flex-start;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card>span,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>span{
+  display:block;
+  margin:0;
+  line-height:1.25;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card>strong,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card>strong{
+  display:block;
+  margin:0;
+  line-height:1.35;
+  font-size:clamp(14px,1.35vw,18px);
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters{
+  margin:0;
+  gap:5px;
+  align-items:center;
+}
+.dilation-page>.dilation-status-grid>.dilation-stat-card .dilation-live-parameters>div,
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .dilation-live-parameters>div{
+  min-width:0;
+  padding:4px 6px;
+  gap:3px;
+}
+.blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card .blackhole-p-value{
+  margin-top:4px;
+  padding-top:4px;
+  line-height:1.2;
+}
+@media(max-width:700px){
+  .dilation-page>.dilation-status-grid,
+  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid{gap:7px}
+  .dilation-page>.dilation-status-grid>.dilation-stat-card,
+  .blackhole-page #blackHoleUnlockedPanel>.blackhole-status-grid>.dilation-stat-card{padding:9px 10px}
+}
