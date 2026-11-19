@@ -671,5 +671,5 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   transform:translateY(-50%);
   transform-origin:left center;
   white-space:nowrap;
-  font-size:2.5em!important;
+  font-size:5em!important;
 }
