@@ -65,6 +65,8 @@
  const typeFor=id=>{
   if(id===0)return "square";
   const roll=random();
+  if(id===1859||id===2047)return "circle";
+  if(id===2048)return "pentagon";
   if(id===3)return "square";
   const p=gridCoords[id];
   if(isSquareCell(p.col,p.row))return "square";
