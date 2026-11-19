@@ -150,7 +150,7 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 .dilation-parameter-value strong{font:14px var(--mono);color:var(--cyan)}
 .dilation-status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:17px 0}
 .dilation-stat-card{display:flex;flex-direction:column;gap:9px;min-width:0;padding:17px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(19,29,36,.98),rgba(13,21,27,.98))}
-.dilation-stat-card span{color:#82938e;font:8px var(--mono);letter-spacing:1px}.dilation-stat-card strong{color:var(--cyan);font:clamp(18px,2.4vw,25px) var(--mono);overflow-wrap:anywhere}
+.dilation-stat-card span{color:#82938e;font:14px var(--mono);letter-spacing:1px}.dilation-stat-card strong{color:var(--cyan);font:clamp(18px,2.4vw,25px) var(--mono);overflow-wrap:anywhere}
 .dilation-currency-card{border-color:rgba(240,166,109,.25)}.dilation-currency-card strong{color:var(--orange)}
 .dilation-mode-card{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:16px 17px;border:1px solid var(--line);background:rgba(255,255,255,.025)}
 .dilation-mode-copy{display:flex;flex-direction:column;gap:6px}.dilation-mode-copy strong{font-size:12px}.dilation-mode-copy small{max-width:580px;color:#82918c;font-size:10px;line-height:1.6}
