@@ -56,8 +56,8 @@ function updateBlackHoleUI(){
  const locked=$("blackHoleLockedPanel"),unlocked=$("blackHoleUnlockedPanel"),buy=$("blackHoleUnlockBtn"),mode=$("blackHoleModeToggle"),time=$("blackHoleTimeDisplay"),currency=$("blackHoleCurrencyDisplay"),integrate=$("blackHoleIntegrateBtn"),input=$("blackHoleConvertInput"),track=$("blackHoleProgressTrack"),fill=$("blackHoleProgressFill"),status=$("blackHoleOperationStatus");
  if(locked)locked.hidden=state.unlocked;if(unlocked)unlocked.hidden=!state.unlocked;
  if(buy)buy.disabled=state.unlocked||dilationCurrency<1e12;
- if(time){if(window.FAFormula)FAFormula.renderCurrency("blackHoleTimeDisplay",formatPrecise(state.time,2),"\\medium t_{bl}");else time.textContent=formatPrecise(state.time,2)+" t₍bl₎"}
- if(currency){if(window.FAFormula)FAFormula.renderCurrency("blackHoleCurrencyDisplay",format(state.currency),"\\medium \\Delta t_{bl}");else currency.textContent=format(state.currency)+" ∆t₍bl₎"}
+ if(time){if(window.FAFormula)FAFormula.renderCurrency("blackHoleTimeDisplay",formatPrecise(state.time,2),"t_{bl}");else time.textContent=formatPrecise(state.time,2)+" t₍bl₎"}
+ if(currency){if(window.FAFormula)FAFormula.renderCurrency("blackHoleCurrencyDisplay",format(state.currency),"\\Delta t_{bl}");else currency.textContent=format(state.currency)+" ∆t₍bl₎"}
  for(const [key,id] of [["q","blackHoleParameterQ"],["s","blackHoleParameterS"],["w","blackHoleParameterW"]]){const el=$(id);if(el)el.textContent=state.parameters[key].toFixed(2)}
  if(mode){mode.checked=state.mode;mode.disabled=!state.unlocked||state.integrating||dilationIntegrating}
  if(input){input.disabled=state.integrating;if(!state.integrating)input.max=String(state.time)}
