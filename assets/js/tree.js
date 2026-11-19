@@ -129,6 +129,8 @@
    if(neighbor!==undefined&&nodes[neighbor].active&&edgeRandom()<.10)addEdge(id,neighbor);
   }
  }
+ // These two explicit links are retained because both pairs occupy adjacent grid cells.
+ addEdge(0,1923);addEdge(1923,1924);
   for(const [a,b] of edges){nodes[a].links.push(b);nodes[b].links.push(a)}
  const saved=FAStorage.getJSON("faTree",[]);
  if(Array.isArray(saved))saved.forEach(v=>{
