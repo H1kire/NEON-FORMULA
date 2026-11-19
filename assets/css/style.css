@@ -602,3 +602,56 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 #blackHoleModulePanel .dilation-operation-card .dilation-equation .katex{
   font-size:1em!important;
 }
+
+
+/* Black Hole telemetry: tighter card frames, larger readable contents. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid{
+  gap:6px!important;
+  margin:10px 0 9px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card{
+  min-height:0!important;
+  height:auto!important;
+  padding:6px 8px!important;
+  gap:4px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > span{
+  font-size:15px!important;
+  line-height:1.2!important;
+  letter-spacing:.65px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > strong{
+  font-size:27px!important;
+  line-height:1.15!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-parameters-card .dilation-live-parameters{
+  gap:4px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-parameters-card .dilation-live-parameters > div{
+  padding:3px 5px!important;
+  gap:2px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-parameters-card .dilation-live-parameters > div > span{
+  font-size:16px!important;
+  line-height:1.1!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-parameters-card .dilation-live-parameters > div > strong{
+  font-size:18px!important;
+  line-height:1.1!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-parameters-card .blackhole-p-value{
+  margin-top:6px!important;
+  padding-top:5px!important;
+  font-size:13px!important;
+}
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-parameters-card .blackhole-p-value strong{
+  font-size:17px!important;
+}
+@media(max-width:520px){
+  #blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid{
+    gap:6px!important;
+  }
+  #blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card{
+    padding:6px 8px!important;
+  }
+}
