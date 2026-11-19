@@ -656,20 +656,12 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   }
 }
 
-/* Enlarge only the rendered Black Hole values without changing card layout dimensions. */
-#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > strong.math-formula{
-  position:relative;
-  display:block;
-  height:1.35em;
-  line-height:1.35;
-  overflow:visible;
+/* Black Hole main values: match the responsive TOTAL VALUE typography, through KaTeX. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card:nth-child(-n+2) > strong.math-formula{
+  font-size:clamp(17px,2.1vw,25px);
+  line-height:1.15;
 }
-#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > strong.math-formula .katex{
-  position:absolute;
-  left:0;
-  top:50%;
-  transform:translateY(-50%);
-  transform-origin:left center;
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card:nth-child(-n+2) > strong.math-formula .katex{
+  font-size:1em;
   white-space:nowrap;
-  font-size:5em!important;
 }
