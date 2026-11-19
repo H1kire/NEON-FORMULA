@@ -656,7 +656,20 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
   }
 }
 
-/* Enlarge the actual KaTeX output for the two primary Black Hole values. */
+/* Enlarge only the rendered Black Hole values without changing card layout dimensions. */
+#blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > strong.math-formula{
+  position:relative;
+  display:block;
+  height:1.35em;
+  line-height:1.35;
+  overflow:visible;
+}
 #blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > strong.math-formula .katex{
-  font-size:1.5em!important;
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  transform-origin:left center;
+  white-space:nowrap;
+  font-size:2.5em!important;
 }
