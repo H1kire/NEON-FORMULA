@@ -658,5 +658,5 @@ body.reduced-motion *,body.reduced-motion *:before,body.reduced-motion *:after{a
 
 /* Enlarge the actual KaTeX output for the two primary Black Hole values. */
 #blackHoleModulePanel #blackHoleUnlockedPanel > .dilation-status-grid > .dilation-stat-card > strong.math-formula .katex{
-  font-size:1.15em;
+  font-size:1.5em!important;
 }
