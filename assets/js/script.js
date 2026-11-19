@@ -13,6 +13,7 @@ const btnA=$("btnA"),btnB=$("btnB"),btnC=$("btnC"),btnD=$("btnD"),btnE=$("btnE")
 const aCostDisplay=$("aCost"),bCostDisplay=$("bCost"),cCostDisplay=$("cCost"),dCostDisplay=$("dCost"),eCostDisplay=$("eCost");
 function metaBonus(type){return typeof getMetaBonus==="function"?getMetaBonus(type):1}
 function getLetterValueMultiplier(){return (1+0.001*Math.max(0,Number(prestigeUpgrades.letterValueBoost)||0))*(1+0.005*(dilationExtraLevels.letters||0))*(1+0.01*(blackHoleLevels.letters||0))}
+function getTreeLetterBonusMultiplier(){const level=typeof window.getTreeNodeLevel==="function"?window.getTreeNodeLevel(2049):0;return 1+0.01*Math.min(5,Math.max(0,level))}
 let formulaState={a:1,b:1,c:1,d:1,e:1},formulaSteps=0,formulaAccumulator=0;
 const LETTER_BASE_COSTS={a:1000,b:100000,c:10000000,d:1000000000,e:1000000000000,f:1000000000000000,g:1e18,h:1e21};
 const LETTER_BASE_PARAMETERS={a:1.81,b:0.652,c:1.66,d:11.7,e:2.057};
@@ -152,7 +153,7 @@ function advanceFormulaClock(delta){
  }
 }
 function resetFormulaState(){formulaState={a:1,b:1,c:1,d:1,e:1};formulaSteps=0;formulaAccumulator=0}
-function getA(){return safeProduct(formulaState.a,getGFactor(),getLetterValueMultiplier())}function getB(){return safeProduct(formulaState.b,getGFactor(),getLetterValueMultiplier())}function getC(){return safeProduct(formulaState.c,getGFactor(),getLetterValueMultiplier())}function getD(){return safeProduct(formulaState.d,getGFactor(),getLetterValueMultiplier())}function getE(){return safeProduct(formulaState.e,getGFactor(),getLetterValueMultiplier())}
+function getA(){return safeProduct(formulaState.a,getGFactor(),getLetterValueMultiplier(),getTreeLetterBonusMultiplier())}function getB(){return safeProduct(formulaState.b,getGFactor(),getLetterValueMultiplier(),getTreeLetterBonusMultiplier())}function getC(){return safeProduct(formulaState.c,getGFactor(),getLetterValueMultiplier(),getTreeLetterBonusMultiplier())}function getD(){return safeProduct(formulaState.d,getGFactor(),getLetterValueMultiplier(),getTreeLetterBonusMultiplier())}function getE(){return safeProduct(formulaState.e,getGFactor(),getLetterValueMultiplier(),getTreeLetterBonusMultiplier())}
 const LETTER_F_BASE_EXPONENT=0.40,LETTER_F_MAX_EXPONENT=0.85,LETTER_F_MAX_LEVEL=4501;
 function getFExponent(){return Math.min(LETTER_F_MAX_EXPONENT,LETTER_F_BASE_EXPONENT+Math.max(0,fLevel-1)*0.0001)}
 function getFCost(offset=0){return fLevel+offset>=LETTER_F_MAX_LEVEL?Number.MAX_SAFE_INTEGER:getLetterPrice(LETTER_BASE_COSTS.f,fLevel+offset)}
@@ -338,7 +339,8 @@ function getGain(){
  const formulaTime=typeof window.getGlyphFormulaTimeMultiplier==="function"?window.getGlyphFormulaTimeMultiplier():1;
  const factors=[safeProduct(t,t,formulaTime,formulaTime)];
  if(integralUnlocked)factors.push(getIntegralMultiplier());
- factors.push(getGlobalSumMultiplier(),letterProduct,boost*(1+0.1*(dilationExtraLevels.production||0)+0.2*(blackHoleLevels.production||0)));
+ const treeFormulaLevel=typeof window.getTreeNodeLevel==="function"?window.getTreeNodeLevel(2048):0;
+ factors.push(getGlobalSumMultiplier(),letterProduct,boost*(1+0.1*(dilationExtraLevels.production||0)+0.2*(blackHoleLevels.production||0)),1+0.05*Math.max(0,treeFormulaLevel));
  let result=safeProduct(...factors);
  if(FA_META.treeUnlocked&&typeof treeProductionMultiplier==="function")result=safeProduct(result,treeProductionMultiplier());
  return Number.isNaN(result)||result<0?0:Math.min(result,Number.MAX_VALUE);
